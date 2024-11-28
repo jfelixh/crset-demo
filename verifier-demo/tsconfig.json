@@ -25,7 +25,9 @@
       "@/types/*": ["types/*"],
       "@/styles/*": ["styles/*"],
       "@/middleware/*": ["middleware/*"],
-      "@/api/*": ["app/api/*"]
+      "@/api/*": ["app/api/*"],
+      "@/hooks/*": ["hooks/*"],
+      "@/components/*": ["components/*"],
     },
     "traceResolution": true
   },

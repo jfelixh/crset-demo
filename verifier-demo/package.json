@@ -9,7 +9,10 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@radix-ui/react-dialog": "^1.1.2",
+    "@radix-ui/react-slot": "^1.1.0",
     "@spruceid/didkit-wasm-node": "^0.2.1",
+    "@tanstack/react-query": "^5.61.5",
     "@types/pino-http": "^5.8.4",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
@@ -17,11 +20,13 @@
     "jsonpath": "^1.1.1",
     "lucide-react": "^0.460.0",
     "next": "15.0.3",
+    "next-qrcode": "^2.5.1",
     "pino": "^9.5.0",
     "react": "19.0.0-rc-66855b96-20241106",
     "react-dom": "19.0.0-rc-66855b96-20241106",
     "tailwind-merge": "^2.5.4",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "ua-parser-js": "^2.0.0"
   },
   "devDependencies": {
     "@types/jsonpath": "^0.2.4",
