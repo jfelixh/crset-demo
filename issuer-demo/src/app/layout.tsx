@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import Header from "@/components/Header";
-import {usePathname, useRouter} from "next/navigation";
+import { usePathname } from "next/navigation";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -16,18 +16,19 @@ const geistMono = localFont({
   weight: "100 900",
 });
 
-
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   const pathname = usePathname();
-  const isHomePage = pathname === '/' || pathname === '/logIn';
+  const isHomePage = pathname === "/" || pathname === "/logIn";
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-      <Header showLinks={!isHomePage} />
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
+        <Header showLinks={!isHomePage} />
         {children}
       </body>
     </html>

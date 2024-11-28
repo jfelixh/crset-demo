@@ -53,6 +53,8 @@ export default function Home() {
   const [name, setName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
+  const [companyName, setCompanyName] = useState("");
+  const [jobTitle, setJobTitle] = useState("");
   const [issuedVC, setIssuedVC] = useState<IssuedVC | null>(null);
   const [qrCode, setQrCode] = useState("");
   const form = useForm<z.infer<typeof formSchema>>({
@@ -80,6 +82,8 @@ export default function Home() {
           name: name,
           lastName: lastName,
           email: email,
+          companyName: companyName,
+          jobTitle: jobTitle,
           status: true,
         }),
       });
@@ -92,12 +96,9 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen">
+    <div className="page-container">
       <Form {...form}>
-        <form
-          onSubmit={(e) => handleSubmit(e)}
-          className="space-y-8 max-w-3xl mx-auto py-10"
-        >
+        <form onSubmit={(e) => handleSubmit(e)} className="space-y-8">
           <FormField
             name="name"
             render={() => (
@@ -145,28 +146,58 @@ export default function Home() {
               </FormItem>
             )}
           />
+          <FormField
+            name="companyName"
+            render={() => (
+              <FormItem>
+                <FormLabel>Company Name</FormLabel>
+                <FormControl>
+                  <Input
+                    type="text"
+                    value={companyName}
+                    onChange={(e) => setCompanyName(e.target.value)}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          <FormField
+            name="jobTitle"
+            render={() => (
+              <FormItem>
+                <FormLabel>Job Title</FormLabel>
+                <FormControl>
+                  <Input
+                    type="text"
+                    value={jobTitle}
+                    onChange={(e) => setJobTitle(e.target.value)}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
           <Button type="submit">Generate Verifiable Credential</Button>
         </form>
       </Form>
-      {qrCode && (
+      {/* {qrCode && (
         <>
           <h3>As a holder, you can scan the VC:</h3>
           <Image src={qrCode} alt="QR Code" width={200} height={200} />
         </>
-      )}
-      {/* <Dialog open={!!vc} onOpenChange={() => setVC(null)}>
+      )} */}
+      <Dialog open={!!qrCode}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Verifiable Credential</DialogTitle>
           </DialogHeader>
           <div className="flex justify-center">
-            {vc && <QRCode value={vc} />}
+            <Image src={qrCode} alt="QR Code" width={200} height={200} />
           </div>
-          <Button onClick={() => setVC(null)} className="mt-4">
+          <Button onClick={() => setQrCode("")} className="mt-4">
             Close
           </Button>
         </DialogContent>
-      </Dialog> */}
+      </Dialog>
     </div>
   );
 }

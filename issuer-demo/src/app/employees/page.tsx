@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 const initialUsers = [
   { id: 1, name: "John Doe", status: "valid" },
@@ -19,6 +20,7 @@ const initialUsers = [
 const UsersPage = () => {
   const [users, setUsers] = useState(initialUsers);
   const [selectedUsers, setSelectedUsers] = useState<number[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const handleCheckboxChange = (id: number) => {
     setSelectedUsers((prev) =>
@@ -35,8 +37,27 @@ const UsersPage = () => {
     setSelectedUsers([]);
   };
 
+  const filteredUsers = users.filter((user) =>
+    user.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
-    <div className="p-6">
+    <div className="page-container">
+      <div className="flex items-center mb-4 space-x-4">
+        <Input
+          type="text"
+          placeholder="Search by name"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="flex-1"
+        />
+        <Button
+          onClick={revokeSelectedUsers}
+          disabled={selectedUsers.length === 0}
+        >
+          Revoke
+        </Button>
+      </div>
       <Table>
         <TableHeader>
           <TableRow>
@@ -46,7 +67,7 @@ const UsersPage = () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {users.map((user) => (
+          {filteredUsers.map((user) => (
             <TableRow key={user.id}>
               <TableCell>
                 <Checkbox
@@ -60,9 +81,6 @@ const UsersPage = () => {
           ))}
         </TableBody>
       </Table>
-      <Button onClick={revokeSelectedUsers} className="mt-4">
-        Revoke
-      </Button>
     </div>
   );
 };
