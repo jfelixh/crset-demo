@@ -3,31 +3,31 @@
  * SPDX-License-Identifier: MIT
  */
 
+import { logger } from "@/config/logger";
 import { InputDescriptor } from "@/types/InputDescriptor";
-import { PresentationDefinition } from "@/types/PresentationDefinition";
 import { LoginPolicy } from "@/types/LoginPolicy";
+import { PresentationDefinition } from "@/types/PresentationDefinition";
 import { promises as fs } from "fs";
-import { logger } from "../../config/logger";
 
-var inputDescriptorOverride: any = undefined;
+let inputDescriptorOverride: any = undefined;
 if (process.env.PEX_DESCRIPTOR_OVERRIDE) {
   fs.readFile(process.env.PEX_DESCRIPTOR_OVERRIDE as string, "utf8").then(
     (file) => {
       inputDescriptorOverride = JSON.parse(file);
-    },
+    }
   );
 }
 
 export const generatePresentationDefinition = (
   policy: LoginPolicy,
-  incrAuthInputDescriptor?: InputDescriptor[],
+  incrAuthInputDescriptor?: InputDescriptor[]
 ) => {
   if (policy === undefined)
     throw Error(
-      "A policy must be specified to generate a presentation definition",
+      "A policy must be specified to generate a presentation definition"
     );
 
-  var pd: PresentationDefinition = {
+  const pd: PresentationDefinition = {
     format: {
       ldp_vc: {
         proof_type: [
@@ -59,14 +59,14 @@ export const generatePresentationDefinition = (
     pd.input_descriptors = incrAuthInputDescriptor;
     logger.debug(
       "Using input descriptor override for incremental authorization",
-      pd,
+      pd
     );
     return pd;
   }
 
-  for (let expectation of policy) {
+  for (const expectation of policy) {
     if (expectation.patterns.length > 1) {
-      let req = {
+      const req = {
         name: "Group " + expectation.credentialId,
         rule: "pick",
         count: 1,
@@ -75,8 +75,8 @@ export const generatePresentationDefinition = (
       pd.submission_requirements!.push(req);
     }
 
-    for (let pattern of expectation.patterns) {
-      let descr: InputDescriptor = {
+    for (const pattern of expectation.patterns) {
+      const descr: InputDescriptor = {
         id: expectation.credentialId,
         purpose: "Sign-in",
         name: "Input descriptor for " + expectation.credentialId,
@@ -87,9 +87,9 @@ export const generatePresentationDefinition = (
         descr.group = ["group_" + expectation.credentialId];
       }
 
-      let fields = pattern.claims
+      const fields = pattern.claims
         .filter((claim) =>
-          Object.hasOwn(claim, "required") ? claim.required : true,
+          Object.hasOwn(claim, "required") ? claim.required : true
         )
         .map((claim) => {
           return {

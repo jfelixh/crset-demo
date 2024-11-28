@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { logger } from "../../config/logger";
+import { logger } from "../config/logger";
 import { NextApiRequest, NextApiResponse } from "next";
 import pino from "pino";
 import pinoHttp from "pino-http";
@@ -28,11 +28,11 @@ const loggerHttp = pinoHttp({
 });
 
 export const withLogging = (
-  handler: (a: NextApiRequest, b: NextApiResponse) => Promise<void>,
+  handler: (a: NextApiRequest, b: NextApiResponse) => Promise<void>
 ) => {
   return async (
     req: NextApiRequest,
-    res: NextApiResponse<any>,
+    res: NextApiResponse<any>
   ): Promise<any> => {
     loggerHttp(req, res);
     return handler(req, res);

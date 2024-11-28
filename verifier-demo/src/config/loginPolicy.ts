@@ -4,10 +4,10 @@
  */
 
 import { promises as fs } from "fs";
-import { isLoginPolicy } from "@/lib/isLoginPolicy";
+import { isLoginPolicy } from "../lib/isLoginPolicy";
 import { LoginPolicy } from "@/types/LoginPolicy";
 
-var configuredPolicy: LoginPolicy | undefined = undefined;
+let configuredPolicy: LoginPolicy | undefined = undefined;
 
 export const reloadConfiguredLoginPolicy = () => {
   if (process.env.LOGIN_POLICY) {
@@ -16,13 +16,13 @@ export const reloadConfiguredLoginPolicy = () => {
         configuredPolicy = JSON.parse(file);
         if (!isLoginPolicy(configuredPolicy)) {
           throw Error(
-            "Configured login policy has syntax error: " + configuredPolicy,
+            "Configured login policy has syntax error: " + configuredPolicy
           );
         }
       });
     } catch (error) {
       throw Error(
-        "Failed loading login policy from file: " + process.env.LOGIN_POLICY,
+        "Failed loading login policy from file: " + process.env.LOGIN_POLICY
       );
     }
   } else {

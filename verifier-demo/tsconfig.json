@@ -18,9 +18,16 @@
         "name": "next"
       }
     ],
+    "baseUrl": "./src",
     "paths": {
-      "@/*": ["./src/*"]
-    }
+      "@/lib/*": ["lib/*"],
+      "@/config/*": ["config/*"],
+      "@/types/*": ["types/*"],
+      "@/styles/*": ["styles/*"],
+      "@/middleware/*": ["middleware/*"],
+      "@/api/*": ["app/api/*"]
+    },
+    "traceResolution": true
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]
