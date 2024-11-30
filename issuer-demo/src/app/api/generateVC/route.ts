@@ -3,8 +3,7 @@ import { Ed25519Signature2020 } from
   '@digitalcredentials/ed25519-signature-2020';
 import { issue } from "@digitalcredentials/vc";
 import documentLoader from "@/lib/documentLoader";
-import { createJWT } from 'did-jwt'
-
+import Redis from "ioredis";
 
 export async function POST(req: Request) {
   if (req.method !== "POST") {
@@ -14,90 +13,81 @@ export async function POST(req: Request) {
     );
   }
 
+  let redis: Redis | undefined;
+
   try {
-    const rawPayload = await req.json()
+    redis = new Redis();
+  } catch (error) {
+    console.error("Failed to connect to Redis:", error);
+    return new Response(
+      JSON.stringify({ error: "Redis connection failed" }),
+      { status: 500 }
+    );
+  }
+  
+  try {
+
+    // Needed for creating cryptographically secure proofs on the credential
     const keyPair = await Ed25519VerificationKey2020.generate();
     const suite = new Ed25519Signature2020({ key: keyPair });
   
     suite.verificationMethod = "did:key:" + keyPair.publicKeyMultibase + "#" + keyPair.publicKeyMultibase;
-    console.log("suite", JSON.stringify(suite))
-
+    const rawPayload = await req.json();
     const credentialPayload = {
-      "@context": ["https://www.w3.org/2018/credentials/v1"],
-      type: ["VerifiableCredential", "ProofOfEmploymentCredential"],
+      "@context": [
+        "https://www.w3.org/2018/credentials/v1",
+        "https://www.w3.org/2018/credentials/examples/v1",
+        {
+          EmploymentCredential: {
+            "@context": {
+              "@protected": true,
+              "@version": 1.1,
+              email: "schema:email",
+              name: "schema:name",
+              familyName: "schema:familyName",
+              jobTitle: "schema:jobTitle",
+              companyName: "schema:hiringOrganization",
+            comment: "schema:Text",
+            id: "@id",
+            schema: "https://schema.org/",
+            type: "@type",
+            },
+            "@id": "urn:employmentcredential",
+          },
+        },
+      ],
+      id: "urn:uuid:3978344f-344d-46a2-8556-1e67196186c6",
+      type: ["VerifiableCredential", "EmploymentCredential"],
+      issuer: `did:key:${keyPair.publicKeyMultibase}`,
       credentialSubject: {
-        //Does the user/issuer in the frontend needs to provide the did or it something that it is generated in the backend?
         id: `did:example:${rawPayload.id || Math.random().toString(36).substr(2)}`,
-        name: rawPayload.name,
-        lastName: rawPayload.lastName,
         email: rawPayload.email,
+        name: rawPayload.name,
+        familyName: rawPayload.lastName,
+        jobTitle: rawPayload.jobTitle,
+        companyName: rawPayload.companyName,
+        comment: "I am just a test credential.",
+        type: "EmploymentCredential",
       },
-      issuanceDate: new Date().toISOString(), 
-      issuer: `did:key:${keyPair.publicKeyMultibase}`, 
     };
-    console.log("Payload", credentialPayload)
-  
-     //Already put inside the credential Payload
-    // credentialPayload.issuer = "did:key:" + keyPair.publicKeyMultibase;
-   
-    console.log("Signature Suite", JSON.stringify(suite));
-    console.log("Document Loader:", documentLoader);
-    console.log("Credential Payload:", JSON.stringify(credentialPayload));
+    
     const signedCredential = await issue({
       credential: credentialPayload,
       suite,
       documentLoader,
     });
 
-    // Store the signedCredential
+    const uuid = crypto.randomUUID();
+    const MAX_AGE = 300; // 300 seconds = 5min
+    const EXPIRY_MS = "EX"; // seconds
+    redis.set(
+      "vc-" + uuid,
+      JSON.stringify(signedCredential),
+      EXPIRY_MS,
+      MAX_AGE
+    );
 
-    console.log("signedCredential", JSON.stringify(signedCredential))
-  
-    //USing JWT instead
-    // const rawPayload = await req.json();
-
-    // // Generate a key pair for signing
-    // const keyPair = await Ed25519VerificationKey2020.generate();
-    // const privateKey = keyPair.privateKeyMultibase;
-    // const publicKey = keyPair.publicKeyMultibase;
-
-    // // Prepare the JWT Header
-    // const header = {
-    //   alg: "EdDSA", // Algorithm
-    //   typ: "JWT", // Token type
-    // };
-
-    // // Prepare the JWT Payload (VC Claims)
-    // const payload = {
-    //   sub: rawPayload.did || `did:example:${Math.random().toString(36).substr(2)}`, // Subject
-    //   iss: `did:key:${publicKey}`, // Issuer
-    //   iat: Math.floor(Date.now() / 1000), // Issued at (timestamp)
-    //   nbf: Math.floor(Date.now() / 1000), // Not before (timestamp)
-    //   vc: {
-    //     "@context": ["https://www.w3.org/2018/credentials/v1"],
-    //     type: ["VerifiableCredential", "ProofOfEmploymentCredential"],
-    //     credentialSubject: {
-    //       name: rawPayload.name,
-    //       lastName: rawPayload.lastName,
-    //       email: rawPayload.email,
-    //     },
-    //   },
-    // };
-
-    // // Sign the JWT with the private key
-    // const signedJwt = await createJWT(payload, { key: keyPair.privateKey, header });
-
-    // console.log("Signed JWT VC:", signedJwt);
-
-    // // Return the signed JWT
-    // return new Response(
-    //   JSON.stringify({ jwt: signedJwt }, null, 2),
-    //   {
-    //     status: 200,
-    //   }
-    // );
-
-    return new Response(JSON.stringify({ vc: signedCredential }), { status: 200 });
+    return new Response(JSON.stringify({ vc: signedCredential, uuid: uuid }), { status: 200 });
   } catch (error) {
     console.error("Error generating VC:", error);
     return new Response(

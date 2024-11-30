@@ -9,39 +9,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import QRCode from "qrcode";
-import Image from "next/image";
-import { DialogHeader } from "@/components/ui/dialog";
-import { Dialog, DialogContent, DialogTitle } from "@radix-ui/react-dialog";
-
-type IssuedVC = {
-  id: string;
-  type: string;
-  issuer: {
-    id: string;
-    name: string;
-    url: string;
-  };
-  subject: {
-    id: string;
-    name: string;
-    dateOfBirth: string;
-    credentialType: string;
-  };
-  credentialStatus: {
-    id: string;
-    status: string;
-  };
-  issuedAt: string;
-  expirationDate: string;
-  metadata: {
-    schema: string;
-    signature: string;
-  };
-};
 
 const formSchema = z.object({
   name: z.string(),
@@ -55,22 +25,9 @@ export default function Home() {
   const [email, setEmail] = useState("");
   const [companyName, setCompanyName] = useState("");
   const [jobTitle, setJobTitle] = useState("");
-  const [issuedVC, setIssuedVC] = useState<IssuedVC | null>(null);
-  const [qrCode, setQrCode] = useState("");
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
-
-  useEffect(() => {
-    const generateQrCode = async () => {
-      if (issuedVC) {
-        const qr = await QRCode.toDataURL(JSON.stringify(issuedVC));
-        setQrCode(qr);
-      }
-    };
-
-    generateQrCode();
-  }, [issuedVC]);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -84,12 +41,14 @@ export default function Home() {
           email: email,
           companyName: companyName,
           jobTitle: jobTitle,
-          status: true,
         }),
       });
       const data = await response.json();
-      console.log("VC", JSON.stringify(data));
-      setIssuedVC(data);
+      if (data?.uuid) {
+        window.location.href = `/vci/${data.uuid}`;
+      } else {
+        console.error("Missing UUID in the response");
+      }
     } catch (error) {
       console.error("Form submission error", error);
     }
@@ -179,25 +138,6 @@ export default function Home() {
           <Button type="submit">Generate Verifiable Credential</Button>
         </form>
       </Form>
-      {/* {qrCode && (
-        <>
-          <h3>As a holder, you can scan the VC:</h3>
-          <Image src={qrCode} alt="QR Code" width={200} height={200} />
-        </>
-      )} */}
-      <Dialog open={!!qrCode}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Verifiable Credential</DialogTitle>
-          </DialogHeader>
-          <div className="flex justify-center">
-            <Image src={qrCode} alt="QR Code" width={200} height={200} />
-          </div>
-          <Button onClick={() => setQrCode("")} className="mt-4">
-            Close
-          </Button>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

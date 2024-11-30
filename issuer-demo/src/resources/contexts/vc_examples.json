@@ -22,6 +22,8 @@
       "DisputeCredential": "ex:DisputeCredential",
       "PrescriptionCredential": "ex:PrescriptionCredential",
       "ZkpExampleSchema2018": "ex:ZkpExampleSchema2018",
+      "EmploymentCredential": "ex:EmploymentCredential",
+      
   
       "issuerData": "ex:issuerData",
       "attributes": "ex:attributes",
