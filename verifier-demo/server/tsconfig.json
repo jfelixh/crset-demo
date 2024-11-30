@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "es2016",
+    "moduleDetection": "auto",
+
+    "module": "commonjs",
+    "baseUrl": "./",
+    "paths": {
+      // TODO: Add aliases for new directories
+      // "@services/*": ["src/services/*"],
+      // "@utils/*": ["src/utils/*"]
+    },
+    "outDir": "./dist",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true
+  }
+}
