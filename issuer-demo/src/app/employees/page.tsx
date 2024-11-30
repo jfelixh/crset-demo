@@ -1,88 +1,130 @@
 "use client";
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
 } from "@/components/ui/table";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import {Checkbox} from "@/components/ui/checkbox";
+import {Button} from "@/components/ui/button";
+import {Input} from "@/components/ui/input";
 
-const initialUsers = [
-  { id: 1, name: "John Doe", status: "valid" },
-  { id: 2, name: "Jane Smith", status: "valid" },
-];
 
 const UsersPage = () => {
-  const [users, setUsers] = useState(initialUsers);
-  const [selectedUsers, setSelectedUsers] = useState<number[]>([]);
-  const [searchTerm, setSearchTerm] = useState("");
+    const [users, setUsers] = useState([]);
+    const [selectedUser, setSelectedUser] = useState<number | null>(null);
+    const [searchTerm, setSearchTerm] = useState("");
 
-  const handleCheckboxChange = (id: number) => {
-    setSelectedUsers((prev) =>
-      prev.includes(id) ? prev.filter((userId) => userId !== id) : [...prev, id]
+    useEffect(() => {
+        const fetchUsers = async () => {
+            try {
+                const response = await fetch("/api/users");
+                const data = await response.json();
+                setUsers(data);
+            } catch (error) {
+                console.error("Error fetching users:", error);
+            }
+        };
+        fetchUsers();
+    }, []);
+
+    useEffect(() => {
+        console.log("Users fetched:", users);
+    }, [users]);
+
+    const handleCheckboxChange = (id: number) => {
+        setSelectedUser(prevSelected => (prevSelected === id ? null : id));
+    };
+
+    const revokeSelectedUser = async () => {
+        try {
+           // setUsers((prev) =>
+           //     prev.map((user) =>
+           //         selectedUsers.includes(user.id) ? {...user, status: "invalid"} : user
+           //     )
+            //);
+            setUsers((prev) =>
+                prev.map((user) =>
+                    user.id === selectedUser ? { ...user, status: "invalid" } : user
+                )
+            );
+            const response = await fetch('/api/revoke-users', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ user: selectedUser }),
+            });
+            if (response.ok) {
+                console.log('Users successfully revoked');
+            } else {
+                throw new Error('Failed to revoke users');
+            }
+            setSelectedUser(null);
+        }catch (error) {
+            console.error("Error revoking users:", error);
+        }
+    };
+
+    const filteredUsers = users.filter((user) =>
+        user.email_address.includes(searchTerm)
     );
-  };
+    const topUsers = filteredUsers.slice(0, 1000);
 
-  const revokeSelectedUsers = () => {
-    setUsers((prev) =>
-      prev.map((user) =>
-        selectedUsers.includes(user.id) ? { ...user, status: "invalid" } : user
-      )
-    );
-    setSelectedUsers([]);
-  };
-
-  const filteredUsers = users.filter((user) =>
-    user.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  return (
-    <div className="page-container">
-      <div className="flex items-center mb-4 space-x-4">
-        <Input
-          type="text"
-          placeholder="Search by name"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="flex-1"
-        />
-        <Button
-          onClick={revokeSelectedUsers}
-          disabled={selectedUsers.length === 0}
-        >
-          Revoke
-        </Button>
-      </div>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Select</TableHead>
-            <TableHead>Name</TableHead>
-            <TableHead>Status</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {filteredUsers.map((user) => (
-            <TableRow key={user.id}>
-              <TableCell>
-                <Checkbox
-                  checked={selectedUsers.includes(user.id)}
-                  onCheckedChange={() => handleCheckboxChange(user.id)}
+    return (
+        <div className="page-container">
+            <div className="flex items-center mb-4 space-x-4">
+                <Input
+                    type="text"
+                    placeholder="Search by Email Address"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="flex-1"
                 />
-              </TableCell>
-              <TableCell>{user.name}</TableCell>
-              <TableCell>{user.status}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </div>
-  );
+            </div>
+            <div className="overflow-x-auto max-w-full">
+                <div className="overflow-y-auto max-h-[800px]">
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Select</TableHead>
+                                <TableHead>Name</TableHead>
+                                <TableHead>Email Address</TableHead>
+                                <TableHead>ID</TableHead>
+                                <TableHead>Status</TableHead>
+
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {topUsers.map((user) => (
+                                <TableRow key={user.id}>
+                                    <TableCell>
+                                        <Checkbox
+                                            checked={selectedUser === user.id}
+                                            onCheckedChange={() => handleCheckboxChange(user.id)}
+                                        />
+                                    </TableCell>
+                                    <TableCell>{user.name}</TableCell>
+                                    <TableCell>{user.email_address}</TableCell>
+                                    <TableCell>{user.id}</TableCell>
+                                    <TableCell>{user.status}</TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </div>
+            </div>
+            <Button
+                onClick={revokeSelectedUser}
+                disabled={selectedUser === null}
+            >
+                Revoke
+            </Button>
+        </div>
+    );
 };
 
 export default UsersPage;
