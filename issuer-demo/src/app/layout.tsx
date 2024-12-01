@@ -27,7 +27,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Header showLinks={!isHomePage} />
+        <Header showLinks={!isHomePage} pathname={pathname} />
         {children}
       </body>
     </html>
