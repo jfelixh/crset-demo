@@ -1,7 +1,7 @@
-import { keyToDID } from "@spruceid/didkit-wasm-node";
 import cors from "cors";
 import dotenv from "dotenv";
 import express, { Express, Request, Response } from "express";
+import LoginRoute from "./routes/LoginRoute";
 
 dotenv.config();
 
@@ -18,16 +18,12 @@ app.use(
   })
 );
 
+app.use("/login", LoginRoute);
+
 app.get("/", (req: Request, res: Response) => {
   res.send("Express + TypeScript Server");
 });
 
-app.get("/test", (req: Request, res: Response) => {
-  const test = keyToDID("key", process.env.DID_KEY_JWK!);
-  res.json({
-    test,
-  });
-});
 
 app.listen(port, () => {
   console.log(`[server]: Server is running at http://localhost:${port}`);

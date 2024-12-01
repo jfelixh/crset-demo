@@ -7,24 +7,14 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import useTest from "@/hooks/api/useTest";
+import useGenerateWalletURL from "@/hooks/api/useGenerateWalletURL";
 import useIsMobileDevice from "@/hooks/useIsMobileDevice";
 import { createFileRoute } from "@tanstack/react-router";
 import { QRCodeCanvas } from "qrcode.react";
 
 function Index() {
-  const { data, isLoading, error } = useTest();
+  const { data: walletUrl, isLoading, error } = useGenerateWalletURL();
   const { isMobile } = useIsMobileDevice();
-
-  const loginChallenge = crypto.randomUUID();
-  const externalUrl = import.meta.env.EXTERNAL_URL!;
-  const walletUrl =
-    "openid-vc://?client_id=" +
-    data +
-    "&request_uri=" +
-    encodeURIComponent(
-      externalUrl + "/api/presentCredential?login_id=" + loginChallenge
-    );
 
   return (
     <div className="container justify-center">
@@ -55,7 +45,7 @@ function Index() {
                     <a href={walletUrl}>Authenticate</a>
                   </Button>
                 )}
-                <pre className="max-w-24">{JSON.stringify(data, null, 2)}</pre>
+                <pre className="w-auto overflow-auto">{JSON.stringify(walletUrl, null, 2)}</pre>
               </DialogContent>
             </Dialog>
           </>
