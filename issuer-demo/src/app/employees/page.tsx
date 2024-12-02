@@ -72,7 +72,7 @@ const UsersPage = () => {
     const filteredUsers = users.filter((user) =>
         user.email_address.includes(searchTerm)
     );
-    const topUsers = filteredUsers.slice(0, 1000);
+    const topUsers = filteredUsers.slice(0, 100);
 
     return (
         <div className="page-container">
@@ -86,7 +86,7 @@ const UsersPage = () => {
                 />
             </div>
             <div className="overflow-x-auto max-w-full">
-                <div className="overflow-y-auto max-h-[800px]">
+                <div className="overflow-y-auto max-h-screen">
                     <Table>
                         <TableHeader>
                             <TableRow>
@@ -117,12 +117,14 @@ const UsersPage = () => {
                     </Table>
                 </div>
             </div>
-            <Button
-                onClick={revokeSelectedUser}
-                disabled={selectedUser === null}
-            >
-                Revoke
-            </Button>
+            <div className="sticky bottom-0 bg-white border-t border-gray-200 p-4">
+                <Button
+                    onClick={revokeSelectedUser}
+                    disabled={selectedUser === null}
+                >
+                    Revoke
+                </Button>
+            </div>
         </div>
     );
 };
