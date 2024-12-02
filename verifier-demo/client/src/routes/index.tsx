@@ -1,57 +1,51 @@
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import useGenerateWalletURL from "@/hooks/api/useGenerateWalletURL";
-import useIsMobileDevice from "@/hooks/useIsMobileDevice";
+import { Card } from "@/components/ui/card";
 import { createFileRoute } from "@tanstack/react-router";
-import { QRCodeCanvas } from "qrcode.react";
+import { motion } from "framer-motion";
+
+import imgUrl from "@/assets/smile.jpg";
 
 function Index() {
-  const { data: walletUrl, isLoading, error } = useGenerateWalletURL();
-  const { isMobile } = useIsMobileDevice();
-
   return (
-    <div className="container justify-center">
-      <div>
-        {isLoading ? (
-          <p>Loading...</p>
-        ) : error ? (
-          <p>Error: {error.message}</p>
-        ) : (
-          <>
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button>Sign-In</Button>
-              </DialogTrigger>
-              <DialogContent className="!max-w-screen-md">
-                <DialogHeader>
-                  <DialogTitle>Login using your wallet</DialogTitle>
-                  <DialogDescription>
-                    Scan the QR code with your wallet to sign in.
-                  </DialogDescription>
-                </DialogHeader>
-                {!isMobile ? (
-                  <div className="w-full flex justify-center">
-                    <QRCodeCanvas value={walletUrl} size={400} />
-                  </div>
-                ) : (
-                  <Button>
-                    <a href={walletUrl}>Authenticate</a>
-                  </Button>
-                )}
-                <pre className="w-auto overflow-auto">{JSON.stringify(walletUrl, null, 2)}</pre>
-              </DialogContent>
-            </Dialog>
-          </>
-        )}
+    <section className="bg-secondary !mt-0">
+      <div className="grid grid-cols-[1fr_10fr_1fr] w-full min-h-[55vh] py-4">
+        <div className="col-start-2 grid grid-cols-2 h-full gap-8">
+          <motion.div
+            className="flex justify-center items-center"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <div className="text-left space-y-4">
+              <h1 className="text-5xl font-bold">
+                The bank you will <br /> love to bank with.
+              </h1>
+              <h2 className="text-xl font-light">
+                Apply for a loan with the power of web3. We don't care about
+                your credit score.
+              </h2>
+              <Button size="lg">Apply for a loan now!</Button>
+            </div>
+          </motion.div>
+
+          <motion.div
+            className="flex justify-center items-center"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            <Card className="p-8 rounded-xl">
+              <img
+                // src="https://media.istockphoto.com/id/1358205700/photo/shot-of-a-young-man-using-his-smartphone-to-send-text-messages.jpg?s=612x612&w=0&k=20&c=TV26GSLYVo3p2QyjKRCe6KdfQbIlZs638IGrViakNbk%3D"
+                src={imgUrl}
+                alt="Image"
+                className="rounded-md object-cover"
+              />
+            </Card>
+          </motion.div>
+        </div>
       </div>
-    </div>
+    </section>
   );
 }
 
