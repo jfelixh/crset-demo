@@ -26,62 +26,81 @@ export function connectToDb(databaseLocation: string): Promise<sqlite.Database> 
     });
 }
 function createTable(db: sqlite.Database) {
-    db.run(`CREATE TABLE IF NOT EXISTS credentialStatus(
-        name TEXT NOT NULL,
-        email_address TEXT NOT NULL,
-        id TEXT PRIMARY KEY,
-        status TEXT NOT NULL
-        ) STRICT`
-        , (err) => {
+    db.run(
+        `CREATE TABLE IF NOT EXISTS credentialStatus(
+                                                        id TEXT PRIMARY KEY,
+                                                        status TEXT NOT NULL
+         ) STRICT`,
+        (err) => {
             if (err) {
-                console.error('Error creating table:', err.message);
+                console.error("Error creating table:", err.message);
                 return;
             }
-            console.log('Credential Status table is ready.');
+            console.log("Credential Status table is ready.");
         }
     );
 }
 
 function populateDb(db: sqlite.Database, filePath: string) {
-    const insertStmt = db.prepare('INSERT INTO credentialStatus (name,email_address,id,status) VALUES (?, ?, ?,?)');
-
+    const insertStmt = db.prepare('INSERT INTO credentialStatus (id,status) VALUES ( ?,?)');
     fs.createReadStream(filePath)
-        .pipe(csv())
-        .on('data', (row) => {
-            const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-            let name = "";
-            for (let i = 0; i < 10; i++) {
-                name += characters.charAt(Math.floor(Math.random() * characters.length));
-            }
-            let email_address="";
-            for (let i = 0; i < 10; i++) {
-                email_address += characters.charAt(Math.floor(Math.random() * characters.length));
-            }
-            email_address += "@bmw.de";
-
-            insertStmt.run([name, email_address, row.id,row.status], (err) => {
+        .pipe(
+            csv({
+                // separator: ";"
+            })
+        )
+        .on("data", (row) => {
+            insertStmt.run([row.id, row.status], (err) => {
                 if (err) {
-                    console.error(`Error inserting row ${JSON.stringify(row)}:`, err.message);
+                    console.error(
+                        `Error inserting row ${JSON.stringify(row)}:`,
+                        err.message
+                    );
                 }
             });
         })
-        .on('end', () => {
-            console.log('CSV file successfully processed.');
+        .on("end", () => {
+            console.log("CSV file successfully processed.");
             insertStmt.finalize();
         })
-        .on('error', (err) => {
-            console.error('Error reading CSV file:', err.message);
+        .on("error", (err) => {
+            console.error("Error reading CSV file:", err.message);
         });
+    // fs.createReadStream(filePath)
+    //     .pipe(csv())
+    //     .on('data', (row) => {
+    //         const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    //         let name = "";
+    //         for (let i = 0; i < 10; i++) {
+    //             name += characters.charAt(Math.floor(Math.random() * characters.length));
+    //         }
+    //         let email_address="";
+    //         for (let i = 0; i < 10; i++) {
+    //             email_address += characters.charAt(Math.floor(Math.random() * characters.length));
+    //         }
+    //         email_address += "@bmw.de";
+    //
+    //         insertStmt.run([name, email_address, row.id,row.status], (err) => {
+    //             if (err) {
+    //                 console.error(`Error inserting row ${JSON.stringify(row)}:`, err.message);
+    //             }
+    //         });
+    //     })
+    //     .on('end', () => {
+    //         console.log('CSV file successfully processed.');
+    //         insertStmt.finalize();
+    //     })
+    //     .on('error', (err) => {
+    //         console.error('Error reading CSV file:', err.message);
+    //     });
 }
 
-//export async function initDB() {
+export async function initDB() {
     // export function initDB() {
- //  connectToDb("./bfc.db");
-  //createTable(db);
- //  populateDb(db, "/Users/ichan-yeong/Downloads/idSet.csv");
+console.log("creating Table")
+   connectToDb("./bfc.db");
+    //createTable(db);
+   populateDb(db, "/Users/ichan-yeong/Downloads/idSet.csv");
 // }
-//}
+}
 
-
-//console.log("Calling initDB...");
-//initDB().then(r => console.log("initDB done."));
