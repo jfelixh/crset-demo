@@ -2,6 +2,7 @@ import { keyToDID, keyToVerificationMethod } from "@spruceid/didkit-wasm-node";
 import { Request, Response } from "express";
 import * as jose from "jose";
 import { getConfiguredLoginPolicy } from "src/config/loginPolicy";
+import { checkRevocationStatus } from "src/lib/checkRevocationStatus";
 import { isTrustedPresentation } from "src/lib/extractClaims";
 import { generatePresentationDefinition } from "src/lib/generatePresentationDefinition";
 import { getMetadata } from "src/lib/getMetadata";
@@ -39,57 +40,59 @@ export const presentCredentialGet = async (req: Request, res: Response) => {
     const configuredPolicy = getConfiguredLoginPolicy();
     console.log("Policy: " + configuredPolicy);
 
-    const presentation_definition = generatePresentationDefinition(
-      /* getConfiguredLoginPolicy()!, */
-      configuredPolicy!
-    );
-    const did = keyToDID("key", process.env.DID_KEY_JWK!);
-    const verificationMethod = await keyToVerificationMethod(
-      "key",
-      process.env.DID_KEY_JWK!
-    );
+        const presentation_definition = generatePresentationDefinition(
+            /* getConfiguredLoginPolicy()!, */
+            configuredPolicy!,
+        );
+        console.log("Presentation Definition: " + presentation_definition);
+        const did = keyToDID("key", process.env.DID_KEY_JWK!);
+        const verificationMethod = await keyToVerificationMethod(
+            "key",
+            process.env.DID_KEY_JWK!,
+        );
 
-    const { login_id } = req.query;
-    console.log("Query: " + login_id);
-    const challenge = login_id as string;
-    const payload = {
-      client_id: did,
-      client_id_scheme: "did",
-      client_metadata_uri: process.env.EXTERNAL_URL + "/login/clientMetadata",
-      nonce: challenge,
-      presentation_definition,
-      response_mode: "direct_post",
-      response_type: "vp_token",
-      response_uri: process.env.EXTERNAL_URL + "/login/presentCredential",
-      state: challenge,
-    };
-    const privateKey = await jose.importJWK(
-      JSON.parse(process.env.DID_KEY_JWK!),
-      "EdDSA"
-    );
-    const token = await new jose.SignJWT(payload)
-      .setProtectedHeader({
-        alg: "EdDSA",
-        kid: verificationMethod,
-        typ: "oauth-authz-req+jwt",
-      })
-      .setIssuedAt()
-      .setIssuer(did)
-      .setAudience("https://self-issued.me/v2") // by definition
-      .setExpirationTime("1 hour")
-      .sign(privateKey)
-      .catch((err) => {
-        //   logger.error(err, "Failed signing presentation definition token");
-        res.status(500).end();
-      });
-    res.status(200).json({
-      token,
-    });
-  } catch (error: any) {
-    res.status(500).json({
-      error: error.message,
-    });
-  }
+        const { login_id } = req.query;
+        console.log("Query: " + login_id);
+        const challenge = login_id as string;
+        const payload = {
+            client_id: did,
+            client_id_scheme: "did",
+            client_metadata_uri: process.env.EXTERNAL_URL + "/login/clientMetadata",
+            nonce: challenge,
+            presentation_definition,
+            response_mode: "direct_post",
+            response_type: "vp_token",
+            response_uri: process.env.EXTERNAL_URL + "/login/presentCredential",
+            state: challenge,
+        };
+        const privateKey = await jose.importJWK(
+            JSON.parse(process.env.DID_KEY_JWK!),
+            "EdDSA",
+        );
+        const token = await new jose.SignJWT(payload)
+            .setProtectedHeader({
+                alg: "EdDSA",
+                kid: verificationMethod,
+                typ: "oauth-authz-req+jwt",
+            })
+            .setIssuedAt()
+            .setIssuer(did)
+            .setAudience("https://self-issued.me/v2") // by definition
+            .setExpirationTime("1 hour")
+            .sign(privateKey)
+            .catch((err) => {
+                console.log(err, "Failed signing presentation definition token");
+                res.status(500).end();
+            });
+        res.status(200).json({
+            token
+        });
+    
+    } catch (error: any) {
+        res.status(500).json({
+            error: error.message,
+        });
+    }
 };
 
 export const getClientMetadata = async (req: Request, res: Response) => {
@@ -153,6 +156,15 @@ export const presentCredentialPost = async (req: Request, res: Response) => {
       ? presentation.verifiableCredential
       : [presentation.verifiableCredential];
     console.log("VC: ", vc);
+
+    // Check if the VC is revoked
+    //TODO: uncomment after issuing VC works
+   /*  if (!await checkRevocationStatus(vc)) {
+      console.log("Credential is revoked");
+      res.status(500).end();
+      return;
+    } */
+
     const credSubject = vc[0]["credentialSubject"];
 
     // create a session by signing the user claims in to an ID token
@@ -234,7 +246,7 @@ export const loginCallback = async (req: Request, res: Response) => {
 
     // if an ID token is found, create a session
     res.cookie("token", idToken, {
-      httpOnly: true,
+      httpOnly: false,
       secure: false,
       sameSite: "strict",
       maxAge: 3600000, // 1 hour

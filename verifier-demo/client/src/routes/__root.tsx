@@ -3,10 +3,12 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { AppState, AuthContext, AuthContextType } from "@/context/authContext";
 import { baseUrl } from "@/hooks/api/base";
 import useGenerateWalletURL from "@/hooks/api/useGenerateWalletURL";
 import { useToast } from "@/hooks/use-toast";
@@ -14,7 +16,7 @@ import useIsMobileDevice from "@/hooks/useIsMobileDevice";
 import { createRootRoute, Link, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 import { QRCodeCanvas } from "qrcode.react";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 // Layout for the root route
 export const Route = createRootRoute({
@@ -42,7 +44,16 @@ const Logo = () => (
   </h1>
 );
 
-const NavBar = () => (
+const NavBar = () => {
+  const [appState, setAppState] = useState<AppState|undefined>(undefined);
+  const test = useContext(AuthContext)?.appState
+  useEffect(() => {
+    if (test) {
+      setAppState(test);
+    }
+  })
+
+  return(
   <nav className="flex justify-between py-4 border-b-[0.5px]">
     <div className="grid grid-cols-[1fr_10fr_1fr] w-full">
       <div className="col-start-2 flex justify-between">
@@ -66,13 +77,14 @@ const NavBar = () => (
         </div>
         <div className="space-x-4">
           {/* TODO: replace with QR code in modal */}
-          <LoginModal />
+          {!appState?.isAuthenticated ? (<LoginModal />):(<LogoutModal/>)}
+          
           <Button>Apply for a loan now!</Button>
         </div>
       </div>
     </div>
   </nav>
-);
+);}
 
 // TODO: extract to separate file
 const LoginModal = () => {
@@ -155,6 +167,37 @@ const LoginModal = () => {
         <pre className="max-w-full text-wrap overflow-auto bg-secondary p-2">
           {JSON.stringify(walletUrl, null, 2)}
         </pre>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+const LogoutModal = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const { isMobile } = useIsMobileDevice();
+  const { toast } = useToast();
+  const {onLogout} = useContext(AuthContext) as AuthContextType;
+
+
+  const handleOpenChange = (open: boolean) => {
+    setIsOpen(open);
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
+      <DialogTrigger asChild>
+        <Button variant="destructive">Log out</Button>
+      </DialogTrigger>
+      <DialogContent className="!max-w-screen-md">
+        <DialogHeader>
+          <DialogTitle>You will be logged out.</DialogTitle>
+          <DialogDescription>
+            Are you sure you want to log out?
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <Button variant="destructive" onClick={onLogout}> Confirm log out</Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

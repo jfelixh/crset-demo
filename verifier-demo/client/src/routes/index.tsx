@@ -5,7 +5,11 @@ import { motion } from "framer-motion";
 
 import imgUrl from "@/assets/smile.jpg";
 
+import { AuthContext } from "@/context/authContext";
+import { useContext } from "react";
+
 function Index() {
+  console.log("AuthContext: ", useContext(AuthContext)?.appState);
   return (
     <section className="bg-secondary !mt-0">
       <div className="grid grid-cols-[1fr_10fr_1fr] w-full min-h-[55vh] py-4">
