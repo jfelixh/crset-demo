@@ -18,7 +18,7 @@ function Index() {
           >
             <div className="text-left space-y-4">
               <h1 className="text-5xl font-bold">
-                The bank you will <br /> love to bank with.
+                The bank you'll <br /> love to bank with.
               </h1>
               <h2 className="text-xl font-light">
                 Apply for a loan with the power of web3. We don't care about

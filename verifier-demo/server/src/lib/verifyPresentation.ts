@@ -7,6 +7,7 @@ import {
   verifyCredential,
   verifyPresentation,
 } from "@spruceid/didkit-wasm-node";
+import { isRevoked } from "./../../../../../bfc-status-check/src/index";
 
 export const verifyAuthenticationPresentation = async (VP: any) => {
   try {

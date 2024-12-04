@@ -1,19 +1,17 @@
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+  Card,
+  CardContent,
+  CardDescription,
+  CardTitle,
+} from "@/components/ui/card";
 import useGenerateWalletURL from "@/hooks/api/useGenerateWalletURL";
 import useIsMobileDevice from "@/hooks/useIsMobileDevice";
 import { createFileRoute } from "@tanstack/react-router";
 import { QRCodeCanvas } from "qrcode.react";
 
 function Index() {
-  const { data: walletUrl, isLoading, error } = useGenerateWalletURL();
+  const { walletUrl, isLoading, error } = useGenerateWalletURL();
   const { isMobile } = useIsMobileDevice();
 
   return (
@@ -25,17 +23,13 @@ function Index() {
           <p>Error: {error.message}</p>
         ) : (
           <>
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button>Sign-In</Button>
-              </DialogTrigger>
-              <DialogContent className="!max-w-screen-md">
-                <DialogHeader>
-                  <DialogTitle>Login using your wallet</DialogTitle>
-                  <DialogDescription>
-                    Scan the QR code with your wallet to sign in.
-                  </DialogDescription>
-                </DialogHeader>
+            <Card>
+              <CardTitle>Login using your wallet</CardTitle>
+              <CardDescription>
+                Scan the QR code with your wallet to sign in.
+              </CardDescription>
+
+              <CardContent className="!max-w-screen-md">
                 {!isMobile ? (
                   <div className="w-full flex justify-center">
                     <QRCodeCanvas value={walletUrl} size={400} />
@@ -48,8 +42,8 @@ function Index() {
                 <pre className="w-auto overflow-auto">
                   {JSON.stringify(walletUrl, null, 2)}
                 </pre>
-              </DialogContent>
-            </Dialog>
+              </CardContent>
+            </Card>
           </>
         )}
       </div>
