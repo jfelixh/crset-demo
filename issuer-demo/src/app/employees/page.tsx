@@ -1,13 +1,6 @@
 "use client";
 import {useEffect, useState} from "react";
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table";
+import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow,} from "@/components/ui/table";
 import {Checkbox} from "@/components/ui/checkbox";
 import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
@@ -15,8 +8,10 @@ import {Input} from "@/components/ui/input";
 
 const UsersPage = () => {
     const [users, setUsers] = useState([]);
+    const [topUsers, setTopUsers] = useState([]);
     const [selectedUser, setSelectedUser] = useState<number | null>(null);
     const [searchTerm, setSearchTerm] = useState("");
+    const [statuses, setStatuses] = useState<{ [key: string]: string }>({});
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -32,25 +27,37 @@ const UsersPage = () => {
     }, []);
 
     useEffect(() => {
-        console.log("Users fetched:", users);
-    }, [users]);
+        const filteredUsers = users.filter((user) =>
+            user.email_address.includes(searchTerm)
+        );
+        setTopUsers(filteredUsers.slice(0, 100));
+    }, [users, searchTerm]);
 
-    const handleCheckboxChange = (id: number) => {
-        setSelectedUser(prevSelected => (prevSelected === id ? null : id));
+    useEffect(() => {
+        const fetchStatusForTopUsers = async () => {
+            const userStatuses: { [key: string]: string } = {};
+            for (const user of topUsers) {
+                console.log("user:", user);
+                const validity= await getCredentialStatus(user);
+                if(validity) {
+                    userStatuses[user.email_address]="Valid";
+                }else {
+                    userStatuses[user.email_address]="Invalid";
+                }
+                console.log("userStatuses:", userStatuses[user.email_address]);
+            }
+            setStatuses(userStatuses);
+        };
+            fetchStatusForTopUsers();
+    }, [topUsers]);
+
+
+    const handleCheckboxChange = (user: any) => {
+        setSelectedUser(prevSelected => (prevSelected === user ? null : user));
     };
 
     const revokeSelectedUser = async () => {
         try {
-           // setUsers((prev) =>
-           //     prev.map((user) =>
-           //         selectedUsers.includes(user.id) ? {...user, status: "invalid"} : user
-           //     )
-            //);
-            setUsers((prev) =>
-                prev.map((user) =>
-                    user.id === selectedUser ? { ...user, status: "invalid" } : user
-                )
-            );
             const response = await fetch('/api/revoke-users', {
                 method: 'POST',
                 headers: {
@@ -69,10 +76,19 @@ const UsersPage = () => {
         }
     };
 
-    const filteredUsers = users.filter((user) =>
-        user.email_address.includes(searchTerm)
-    );
-    const topUsers = filteredUsers.slice(0, 100);
+    const getCredentialStatus = async (user: any) => {
+        const response = await fetch('/api/get_status', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({user: user}),
+        });
+        const result = await response.json(); // Wait for the Promise to resolve
+        console.log("getCredentialStatus result:", result); // Ensure result is what you expect
+        return result.data.status;
+    }
+
 
     return (
         <div className="page-container">
@@ -93,24 +109,26 @@ const UsersPage = () => {
                                 <TableHead>Select</TableHead>
                                 <TableHead>Name</TableHead>
                                 <TableHead>Email Address</TableHead>
-                                <TableHead>ID</TableHead>
+                                <TableHead>Job Title</TableHead>
                                 <TableHead>Status</TableHead>
-
+                                <TableHead>VC</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {topUsers.map((user) => (
-                                <TableRow key={user.id}>
+                                <TableRow key={user.email_address}>
                                     <TableCell>
                                         <Checkbox
-                                            checked={selectedUser === user.id}
-                                            onCheckedChange={() => handleCheckboxChange(user.id)}
+                                            checked={selectedUser === user}
+                                            onCheckedChange={() => handleCheckboxChange(user)}
                                         />
                                     </TableCell>
                                     <TableCell>{user.name}</TableCell>
                                     <TableCell>{user.email_address}</TableCell>
-                                    <TableCell>{user.id}</TableCell>
-                                    <TableCell>{user.status}</TableCell>
+                                    <TableCell>{user.jobTitle}</TableCell>
+                                    <TableCell>{statuses[user.email_address]}
+                                    </TableCell>
+                                    <TableCell>{user.VC}</TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>

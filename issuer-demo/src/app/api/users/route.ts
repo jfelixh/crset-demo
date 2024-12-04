@@ -7,8 +7,8 @@ let db: sqlite.Database;
 type User = {
     name: string;
     email_address: string;
-    id: string;
-    status: string;
+    jobTitle: string;
+    VC: string;
 };
 
 export const GET = async (req, res) => {
@@ -41,7 +41,7 @@ export const getAllUsers = async (): Promise<User[]> => {
 
     try {
         const getUsers = new Promise<User[]>((resolve, reject) => {
-            db.all("SELECT * FROM credentialStatus", (err, rows) => {
+            db.all("SELECT * FROM companyDataBase", (err, rows) => {
                 if (err) {
                     reject(err);
                 } else {
@@ -49,9 +49,9 @@ export const getAllUsers = async (): Promise<User[]> => {
                     rows.forEach((row) => {
                         users.push({
                             name: row.name,
-                            email_address: row.email_address,
-                            id: row.id,
-                            status: row.status,
+                            email_address: row.email,
+                            jobTitle: row.jobTitle,
+                            VC: row.VC,
                         });
                     });
                     resolve(users); // Resolve with the populated users array
@@ -62,8 +62,9 @@ export const getAllUsers = async (): Promise<User[]> => {
         const userData = await getUsers;
         console.log("Users:", userData[0]);
         return userData;
-    } finally {
-        await db.close();
+    } catch (error) {
+        console.error("Error getting users:", error);
+        return [];
     }
 
 };

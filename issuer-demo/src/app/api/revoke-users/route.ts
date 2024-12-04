@@ -10,16 +10,21 @@ export async function POST(req: Request) {
         );
     }
 
-    async function revokeVC(userID) {
-        console.log("user revoking:",userID)
-        fetch(`http://localhost:5050/api/status/revokeCredential?id=${userID}`, {
+    async function revokeVC(user) {
+        console.log("user revoking:",user.VC)
+        const credentialStatusID=getStatusIDFromVC(user)
+        console.log("credentialStatusID:",credentialStatusID)
+        fetch(`http://localhost:5050/api/status/revokeCredential?id=${credentialStatusID}`, {
             method: "POST",
         })
             .then((res) => res.json())
             .then((data) => console.log("Revocation results:", data))
             .catch((error) => console.error("Error:", error));
     }
-
+    function getStatusIDFromVC(user) {
+        const vc = JSON.parse(user.VC);
+        return vc.credentialStatus.id;
+    }
     try {
         const rawPayload = await req.json()
         await revokeVC(rawPayload.user)

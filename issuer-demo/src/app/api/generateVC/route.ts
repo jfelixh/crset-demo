@@ -21,7 +21,7 @@ async function createStatusEntry() {
     if (!response.ok) {
       throw new Error(`Response is not ok! status: ${response.status}`);
     }
-
+  //TODO: save it in database for both database
     const data = await response.json();
     console.log("Revocation results:", data); // Logs the data for debugging
     return data; // Returns the actual data
