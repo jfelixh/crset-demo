@@ -48,7 +48,6 @@ export const LoginModal = () => {
             title: "Authentication successful",
             description: "You are now logged in.",
           });
-          // Close the modal or perform any other action on successful authentication
         }
       } catch (err) {
         console.error("Error checking auth status:", err);

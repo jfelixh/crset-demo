@@ -1,19 +1,16 @@
-import { AuthContext } from "@/context/authContext";
+import { useAuth } from "@/hooks/useAuth";
 import { Link } from "@tanstack/react-router";
-import { useContext } from "react";
 import { LoginModal } from "./modals/loginModal";
 import { LogoutModal } from "./modals/logoutModal";
 import { Button } from "./ui/button";
 
 export const NavBar = () => {
-  const authContext = useContext(AuthContext);
-  const appState = authContext ? authContext.appState : null;
+  const { isAuthenticated } = useAuth();
 
   return (
     <nav className="flex justify-between py-4 border-b-[0.5px]">
       <div className="grid grid-cols-[1fr_10fr_1fr] w-full">
         <div className="col-start-2 flex justify-between">
-          {/* Navigation bar */}
           <div className="flex space-x-4">
             <Link to="/">
               <Logo />
@@ -32,9 +29,11 @@ export const NavBar = () => {
             </div>
           </div>
           <div className="space-x-4">
-            {!appState?.isAuthenticated ? <LoginModal /> : <LogoutModal />}
+            {!isAuthenticated ? <LoginModal /> : <LogoutModal />}
 
-            <Button>Apply for a loan now!</Button>
+            <Button asChild>
+              <Link to="/apply-for-loan">Apply for loan now!</Link>
+            </Button>
           </div>
         </div>
       </div>

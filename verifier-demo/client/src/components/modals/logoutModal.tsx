@@ -1,22 +1,29 @@
-import { AuthContext } from "@/context/authContext";
-import { AuthContextType } from "@/context/authContextProvider";
 import {
   Dialog,
-  DialogTrigger,
   DialogContent,
-  DialogTitle,
   DialogDescription,
+  DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
-import { useState, useContext } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import { useState } from "react";
 import { Button } from "../ui/button";
-import { DialogHeader, DialogFooter } from "../ui/dialog";
+import { DialogFooter, DialogHeader } from "../ui/dialog";
+import { useNavigate } from "@tanstack/react-router";
 
 export const LogoutModal = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { onLogout } = useContext(AuthContext) as AuthContextType;
+  const { onLogout } = useAuth();
+  const navigate = useNavigate();
 
   const handleOpenChange = (open: boolean) => {
     setIsOpen(open);
+  };
+
+  const handleLogout = () => {
+    onLogout();
+    setIsOpen(false);
+    navigate({ to: "/" });
   };
 
   return (
@@ -32,7 +39,7 @@ export const LogoutModal = () => {
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <Button variant="destructive" onClick={onLogout}>
+          <Button variant="destructive" onClick={handleLogout}>
             {" "}
             Confirm log out
           </Button>
