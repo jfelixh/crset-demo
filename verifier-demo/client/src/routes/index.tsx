@@ -5,11 +5,7 @@ import { motion } from "framer-motion";
 
 import imgUrl from "@/assets/smile.jpg";
 
-import { AuthContext } from "@/context/authContext";
-import { useContext } from "react";
-
 function Index() {
-  console.log("AuthContext: ", useContext(AuthContext)?.appState);
   return (
     <section className="bg-secondary !mt-0">
       <div className="grid grid-cols-[1fr_10fr_1fr] w-full min-h-[55vh] py-4">
@@ -40,7 +36,6 @@ function Index() {
           >
             <Card className="p-8 rounded-xl">
               <img
-                // src="https://media.istockphoto.com/id/1358205700/photo/shot-of-a-young-man-using-his-smartphone-to-send-text-messages.jpg?s=612x612&w=0&k=20&c=TV26GSLYVo3p2QyjKRCe6KdfQbIlZs638IGrViakNbk%3D"
                 src={imgUrl}
                 alt="Image"
                 className="rounded-md object-cover"
