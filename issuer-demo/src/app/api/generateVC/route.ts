@@ -4,10 +4,6 @@ import { Ed25519Signature2020 } from
 import { issue } from "@digitalcredentials/vc";
 import documentLoader from "@/lib/documentLoader";
 import Redis from "ioredis";
-import * as sqlite from "sqlite3";
-import * as database from "../../../../database/database";
-
-let db: sqlite.Database;
 
 async function createStatusEntry() {
   try {
@@ -60,6 +56,7 @@ export async function POST(req: Request) {
   
     suite.verificationMethod = "did:key:" + keyPair.publicKeyMultibase + "#" + keyPair.publicKeyMultibase;
     const rawPayload = await req.json();
+ 
     const credentialPayload = {
       "@context": [
         "https://www.w3.org/2018/credentials/v1",
@@ -74,45 +71,46 @@ export async function POST(req: Request) {
               familyName: "schema:familyName",
               jobTitle: "schema:jobTitle",
               companyName: "schema:hiringOrganization",
-            comment: "schema:Text",
-            id: "@id",
-            schema: "https://schema.org/",
-            type: "@type",
+              comment: "schema:Text",
+              id: "@id",
+              schema: "https://schema.org/",
+              type: "@type",
             },
             "@id": "urn:employmentcredential",
           },
         },
       ],
-      id: "urn:uuid:3978344f-344d-46a2-8556-1e67196186c6",
+      id: "urn:uuid:3978344f-344d-46a2-8556-1e67196186c6", //crypto.randomUUID(),
       type: ["VerifiableCredential", "EmploymentCredential"],
       issuer: `did:key:${keyPair.publicKeyMultibase}`,
       credentialSubject: {
-        id: `did:example:${rawPayload.id || Math.random().toString(36).substr(2)}`,
+        id: `did:example:${Math.random().toString(36).substr(2)}`, //crypto.randomUUID(),
         email: rawPayload.email,
         name: rawPayload.name,
         familyName: rawPayload.lastName,
         jobTitle: rawPayload.jobTitle,
         companyName: rawPayload.companyName,
-        comment: "I am just a test credential.",
+        comment: "I am just a test employment credential.",
         type: "EmploymentCredential",
       },
     };
 
    const result = await createStatusEntry();
-   const credential = {...credentialPayload, "credentialStatus": [
-    {
-      id: result.id,
-      type: result.type,
-      statusPurpose: result.statusPurpose,
-      statusPublisher: result.statusPublisher,
-    },
-  ],}
-   console.log("credential",credential)
+  //  const credential = {...credentialPayload, "credentialStatus": [
+  //   {
+  //     id: result.id,
+  //     type: result.type,
+  //     statusPurpose: result.statusPurpose,
+  //     statusPublisher: result.statusPublisher,
+  //   },
+  // ],}
+  //  console.log("credential",credential)
 
-   await insertStatusEntry(rawPayload.name, rawPayload.email, result.id, "valid");
+   //await insertStatusEntry(rawPayload.name, rawPayload.email, result.id, "valid");
 
+   
     const signedCredential = await issue({
-      credential: credential,
+      credential: credentialPayload,
       suite,
       documentLoader,
     });
@@ -138,29 +136,29 @@ export async function POST(req: Request) {
 }
 
 
-export async function insertStatusEntry(
-  name: string,
-  email_address: string,
-  id: string,
-  status: string
-): Promise<string> {
-  console.log("Start inserting status entry");
-  db = await database.connectToDb("database/bfc.db");
-  console.log("Connected to SQLite database in insertStatusEntry", {db});
-  return new Promise((resolve, reject) => {
-    db.run(
-      "INSERT INTO credentialStatus (name,email_address,id, status) VALUES (?,?,?, ?)",
-      [name, email_address, id, status],
-      (err) => {
-        if (err) {
-          console.error("Error inserting status entry:", err.message);
-          console.error("Error inserting status entry:", err.message);
-          reject(err);
-          return "";
-        }
-        resolve(id);
-      }
-    );
-  });
-}
+// export async function insertStatusEntry(
+//   name: string,
+//   email_address: string,
+//   id: string,
+//   status: string
+// ): Promise<string> {
+//   console.log("Start inserting status entry");
+//   db = await database.connectToDb("database/bfc.db");
+//   console.log("Connected to SQLite database in insertStatusEntry", {db});
+//   return new Promise((resolve, reject) => {
+//     db.run(
+//       "INSERT INTO credentialStatus (name,email_address,id, status) VALUES (?,?,?, ?)",
+//       [name, email_address, id, status],
+//       (err) => {
+//         if (err) {
+//           console.error("Error inserting status entry:", err.message);
+//           console.error("Error inserting status entry:", err.message);
+//           reject(err);
+//           return "";
+//         }
+//         resolve(id);
+//       }
+//     );
+//   });
+// }
 

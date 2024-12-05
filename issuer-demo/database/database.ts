@@ -154,7 +154,7 @@ function populateDbCompany(db: sqlite.Database, filePath: string) {
             console.log("CSV file successfully processed.");
             insertStmt.finalize();
         })
-        .on("error", (err) => {
+        .on("error", (err: any) => {
             console.error("Error reading CSV file:", err.message);
         });
 }
@@ -184,43 +184,45 @@ function populateDb(db: sqlite.Database, filePath: string) {
         .on("error", (err) => {
             console.error("Error reading CSV file:", err.message);
         });
-    // fs.createReadStream(filePath)
-    //     .pipe(csv())
-    //     .on('data', (row) => {
-    //         const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-    //         let name = "";
-    //         for (let i = 0; i < 10; i++) {
-    //             name += characters.charAt(Math.floor(Math.random() * characters.length));
-    //         }
-    //         let email_address="";
-    //         for (let i = 0; i < 10; i++) {
-    //             email_address += characters.charAt(Math.floor(Math.random() * characters.length));
-    //         }
-    //         email_address += "@bmw.de";
-    //
-    //         insertStmt.run([name, email_address, row.id,row.status], (err) => {
-    //             if (err) {
-    //                 console.error(`Error inserting row ${JSON.stringify(row)}:`, err.message);
-    //             }
-    //         });
-    //     })
-    //     .on('end', () => {
-    //         console.log('CSV file successfully processed.');
-    //         insertStmt.finalize();
-    //     })
-    //     .on('error', (err) => {
-    //         console.error('Error reading CSV file:', err.message);
-    //     });
+    fs.createReadStream(filePath)
+        .pipe(csv())
+        .on('data', (row) => {
+            const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+            let name = "";
+            for (let i = 0; i < 10; i++) {
+                name += characters.charAt(Math.floor(Math.random() * characters.length));
+            }
+            let email_address="";
+            for (let i = 0; i < 10; i++) {
+                email_address += characters.charAt(Math.floor(Math.random() * characters.length));
+            }
+            email_address += "@bmw.de";
+    
+            insertStmt.run([name, email_address, row.id,row.status], (err) => {
+                if (err) {
+                    console.error(`Error inserting row ${JSON.stringify(row)}:`, err.message);
+                }
+            });
+        })
+        .on('end', () => {
+            console.log('CSV file successfully processed.');
+            insertStmt.finalize();
+        })
+        .on('error', (err) => {
+            console.error('Error reading CSV file:', err.message);
+        });
 }
 
-// export async function initDB() {
-//     // export function initDB() {
-//     console.log("creating Table")
-//     connectToDb("./bfc.db");
-//     //createTableCompany(db);
-//     populateDbCompany(db, "/Users/ichan-yeong/Downloads/idSet.csv");
-// // }
+export async function initDB() {
+    // export function initDB() {
+    console.log("creating Table")
+    connectToDb("./bfc.db");
+    //createTableCompany(db);
+    //createTable(db)
+  populateDb(db, "/Users/Natalia M/Desktop/Project/idSet.csv");
+   //populateDbCompany(db, "/Users/Natalia M/Desktop/Project/idSet.csv");
 // }
+}
 
 //initDB();
 

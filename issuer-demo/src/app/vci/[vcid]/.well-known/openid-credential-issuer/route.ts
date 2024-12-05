@@ -25,7 +25,7 @@ export async function GET(
     credential_endpoint:
       process.env.NEXT_PUBLIC_URL + "/vci/" + resolvedParams.vcid + "/credential",
     credential_configurations_supported: {
-      TestCredential: {
+      ProofOfEmploymentCredential: {
         format: "ldp_vc",
         credential_definition: {
           // just mentioning the standard type for simplicity
