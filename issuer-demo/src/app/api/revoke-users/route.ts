@@ -11,9 +11,7 @@ export async function POST(req: Request) {
     }
 
     async function revokeVC(user) {
-        console.log("user revoking:",user.VC)
         const credentialStatusID=getStatusIDFromVC(user)
-        console.log("credentialStatusID:",credentialStatusID)
         fetch(`http://localhost:5050/api/status/revokeCredential?id=${credentialStatusID}`, {
             method: "POST",
         })
@@ -23,12 +21,11 @@ export async function POST(req: Request) {
     }
     function getStatusIDFromVC(user) {
         const vc = JSON.parse(user.VC);
-        return vc.credentialStatus.id;
+        return vc.credentialStatus[0].id;
     }
     try {
         const rawPayload = await req.json()
         await revokeVC(rawPayload.user)
-        console.log("Payload", rawPayload)
     }catch (error) {
         console.error("Error revoking VC:", error);
         return new Response(

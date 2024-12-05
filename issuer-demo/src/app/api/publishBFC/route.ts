@@ -6,15 +6,13 @@ export const GET = async (req, res) => {
         const response = await fetch('http://localhost:5050/api/status/publishBFC', {
             method: 'POST',
         });
-        const data = await response.json();
+        return new Response("Published BFC successfully", {status: 200, headers: {'Content-Type': 'application/json'}});
 
-        // Return a successful response
-        return Response.json({ success: true, data });
     } catch (error) {
         console.error('Error publishing BFC', error);
         // Return an error response
         return new Response(
-            JSON.stringify({error: 'Failed to fetch users'}),
+            JSON.stringify({error: 'Publishing BFC failed'}),
             {status: 500, headers: {'Content-Type': 'application/json'}}
         );
     }

@@ -11,14 +11,12 @@ export async function POST(req: Request) {
         );
     }
     function getStatusUser(user) {
-        console.log("user:", user);
         const vc = JSON.parse(user.VC);
         return vc.credentialStatus[0].id;
     }
     try{
         const user = await req.json()
         const credentialStatusID=getStatusUser(user.user);
-        console.log("credentialStatusID:",credentialStatusID)
         const response = await fetch(`http://localhost:5050/api/status/getStatus?id=${credentialStatusID}`, {
             method: 'POST',
         });

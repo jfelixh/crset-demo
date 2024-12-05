@@ -14,15 +14,6 @@ const UsersPage = () => {
     const [statuses, setStatuses] = useState<{ [key: string]: string }>({});
 
     useEffect(() => {
-        const fetchUsers = async () => {
-            try {
-                const response = await fetch("/api/users");
-                const data = await response.json();
-                setUsers(data);
-            } catch (error) {
-                console.error("Error fetching users:", error);
-            }
-        };
         fetchUsers();
     }, []);
 
@@ -30,26 +21,35 @@ const UsersPage = () => {
         const filteredUsers = users.filter((user) =>
             user.email_address.includes(searchTerm)
         );
-        setTopUsers(filteredUsers.slice(0, 100));
+        setTopUsers(filteredUsers.slice(0, 20));
     }, [users, searchTerm]);
 
     useEffect(() => {
-        const fetchStatusForTopUsers = async () => {
-            const userStatuses: { [key: string]: string } = {};
-            for (const user of topUsers) {
-                console.log("user:", user);
-                const validity= await getCredentialStatus(user);
-                if(validity) {
-                    userStatuses[user.email_address]="Valid";
-                }else {
-                    userStatuses[user.email_address]="Invalid";
-                }
-                console.log("userStatuses:", userStatuses[user.email_address]);
-            }
-            setStatuses(userStatuses);
-        };
-            fetchStatusForTopUsers();
+        fetchStatusForTopUsers()
     }, [topUsers]);
+
+    const fetchUsers = async () => {
+        try {
+            const response = await fetch("/api/users");
+            const data = await response.json();
+            setUsers(data);
+        } catch (error) {
+            console.error("Error fetching users:", error);
+        }
+    };
+
+    const fetchStatusForTopUsers = async () => {
+        const userStatuses: { [key: string]: string } = {};
+        for (const user of topUsers) {
+            const validity= await getCredentialStatus(user);
+            if(validity) {
+                userStatuses[user.email_address]="Valid";
+            }else {
+                userStatuses[user.email_address]="Invalid";
+            }
+        }
+        setStatuses(userStatuses);
+    };
 
 
     const handleCheckboxChange = (user: any) => {
@@ -74,6 +74,7 @@ const UsersPage = () => {
         }catch (error) {
             console.error("Error revoking users:", error);
         }
+        fetchStatusForTopUsers();
     };
 
     const getCredentialStatus = async (user: any) => {
@@ -84,8 +85,7 @@ const UsersPage = () => {
             },
             body: JSON.stringify({user: user}),
         });
-        const result = await response.json(); // Wait for the Promise to resolve
-        console.log("getCredentialStatus result:", result); // Ensure result is what you expect
+        const result = await response.json();
         return result.data.status;
     }
 
