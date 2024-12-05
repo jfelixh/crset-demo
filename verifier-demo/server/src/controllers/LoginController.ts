@@ -246,7 +246,7 @@ export const loginCallback = async (req: Request, res: Response) => {
 
     // if an ID token is found, create a session
     res.cookie("token", idToken, {
-      httpOnly: false,
+      httpOnly: false,  // https://stackoverflow.com/questions/17508027/cant-access-cookies-from-document-cookie-in-js-but-browser-shows-cookies-exist
       secure: false,
       sameSite: "strict",
       maxAge: 3600000, // 1 hour
