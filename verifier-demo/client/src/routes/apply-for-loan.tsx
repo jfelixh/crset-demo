@@ -1,18 +1,8 @@
-import { useAuth } from "@/hooks/useAuth";
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = () => {
-  const { isAuthenticated } = useAuth();
-
-  return createFileRoute("/apply-for-loan")({
-    component: RouteComponent,
-    loader: () => {
-      if (!isAuthenticated) {
-        throw redirect({ to: "/" });
-      }
-    },
-  });
-};
+export const Route = createFileRoute("/apply-for-loan")({
+  component: RouteComponent,
+});
 
 function RouteComponent() {
   return (
