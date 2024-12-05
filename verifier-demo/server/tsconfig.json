@@ -9,6 +9,9 @@
       // TODO: Add aliases for new directories
       // "@services/*": ["src/services/*"],
       // "@utils/*": ["src/utils/*"]
+      "@/db/*": ["src/db/*"],
+      "@/types/*": ["src/types/*"],
+      "@/controllers/*": ["src/controllers/*"]
     },
     "outDir": "./dist",
     "esModuleInterop": true,
@@ -18,6 +21,6 @@
     "allowImportingTsExtensions": true,
     "emitDeclarationOnly": true,
     "declaration": true,
-    "declarationMap": true,
+    "declarationMap": true
   }
 }

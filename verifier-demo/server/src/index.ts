@@ -1,10 +1,12 @@
+import { RedisStore } from "connect-redis";
 import cors from "cors";
 import dotenv from "dotenv";
 import express, { Express, Request, Response } from "express";
-import LoginRoute from "./routes/LoginRoute";
-import { redisClient } from "./config/redis";
-import { RedisStore } from "connect-redis";
 import session from "express-session";
+import { redisClient } from "./config/redis";
+import { connectDB } from "./db/database";
+import LoanRoute from "./routes/LoanRoute";
+import LoginRoute from "./routes/LoginRoute";
 
 dotenv.config();
 
@@ -22,13 +24,13 @@ app.use(
   })
 );
 
-// Initialize store.
+// Initialize store
 let redisStore = new RedisStore({
   client: redisClient,
   prefix: "login_id:",
 });
 
-// Initialize session storage.
+// Initialize session storage
 app.use(
   session({
     store: redisStore,
@@ -43,7 +45,20 @@ app.use(
   })
 );
 
+// Initialize DB
+const initializeDatabase = async () => {
+  try {
+    await connectDB();
+    console.log("Database and table setup complete.");
+  } catch (error) {
+    console.error("Error setting up the database:", error);
+  }
+};
+initializeDatabase();
+
+// Routes
 app.use("/login", LoginRoute);
+app.use("/loans", LoanRoute);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Express + TypeScript Server");

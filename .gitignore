@@ -131,3 +131,6 @@ dist
 
 # Redis dump
 dump.rdb
+
+# sqlite DB files
+*.db
