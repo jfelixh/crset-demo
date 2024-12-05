@@ -1,6 +1,4 @@
-
-
-export const GET = async (req, res) => {
+export const GET = async () => {
     try {
         console.log("Posting to publish BFC...");
         const response = await fetch('http://localhost:5050/api/status/publishBFC', {

@@ -4,6 +4,10 @@ import { Ed25519Signature2020 } from
 import { issue } from "@digitalcredentials/vc";
 import documentLoader from "@/lib/documentLoader";
 import Redis from "ioredis";
+import * as sqlite from "sqlite3";
+import * as database from "../../../../database/database";
+
+let db: sqlite.Database;
 
 async function createStatusEntry() {
   try {
@@ -17,7 +21,6 @@ async function createStatusEntry() {
     if (!response.ok) {
       throw new Error(`Response is not ok! status: ${response.status}`);
     }
-  //TODO: save it in database for both database
     const data = await response.json();
     console.log("Revocation results:", data); // Logs the data for debugging
     return data; // Returns the actual data
@@ -59,8 +62,8 @@ export async function POST(req: Request) {
  
     const credentialPayload = {
       "@context": [
-        "https://www.w3.org/2018/credentials/v1",
-        "https://www.w3.org/2018/credentials/examples/v1",
+        "https://www.w3.org/ns/credentials/v2",
+        "https://www.w3.org/ns/credentials/examples/v2",
         {
           EmploymentCredential: {
             "@context": {
@@ -96,24 +99,24 @@ export async function POST(req: Request) {
     };
 
    const result = await createStatusEntry();
-  //  const credential = {...credentialPayload, "credentialStatus": [
-  //   {
-  //     id: result.id,
-  //     type: result.type,
-  //     statusPurpose: result.statusPurpose,
-  //     statusPublisher: result.statusPublisher,
-  //   },
-  // ],}
-  //  console.log("credential",credential)
+   const credential = {...credentialPayload, credentialStatus: [
+    {
+      id: result.id,
+      type: result.type,
+      statusPurpose: result.statusPurpose,
+    },
+  ],}
 
-   //await insertStatusEntry(rawPayload.name, rawPayload.email, result.id, "valid");
-
+  const name = rawPayload.name + " " + rawPayload.lastName;
    
     const signedCredential = await issue({
-      credential: credentialPayload,
+      credential: credential,
       suite,
       documentLoader,
     });
+
+    
+   // await insertEmployee(db, name, rawPayload.email, rawPayload.jobTitle, JSON.stringify(signedCredential));
 
     const uuid = crypto.randomUUID();
     const MAX_AGE = 300; // 300 seconds = 5min
@@ -136,29 +139,29 @@ export async function POST(req: Request) {
 }
 
 
-// export async function insertStatusEntry(
-//   name: string,
-//   email_address: string,
-//   id: string,
-//   status: string
-// ): Promise<string> {
-//   console.log("Start inserting status entry");
-//   db = await database.connectToDb("database/bfc.db");
-//   console.log("Connected to SQLite database in insertStatusEntry", {db});
-//   return new Promise((resolve, reject) => {
-//     db.run(
-//       "INSERT INTO credentialStatus (name,email_address,id, status) VALUES (?,?,?, ?)",
-//       [name, email_address, id, status],
-//       (err) => {
-//         if (err) {
-//           console.error("Error inserting status entry:", err.message);
-//           console.error("Error inserting status entry:", err.message);
-//           reject(err);
-//           return "";
-//         }
-//         resolve(id);
-//       }
-//     );
-//   });
-// }
+export async function insertEmployee(
+  db: sqlite.Database,
+  name: string,
+  email: string,
+  jobTitle: string,
+  VC: string,
+): Promise<string> {
+  console.log("Start inserting employee into companyDataBase");
+  db = await database.connectToDb("../../../../database/bfc.db");
+  console.log("Connected to SQLite database in insertStatusEntry", {db});
+  return new Promise((resolve, reject) => {
+      db.run(
+          "INSERT INTO companyDataBase (name,email,jobTitle,VC) VALUES (?,?,?,?)",
+          [name, email, jobTitle, VC],
+          (err) => {
+              if (err) {
+                  console.error("Error inserting employee:", err.message);
+                  reject(err);
+                  return "";
+              }
+              resolve(email);
+          }
+      );
+  });
+}
 

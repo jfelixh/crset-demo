@@ -9,6 +9,7 @@ let db: sqlite.Database;
 
 export function connectToDb(databaseLocation: string): Promise<sqlite.Database> {
     return new Promise((resolve, reject) => {
+        console.log("Test connection to db")
         if (!db) {
             const dbPath = path.resolve(process.cwd(), databaseLocation);
             console.log('Connecting to SQLite database:', dbPath);
@@ -218,12 +219,12 @@ export async function initDB() {
     console.log("creating Table")
     connectToDb("./bfc.db");
     //createTableCompany(db);
-    //createTable(db)
+  //  createTable(db)
   populateDb(db, "/Users/Natalia M/Desktop/Project/idSet.csv");
    //populateDbCompany(db, "/Users/Natalia M/Desktop/Project/idSet.csv");
 // }
 }
 
-//initDB();
+initDB();
 
 

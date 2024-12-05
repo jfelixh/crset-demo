@@ -1,8 +1,3 @@
-import * as sqlite from "sqlite3";
-
-let db: sqlite.Database;
-
-
 export async function POST(req: Request) {
     if (req.method !== "POST") {
         return new Response(
@@ -16,7 +11,9 @@ export async function POST(req: Request) {
     }
     try{
         const user = await req.json()
+        console.log("user", user)
         const credentialStatusID=getStatusUser(user.user);
+        console.log("credentialStatusID:",credentialStatusID)
         const response = await fetch(`http://localhost:5050/api/status/getStatus?id=${credentialStatusID}`, {
             method: 'POST',
         });

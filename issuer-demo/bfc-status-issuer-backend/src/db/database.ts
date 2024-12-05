@@ -1,4 +1,4 @@
-import csv from "csv-parser";
+import * as csv from 'csv-parser';
 import * as fs from "node:fs";
 import * as sqlite from "sqlite3";
 
@@ -7,7 +7,6 @@ let db: sqlite.Database;
 export function connectToDb(databaseLocation: string) {
   console.log("Connecting to SQLite database...");
   if (!db) {
-    console.log("Current working directory:", process.cwd());
     db = new sqlite.Database(databaseLocation, (err) => {
       if (err) {
         console.error("Error connecting to SQLite:", err.message);

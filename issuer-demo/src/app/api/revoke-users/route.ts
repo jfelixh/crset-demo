@@ -1,7 +1,3 @@
-import * as database from "../../../../database/database";
-import * as sqlite from "sqlite3";
-
-let db: sqlite.Database;
 export async function POST(req: Request) {
     if (req.method !== "POST") {
         return new Response(

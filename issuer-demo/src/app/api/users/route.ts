@@ -1,6 +1,5 @@
 import * as sqlite from "sqlite3";
 import * as database from "../../../../database/database";
-import {NextApiRequest, NextApiResponse} from "next";
 
 let db: sqlite.Database;
 
@@ -11,7 +10,7 @@ type User = {
     VC: string;
 };
 
-export const GET = async (req, res) => {
+export const GET = async () => {
     try {
         console.log("Fetching users...");
         const users = await getAllUsers();
@@ -37,7 +36,6 @@ export const getAllUsers = async (): Promise<User[]> => {
     db = await database.connectToDb("database/bfc.db");
     console.log("Connected to SQLite database1.");
     console.log(db)
-    const users: User[] = [];
 
     try {
         const getUsers = new Promise<User[]>((resolve, reject) => {
