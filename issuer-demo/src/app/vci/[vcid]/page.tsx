@@ -39,8 +39,12 @@ export default function Issuance({
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24 font-mono">
       <div>
-        <h1 className="text-6xl">OID4VCI Wizard</h1>
-        <p className="text-black">Scan the code to download your credential.</p>
+        <div className="text-center">
+          <h1 className="text-6xl">Verifiable Credential</h1>
+          <p className="text-black">
+            Let your employee scan the code to download the credential.
+          </p>
+        </div>
         <div className="w-full flex align-center justify-center pt-10">
           <Canvas
             text={getWalletUrl()}

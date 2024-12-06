@@ -92,7 +92,7 @@ export async function POST(req: Request) {
         name: rawPayload.name,
         familyName: rawPayload.lastName,
         jobTitle: rawPayload.jobTitle,
-        companyName: rawPayload.companyName,
+        companyName: "CMW Group",
         comment: "I am just a test employment credential.",
         type: "EmploymentCredential",
       },
@@ -147,7 +147,7 @@ export async function insertEmployee(
 ): Promise<string> {
   console.log("Start inserting employee into companyDataBase");
   db = await database.connectToDb("./database/bfc.db");
-  await logDatabaseTables(db);
+ // await logDatabaseTables(db); Log database tables if needed
   console.log("Connected to SQLite database in companyDataBase", {db});
   return new Promise((resolve, reject) => {
       db.run(

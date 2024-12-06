@@ -138,7 +138,7 @@ const UsersPage = () => {
           </Table>
         </div>
       </div>
-      <div className="sticky bottom-0 bg-white border-t border-gray-200 p-4">
+      <div className="sticky bottom-0 bg-white border-t border-gray-200 pt-4">
         <Button onClick={revokeSelectedUser} disabled={selectedUser === null}>
           Revoke
         </Button>
