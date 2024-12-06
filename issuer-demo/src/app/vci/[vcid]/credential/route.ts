@@ -12,11 +12,7 @@ export async function POST(
   { params }:  { params: Promise<{ vcid: string } > }
 ) {
   const resolvedParams = await params;
-  console.log("Post request", JSON.stringify(_request))
-  console.log("Post params", JSON.stringify(_request))
   const vc = await redis.get("vc-" + resolvedParams.vcid);
-
-  console.log("VC in credential folder", JSON.stringify(vc))
   const data = {
     credential: vc,
   };

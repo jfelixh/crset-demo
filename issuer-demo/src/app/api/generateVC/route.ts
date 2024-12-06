@@ -115,8 +115,7 @@ export async function POST(req: Request) {
       documentLoader,
     });
 
-    
-   // await insertEmployee(db, name, rawPayload.email, rawPayload.jobTitle, JSON.stringify(signedCredential));
+   await insertEmployee(db, name, rawPayload.email, rawPayload.jobTitle, JSON.stringify(signedCredential));
 
     const uuid = crypto.randomUUID();
     const MAX_AGE = 300; // 300 seconds = 5min
@@ -147,8 +146,9 @@ export async function insertEmployee(
   VC: string,
 ): Promise<string> {
   console.log("Start inserting employee into companyDataBase");
-  db = await database.connectToDb("../../../../database/bfc.db");
-  console.log("Connected to SQLite database in insertStatusEntry", {db});
+  db = await database.connectToDb("./database/bfc.db");
+  await logDatabaseTables(db);
+  console.log("Connected to SQLite database in companyDataBase", {db});
   return new Promise((resolve, reject) => {
       db.run(
           "INSERT INTO companyDataBase (name,email,jobTitle,VC) VALUES (?,?,?,?)",
@@ -159,9 +159,31 @@ export async function insertEmployee(
                   reject(err);
                   return "";
               }
+              console.log("Employee inserted successfully with email_address:", email);
               resolve(email);
           }
       );
   });
 }
+
+export async function logDatabaseTables(db: sqlite.Database): Promise<void> {
+  try {
+    console.log("Fetching tables from the database...");
+    db.all("SELECT name FROM sqlite_master WHERE type='table'", [], (err, rows) => {
+      if (err) {
+        console.error("Error fetching tables:", err.message);
+        return;
+      }
+      if (rows.length === 0) {
+        console.log("No tables found in the database.");
+      } else {
+        console.log("Tables in the database:");
+        rows.forEach((row) => console.log(row.name));
+      }
+    });
+  } catch (error) {
+    console.error("Error logging database tables:", error.message);
+  }
+}
+
 

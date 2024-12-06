@@ -45,6 +45,7 @@ var path = require("path");
 var db;
 function connectToDb(databaseLocation) {
     return new Promise(function (resolve, reject) {
+        console.log("Test connection to db");
         if (!db) {
             var dbPath = path.resolve(process.cwd(), databaseLocation);
             console.log('Connecting to SQLite database:', dbPath);
@@ -74,6 +75,7 @@ function createTable(db) {
     });
 }
 function createTableCompany(db) {
+    console.log("Creating companyDataBase table...");
     db.run("CREATE TABLE IF NOT EXISTS companyDataBase\n         (\n             name     TEXT NOT NULL,\n             email    TEXT PRIMARY KEY,\n             jobTitle TEXT NOT NULL,\n             VC       TEXT NOT NULL\n         ) STRICT", function (err) {
         if (err) {
             console.error("Error creating table:", err.message);
@@ -160,7 +162,7 @@ function populateDbCompany(db, filePath) {
         });
         insertStmt.run([name, email_address, jobTitle[Math.floor(Math.random() * 6)], vc], function (err) {
             if (err) {
-                console.error("Error inserting row ".concat(JSON.stringify(row), ":"), err.message);
+                console.error("Error inserting rowsss ".concat(JSON.stringify(row), ":"), err.message);
             }
         });
     })
@@ -224,12 +226,10 @@ function initDB() {
         return __generator(this, function (_a) {
             // export function initDB() {
             console.log("creating Table");
+            console.log("Initializing database...");
             connectToDb("./bfc.db");
-            //createTableCompany(db);
-            //  createTable(db)
-            populateDb(db, "/Users/Natalia M/Desktop/Project/idSet.csv");
             return [2 /*return*/];
         });
     });
 }
-initDB();
+//initDB();

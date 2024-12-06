@@ -46,6 +46,7 @@ function createTable(db: sqlite.Database) {
 }
 
 function createTableCompany(db: sqlite.Database) {
+    console.log("Creating companyDataBase table...");
     db.run(
         `CREATE TABLE IF NOT EXISTS companyDataBase
          (
@@ -145,7 +146,7 @@ function populateDbCompany(db: sqlite.Database, filePath: string) {
             insertStmt.run([name, email_address, jobTitle[Math.floor(Math.random() * 6)],vc], (err) => {
                 if (err) {
                     console.error(
-                        `Error inserting row ${JSON.stringify(row)}:`,
+                        `Error inserting rowsss ${JSON.stringify(row)}:`,
                         err.message
                     );
                 }
@@ -217,14 +218,15 @@ function populateDb(db: sqlite.Database, filePath: string) {
 export async function initDB() {
     // export function initDB() {
     console.log("creating Table")
+    console.log("Initializing database...");
     connectToDb("./bfc.db");
     //createTableCompany(db);
-  //  createTable(db)
-  populateDb(db, "/Users/Natalia M/Desktop/Project/idSet.csv");
+   // createTable(db)
+ // populateDb(db, "/Users/Natalia M/Desktop/Project/idSet.csv");
    //populateDbCompany(db, "/Users/Natalia M/Desktop/Project/idSet.csv");
 // }
 }
 
-initDB();
+//initDB();
 
 
