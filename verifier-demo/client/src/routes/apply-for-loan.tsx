@@ -19,6 +19,7 @@ import { AuthContext } from "@/context/authContext";
 import { SeparatorHorizontal } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
+import {usePostLoan} from "@/hooks/api/usePostLoan";
 
 const formSchema = z.object({
   name: z.string().min(2).max(50),
@@ -69,9 +70,17 @@ function RouteComponent() {
     }
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     // Store to db
     console.log(values);
+  
+    const payload = {amount: values.loanAmount, applicant: userInfo?.id, application_dump: JSON.stringify(values)};
+    try {
+      const response = usePostLoan(payload);
+      console.log(response);
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   return (
