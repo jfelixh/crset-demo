@@ -15,7 +15,7 @@ const testContext = new Map([
   ["https://w3id.org/security/suites/ed25519-2020/v1", require("./ed.json")],
   // This is the context for the Status List 2021 specification
   [
-    "https://w3c-ccg.github.io/vc-status-list-2021/contexts/v1.jsonld",
+    "https://github.com/w3c/vc-bitstring-status-list/blob/main/contexts/2021/v1.jsonld",
     require("./sl2021.json"),
   ],
 ]);

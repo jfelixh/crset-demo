@@ -1,8 +1,9 @@
 export async function POST() {
 
+  console.log("Post request with the corresponding access token")
   const data = {
-    access_token: "",
-    token_type: "",
+    access_token: "secureToken",
+    token_type: "bearer",
     expires_in: 3600,
   };
 

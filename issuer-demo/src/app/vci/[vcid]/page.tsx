@@ -30,6 +30,9 @@ export default function Issuance({
       },
     };
 
+    console.log(
+      "Generate QR code for the credential offer so that the wallet can receive the credential offer"
+    );
     return (
       "openid-credential-offer://?credential_offer=" +
       encodeURIComponent(JSON.stringify(credentialOffer))

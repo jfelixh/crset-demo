@@ -12,6 +12,7 @@ export async function GET(
   { params }:  { params: Promise<{ vcid: string } > }
 ) {
   const resolvedParams = await params;
+  console.log("Resolved params:", resolvedParams);
   const vc = await redis.get("vc-" + resolvedParams.vcid);
 
   if (!vc || vc === undefined) {
@@ -37,6 +38,8 @@ export async function GET(
       },
     },
   };
+
+  console.log("Send metadata to the wallet to know what kind of credential to request")
 
   return Response.json(data);
 }

@@ -22,9 +22,6 @@
       "DisputeCredential": "ex:DisputeCredential",
       "PrescriptionCredential": "ex:PrescriptionCredential",
       "ZkpExampleSchema2018": "ex:ZkpExampleSchema2018",
-      "EmploymentCredential": "ex:EmploymentCredential",
-      "CredentialStatusList2017": "ex:CredentialStatusList2017",
-      "BFCStatusEntry": "ex:BFCStatusEntry",
       
   
       "issuerData": "ex:issuerData",

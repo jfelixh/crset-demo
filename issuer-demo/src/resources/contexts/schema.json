@@ -2363,8 +2363,7 @@
           "http://www.w3.org/wiki/WebSchemas/SchemaDotOrgSources#source_rNews": {"@id": "http://www.w3.org/wiki/WebSchemas/SchemaDotOrgSources#source_rNews"},
           "https://www.w3.org/wiki/WebSchemas/SchemaDotOrgSources#STI_Accommodation_Ontology": {"@id": "https://www.w3.org/wiki/WebSchemas/SchemaDotOrgSources#STI_Accommodation_Ontology"},
           "https://www.w3.org/wiki/WebSchemas/SchemaDotOrgSources#TP": {"@id": "https://www.w3.org/wiki/WebSchemas/SchemaDotOrgSources#TP"},
-          "https://www.w3.org/wiki/WebSchemas/SchemaDotOrgSources#TP-draws": {"@id": "https://www.w3.org/wiki/WebSchemas/SchemaDotOrgSources#TP-draws"},
-          "companyName": "schema:hiringOrganization"
+          "https://www.w3.org/wiki/WebSchemas/SchemaDotOrgSources#TP-draws": {"@id": "https://www.w3.org/wiki/WebSchemas/SchemaDotOrgSources#TP-draws"}
       }
   }
   

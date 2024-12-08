@@ -17,5 +17,7 @@ export async function POST(
     credential: vc,
   };
 
+  console.log("Post request to the wallet to receive the credential")
+
   return Response.json(data);
 }
