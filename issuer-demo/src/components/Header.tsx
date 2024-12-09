@@ -12,15 +12,16 @@ const Header = ({
 }) => {
   return (
     <>
-      <header className="bg-black text-white p-4">
+      <header className="bg-black text-white py-2 px-16">
         <nav className="flex justify-between items-center">
           <div className="flex gap-4 items-center">
             <Image
               src="/images/logoVC.png"
               alt="Company Logo"
-              width={75}
-              height={30}
+              width={55}
+              height={22}
             />
+
             {showLinks && (
               <Link
                 href="/credentialIssuance"

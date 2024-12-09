@@ -21,7 +21,13 @@ export default function LoginPage() {
           objectFit="cover"
           className="absolute z-0"
         />
-        <h2 className="relative z-10 text-2xl font-semibold text-center">
+        <h1 className="relative z-10 text-4xl font-bold text-center font-serif">
+          CMW
+          <br />
+          Enterprise Management System
+        </h1>
+        <br />
+        <h2 className="relative z-10 text-2xl font-medium text-center italic tracking-wide">
           Get started issuing verifiable credentials <br />
           and having an overview of <br />
           your employees
