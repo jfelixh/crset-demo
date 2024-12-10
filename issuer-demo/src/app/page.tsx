@@ -1,7 +1,22 @@
+"use client";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { useEffect } from "react";
 
 export default function LoginPage() {
+  useEffect(() => {
+    let result;
+    const generateWalletURL = async () => {
+      result = await fetch("/api/generateWalletUrl");
+
+      //const { walletUrl, login_id } = await result.json();
+      console.log("Result inside async function", await result.json());
+      // console.log("walletUrl", walletUrl);
+      // console.log("login_id", login_id);
+    };
+    generateWalletURL();
+    console.log("Result", result);
+  }, []);
   return (
     <div className="min-h-screen flex">
       <div className="w-1/2 bg-white-100 flex flex-col justify-center px-36">
