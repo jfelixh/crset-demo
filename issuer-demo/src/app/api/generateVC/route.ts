@@ -34,7 +34,7 @@ async function createStatusEntry() {
 export async function POST(req: Request) {
   if (req.method !== "POST") {
     return new Response(
-      `Method ${req.method} Not Allowed`, 
+      `Method ${req.method} Not Allowed`,
       { status: 405, headers: { "Allow": "POST" } }
     );
   }
@@ -62,18 +62,27 @@ export async function POST(req: Request) {
  
     const credentialPayload = {
       "@context": [
-        "https://www.w3.org/ns/credentials/v2",
-        "https://www.w3.org/ns/credentials/examples/v2",
+        "https://www.w3.org/2018/credentials/v1",
         {
+          BFCStatusEntry: {
+            "@context": {
+              "@protected": true,
+              id: "@id",
+              type: "@type",
+              statusPurpose: "schema:Text",
+              schema: "https://schema.org/",
+            },
+            "@id": "urn:bfcstatusentry",
+          },
           EmploymentCredential: {
             "@context": {
               "@protected": true,
               "@version": 1.1,
               email: "schema:email",
               name: "schema:name",
-              familyName: "schema:familyName",
+              familyName: "schema:givenName",
               jobTitle: "schema:jobTitle",
-              companyName: "schema:hiringOrganization",
+              companyName: "schema:legalName",
               comment: "schema:Text",
               id: "@id",
               schema: "https://schema.org/",
@@ -84,7 +93,7 @@ export async function POST(req: Request) {
         },
       ],
       id: "urn:uuid:3978344f-344d-46a2-8556-1e67196186c6", //crypto.randomUUID(),
-      type: ["VerifiableCredential", "EmploymentCredential"],
+      type: ["VerifiableCredential", "EmploymentCredential",],
       issuer: `did:key:${keyPair.publicKeyMultibase}`,
       credentialSubject: {
         id: `did:example:${Math.random().toString(36).substr(2)}`, //crypto.randomUUID(),
@@ -99,15 +108,15 @@ export async function POST(req: Request) {
     };
 
    const result = await createStatusEntry();
-   const credential = {...credentialPayload, credentialStatus: [
+   const credential = {...credentialPayload, credentialStatus: 
     {
       id: result.id,
       type: result.type,
       statusPurpose: result.statusPurpose,
-    },
-  ],}
+    }
+  }
 
-  const name = rawPayload.name + " " + rawPayload.lastName;
+    const name = rawPayload.name + " " + rawPayload.lastName;
    
     const signedCredential = await issue({
       credential: credential,
@@ -115,7 +124,7 @@ export async function POST(req: Request) {
       documentLoader,
     });
 
-   await insertEmployee(db, name, rawPayload.email, rawPayload.jobTitle, JSON.stringify(signedCredential));
+    await insertEmployee(db, name, rawPayload.email, rawPayload.jobTitle, JSON.stringify(signedCredential));
 
     const uuid = crypto.randomUUID();
     const MAX_AGE = 300; // 300 seconds = 5min
@@ -147,22 +156,22 @@ export async function insertEmployee(
 ): Promise<string> {
   console.log("Start inserting employee into companyDataBase");
   db = await database.connectToDb("./database/bfc.db");
- // await logDatabaseTables(db); Log database tables if needed
-  console.log("Connected to SQLite database in companyDataBase", {db});
+  // await logDatabaseTables(db); Log database tables if needed
+  console.log("Connected to SQLite database in companyDataBase", { db });
   return new Promise((resolve, reject) => {
-      db.run(
-          "INSERT INTO companyDataBase (name,email,jobTitle,VC) VALUES (?,?,?,?)",
-          [name, email, jobTitle, VC],
-          (err) => {
-              if (err) {
-                  console.error("Error inserting employee:", err.message);
-                  reject(err);
-                  return "";
-              }
-              console.log("Employee inserted successfully with email_address:", email);
-              resolve(email);
-          }
-      );
+    db.run(
+      "INSERT INTO companyDataBase (name,email,jobTitle,VC) VALUES (?,?,?,?)",
+      [name, email, jobTitle, VC],
+      (err) => {
+        if (err) {
+          console.error("Error inserting employee:", err.message);
+          reject(err);
+          return "";
+        }
+        console.log("Employee inserted successfully with email_address:", email);
+        resolve(email);
+      }
+    );
   });
 }
 
