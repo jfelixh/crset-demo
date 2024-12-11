@@ -15,7 +15,8 @@ export interface CustomJwtPayload extends JwtPayload {
 export type CredentialSubject = PassportCredential & { email: string };
 
 export interface AuthContextType {
-  appState: AppState;
+  token: CustomJwtPayload | null;
+  isAuthenticated: boolean;
   onLogout: () => void;
 }
 
@@ -48,9 +49,14 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     setAppState({ token: null, isAuthenticated: false });
     removeToken("token", "");
   };
-
   return (
-    <AuthContext.Provider value={{ appState, onLogout }}>
+    <AuthContext.Provider
+      value={{
+        token: appState?.token,
+        isAuthenticated: appState.isAuthenticated,
+        onLogout,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

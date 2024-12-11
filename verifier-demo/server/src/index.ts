@@ -6,7 +6,7 @@ import session from "express-session";
 import { redisClient } from "./config/redis";
 import { connectDB } from "./db/database";
 import LoanRoute from "./routes/LoanRoute";
-import LoginRoute from "./routes/LoginRoute";
+import LoginRoute from "./routes/PresentCredentialRoute";
 
 dotenv.config();
 
@@ -36,7 +36,7 @@ app.use(
     store: redisStore,
     resave: false,
     saveUninitialized: false,
-    secret: "Fear is the mind-killer.", // TODO: extract to env
+    secret: process.env.SECRET!,
     cookie: {
       secure: false,
       httpOnly: true,
@@ -57,7 +57,7 @@ const initializeDatabase = async () => {
 initializeDatabase();
 
 // Routes
-app.use("/login", LoginRoute);
+app.use("/present", LoginRoute);
 app.use("/loans", LoanRoute);
 
 app.get("/", (req: Request, res: Response) => {

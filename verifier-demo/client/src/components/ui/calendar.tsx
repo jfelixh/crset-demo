@@ -1,4 +1,3 @@
-"use client";
 // taken from https://date-picker.luca-felix.com/
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";

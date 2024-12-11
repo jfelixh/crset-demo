@@ -6,8 +6,8 @@ export const useAuth = () => {
   if (!context) {
     throw new Error("useAuth must be used within an AuthProvider");
   }
-  const { appState, onLogout } = context;
-  const { isAuthenticated, token } = appState;
+  // TODO: fix unnecessary rerenders
+  const { token, isAuthenticated, onLogout } = context;
 
   return {
     isAuthenticated,

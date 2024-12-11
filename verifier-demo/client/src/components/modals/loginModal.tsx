@@ -1,23 +1,23 @@
-import { baseUrl } from "@/hooks/api/base";
-import useGenerateWalletURL from "@/hooks/api/useGenerateWalletURL";
-import { useToast } from "@/hooks/use-toast";
-import useIsMobileDevice from "@/hooks/useIsMobileDevice";
 import {
   Dialog,
-  DialogTrigger,
   DialogContent,
-  DialogTitle,
   DialogDescription,
+  DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
+import useGenerateWalletURL from "@/hooks/api/useGenerateWalletURL";
+import { useToast } from "@/hooks/use-toast";
+import { useCallbackPolling } from "@/hooks/useCallbackPolling";
+import useIsMobileDevice from "@/hooks/useIsMobileDevice";
 import { QRCodeCanvas } from "qrcode.react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "../ui/button";
 import { DialogHeader } from "../ui/dialog";
 import { Skeleton } from "../ui/skeleton";
 
 export const LoginModal = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { login_id, walletUrl, isLoading, error } =
+  const { challenge, walletUrl, isLoading, error } =
     useGenerateWalletURL(isOpen);
   const { isMobile } = useIsMobileDevice();
   const { toast } = useToast();
@@ -26,48 +26,52 @@ export const LoginModal = () => {
     setIsOpen(open);
   };
 
-  useEffect(() => {
-    if (!walletUrl) return;
+  useCallbackPolling({
+    walletUrl,
+    challenge,
+    onSuccess: () => {
+      setIsOpen(false);
+      toast({
+        title: "Authentication successful",
+        description: "You are now logged in.",
+      });
+    },
+    modalOpen: isOpen,
+  });
 
-    const interval = setInterval(async () => {
-      try {
-        const response = await fetch(
-          encodeURI(`${baseUrl}/login/callback?login_id=${login_id}`),
-          {
-            credentials: "include",
-          }
-        );
+  // useEffect(() => {
+  //   if (!walletUrl || !isOpen) return;
 
-        const result = await response.json();
+  //   const interval = setInterval(async () => {
+  //     try {
+  //       const response = await fetch(
+  //         encodeURI(`${baseUrl}/login/callback?login_id=${challenge}`),
+  //         {
+  //           credentials: "include",
+  //         }
+  //       );
 
-        if (result.success === true) {
-          clearInterval(interval);
-          setIsOpen(false);
-          console.log("Auth successful");
-          toast({
-            title: "Authentication successful",
-            description: "You are now logged in.",
-          });
-        }
-      } catch (err) {
-        console.error("Error checking auth status:", err);
-        toast({
-          title: "Authentication failed",
-          description: "Please try again.",
-          variant: "destructive",
-        });
-      }
-    }, 5000);
+  //       // Server acknowledges the login request, still waiting for auth
+  //       if (response.status === 202) return;
 
-    return () => {
-      const token = document.cookie
-        .split("; ")
-        .find((row) => row.startsWith("token="));
-      if (token && !isOpen) {
-        return clearInterval(interval);
-      }
-    };
-  }, [isOpen, login_id, toast, walletUrl]);
+  //       const result = await response.json();
+
+  //       if (result.success === true) {
+  //         setIsOpen(false);
+  //         toast({
+  //           title: "Authentication successful",
+  //           description: "You are now logged in.",
+  //         });
+  //       }
+  //     } catch (err) {
+  //       console.error("Error checking auth status:", err);
+  //     }
+  //   }, 5000);
+
+  //   return () => {
+  //     return clearInterval(interval);
+  //   };
+  // }, [isOpen, challenge, toast, walletUrl]);
 
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
