@@ -63,8 +63,8 @@ export const LoginModal = () => {
       const token = document.cookie
         .split("; ")
         .find((row) => row.startsWith("token="));
-      if (!token && isOpen) {
-        clearInterval(interval);
+      if (token && !isOpen) {
+        return clearInterval(interval);
       }
     };
   }, [isOpen, login_id, toast, walletUrl]);

@@ -1,33 +1,33 @@
+import { PassportCredential } from "@/models/auth";
 import { JwtPayload, jwtDecode } from "jwt-decode";
-import React, { FC, useEffect, useState } from "react";
+import { FC, ReactNode, useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import { AuthContext } from "./authContext";
 
 export interface AppState {
-  token: JwtPayload | null;
+  token: CustomJwtPayload | null;
   isAuthenticated: boolean;
-  email: string;
 }
+export interface CustomJwtPayload extends JwtPayload {
+  credentialSubject: CredentialSubject;
+}
+
+export type CredentialSubject = PassportCredential & { email: string };
 
 export interface AuthContextType {
   appState: AppState;
   onLogout: () => void;
 }
 
-interface CustomJwtPayload extends JwtPayload {
-  credentialSubject: {
-    email: string;
-  };
+interface AuthProviderProps {
+  children: ReactNode;
 }
 
-export const AuthProvider: FC<React.PropsWithChildren<AuthContextType>> = ({
-  children,
-}) => {
+export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   const [tokenFromCookie, removeToken] = useCookies(["token"]);
   const [appState, setAppState] = useState<AppState>({
     token: null,
     isAuthenticated: false,
-    email: "",
   });
 
   useEffect(() => {
@@ -38,7 +38,6 @@ export const AuthProvider: FC<React.PropsWithChildren<AuthContextType>> = ({
       const newState = {
         token: decodedToken,
         isAuthenticated: true,
-        email: decodedToken.credentialSubject.email,
       };
       setAppState(newState);
       sessionStorage.setItem("appState", JSON.stringify(appState));
@@ -46,7 +45,7 @@ export const AuthProvider: FC<React.PropsWithChildren<AuthContextType>> = ({
   }, [tokenFromCookie]);
 
   const onLogout = () => {
-    setAppState({ token: null, isAuthenticated: false, email: "" });
+    setAppState({ token: null, isAuthenticated: false });
     removeToken("token", "");
   };
 

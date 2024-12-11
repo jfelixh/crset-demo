@@ -14,17 +14,14 @@ if (process.env.PEX_DESCRIPTOR_OVERRIDE) {
   fs.readFile(process.env.PEX_DESCRIPTOR_OVERRIDE as string, "utf8").then(
     (file) => {
       inputDescriptorOverride = JSON.parse(file);
-    },
+    }
   );
 }
 
-export const generatePresentationDefinition = (
-  policy: LoginPolicy,
-  incrAuthInputDescriptor?: InputDescriptor[],
-) => {
+export const generatePresentationDefinition = (policy: LoginPolicy) => {
   if (policy === undefined)
     throw Error(
-      "A policy must be specified to generate a presentation definition",
+      "A policy must be specified to generate a presentation definition"
     );
 
   var pd: PresentationDefinition = {
@@ -52,18 +49,6 @@ export const generatePresentationDefinition = (
     input_descriptors: [] as InputDescriptor[],
   };
 
-  if (inputDescriptorOverride && !incrAuthInputDescriptor) {
-    pd.input_descriptors = inputDescriptorOverride;
-    return pd;
-  } else if (incrAuthInputDescriptor) {
-    pd.input_descriptors = incrAuthInputDescriptor;
-    // logger.debug(
-    //   "Using input descriptor override for incremental authorization",
-    //   pd,
-    // );
-    return pd;
-  }
-
   for (let expectation of policy) {
     if (expectation.patterns.length > 1) {
       let req = {
@@ -89,7 +74,7 @@ export const generatePresentationDefinition = (
 
       let fields = pattern.claims
         .filter((claim) =>
-          Object.hasOwn(claim, "required") ? claim.required : true,
+          Object.hasOwn(claim, "required") ? claim.required : true
         )
         .map((claim) => {
           return {

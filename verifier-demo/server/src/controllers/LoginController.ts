@@ -145,6 +145,9 @@ export const presentCredentialPost = async (req: Request, res: Response) => {
       : [presentation.verifiableCredential];
     console.log("VC: ", vc);
 
+    // TODO: check here for the type of the VC
+    // if employment cred, check revocation status
+    // else cred is used for login so continue with the current flow
     const credSubject = vc[0]["credentialSubject"];
 
     // create a session by signing the user claims in to an ID token

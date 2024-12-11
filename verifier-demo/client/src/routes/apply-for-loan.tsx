@@ -1,6 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { set, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Form,
   FormControl,
@@ -11,17 +10,28 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { jwtDecode } from "jwt-decode";
-import { useContext, useEffect, useState } from "react";
-import { AuthContext } from "@/context/authContext";
-import { SeparatorHorizontal } from "lucide-react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
-import {usePostLoan} from "@/hooks/api/usePostLoan";
+import { usePostLoan } from "@/hooks/api/usePostLoan";
+import { useAuth } from "@/hooks/useAuth";
+import { cn } from "@/lib/utils";
+import { LoanRequest } from "@/models/loan";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { createFileRoute } from "@tanstack/react-router";
+import { format } from "date-fns";
+import { CalendarIcon } from "lucide-react";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { useToast } from "@/hooks/use-toast";
 
 const formSchema = z.object({
+  id: z.string(),
   name: z.string().min(2).max(50),
   email: z.string().email(),
   birthDate: z.date().max(new Date()),
@@ -31,24 +41,15 @@ const formSchema = z.object({
   purpose: z.string().min(2).max(1000),
 });
 
-type passportType = {
-  id: String,
-  type: "PassportCredential",
-  birthDate: Date,
-  givenName: String,
-  address: String,
-  dateIssued: Date,
-  familyName: String,
-  expiresOn: Date,
-  gender: String,
-};
-
 function RouteComponent() {
-  
-  // Form default values
+  const { token } = useAuth();
+  const { mutateAsync: postLoan } = usePostLoan();
+  const { toast } = useToast();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      id: "",
       name: "",
       email: "",
       loanAmount: 0,
@@ -57,26 +58,36 @@ function RouteComponent() {
       purpose: "",
     },
   });
-  
-  // Autofill some fields with user data
-  const [userInfo, setUserInfo] = useState<passportType | null>(null);
-  const userToken = useContext(AuthContext)?.appState.token;
+
   useEffect(() => {
-    if (userToken) {
-      setUserInfo(userToken?.credentialSubject);
-      form.setValue("name", userInfo?.givenName + " " + userInfo?.familyName);
-      form.setValue("birthDate", new Date(userInfo?.birthDate!));
-      form.setValue("address", userInfo?.address);
+    if (token) {
+      const { credentialSubject } = token;
+      form.setValue("id", credentialSubject?.id || "");
+      form.setValue(
+        "name",
+        credentialSubject?.givenName + " " + credentialSubject?.familyName
+      );
+      form.setValue("birthDate", new Date(credentialSubject?.birthDate || ""));
+      form.setValue("address", credentialSubject?.address || "");
+      // toast to notify user that the form has been pre-filled
+      toast({
+        title: "Form pre-filled",
+        description: "Your information has been pre-filled from your ID",
+      });
     }
-  });
+  }, [token]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    // Store to db
     console.log(values);
-  
-    const payload = {amount: values.loanAmount, applicant: userInfo?.id, application_dump: JSON.stringify(values)};
+    const { id, loanAmount } = values;
+    const payload = {
+      amount: loanAmount,
+      applicant: id,
+      application_dump: JSON.stringify(values),
+    } as LoanRequest;
+
     try {
-      const response = usePostLoan(payload);
+      const response = await postLoan(payload);
       console.log(response);
     } catch (error) {
       console.error(error);
@@ -129,9 +140,16 @@ function RouteComponent() {
                   <FormItem>
                     <FormLabel>Purpose</FormLabel>
                     <FormControl>
-                      <Textarea placeholder="What do you plan to do with it?" {...field} />
+                      <Textarea
+                        placeholder="What do you plan to do with it?"
+                        {...field}
+                      />
                     </FormControl>
-                    {<FormDescription>Intended usage for this loan</FormDescription>}
+                    {
+                      <FormDescription>
+                        Intended usage for this loan
+                      </FormDescription>
+                    }
                     <FormMessage />
                   </FormItem>
                 )}
@@ -163,7 +181,9 @@ function RouteComponent() {
                     <FormControl>
                       <Input placeholder="your home address" {...field} />
                     </FormControl>
-                    <FormDescription>Address at which you currently reside</FormDescription>
+                    <FormDescription>
+                      Address at which you currently reside
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -173,12 +193,41 @@ function RouteComponent() {
                 control={form.control}
                 name="birthDate"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="flex flex-col">
                     <FormLabel>Date of birth</FormLabel>
-                    <FormControl>
-                      <Input placeholder="YYYY-MM-DD" {...field} />
-                    </FormControl>
-                    <FormDescription>In American format</FormDescription>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant={"outline"}
+                            className={cn(
+                              "w-[240px] pl-3 text-left font-normal",
+                              !field.value && "text-muted-foreground"
+                            )}
+                          >
+                            {field.value ? (
+                              format(field.value, "PPP")
+                            ) : (
+                              <span>Pick a date</span>
+                            )}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={field.value}
+                          onSelect={field.onChange}
+                          disabled={(date) =>
+                            date > new Date() || date < new Date("1900-01-01")
+                          }
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <FormDescription>
+                      Date of birth as per your ID
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -193,15 +242,17 @@ function RouteComponent() {
                     <FormControl>
                       <Input placeholder="Your email" {...field} />
                     </FormControl>
-                    <FormDescription>max.mustermann@example.com</FormDescription>
+                    <FormDescription>
+                      max.mustermann@example.com
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              </div>
-              <Button type="submit">Next: Confirm your employment status</Button>
-            </form>
-          </Form>
+            </div>
+            <Button type="submit">Next: Confirm your employment status</Button>
+          </form>
+        </Form>
       </div>
     </div>
   );
