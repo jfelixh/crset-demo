@@ -12,10 +12,11 @@ import { createFileRoute } from "@tanstack/react-router";
 
 // Import Routes
 
-import { Route as rootRoute } from "./routes/__root";
-import { Route as LoginImport } from "./routes/login";
-import { Route as ApplyForLoanImport } from "./routes/apply-for-loan";
-import { Route as IndexImport } from "./routes/index";
+import { Route as rootRoute } from './routes/__root'
+import { Route as UserHomepageImport } from './routes/user-homepage'
+import { Route as LoginImport } from './routes/login'
+import { Route as ApplyForLoanImport } from './routes/apply-for-loan'
+import { Route as IndexImport } from './routes/index'
 
 // Create Virtual Routes
 
@@ -27,7 +28,13 @@ const AboutLazyRoute = AboutLazyImport.update({
   id: "/about",
   path: "/about",
   getParentRoute: () => rootRoute,
-} as any).lazy(() => import("./routes/about.lazy").then((d) => d.Route));
+} as any).lazy(() => import('./routes/about.lazy').then((d) => d.Route))
+
+const UserHomepageRoute = UserHomepageImport.update({
+  id: '/user-homepage',
+  path: '/user-homepage',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const LoginRoute = LoginImport.update({
   id: "/login",
@@ -51,81 +58,99 @@ const IndexRoute = IndexImport.update({
 
 declare module "@tanstack/react-router" {
   interface FileRoutesByPath {
-    "/": {
-      id: "/";
-      path: "/";
-      fullPath: "/";
-      preLoaderRoute: typeof IndexImport;
-      parentRoute: typeof rootRoute;
-    };
-    "/apply-for-loan": {
-      id: "/apply-for-loan";
-      path: "/apply-for-loan";
-      fullPath: "/apply-for-loan";
-      preLoaderRoute: typeof ApplyForLoanImport;
-      parentRoute: typeof rootRoute;
-    };
-    "/login": {
-      id: "/login";
-      path: "/login";
-      fullPath: "/login";
-      preLoaderRoute: typeof LoginImport;
-      parentRoute: typeof rootRoute;
-    };
-    "/about": {
-      id: "/about";
-      path: "/about";
-      fullPath: "/about";
-      preLoaderRoute: typeof AboutLazyImport;
-      parentRoute: typeof rootRoute;
-    };
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/apply-for-loan': {
+      id: '/apply-for-loan'
+      path: '/apply-for-loan'
+      fullPath: '/apply-for-loan'
+      preLoaderRoute: typeof ApplyForLoanImport
+      parentRoute: typeof rootRoute
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginImport
+      parentRoute: typeof rootRoute
+    }
+    '/user-homepage': {
+      id: '/user-homepage'
+      path: '/user-homepage'
+      fullPath: '/user-homepage'
+      preLoaderRoute: typeof UserHomepageImport
+      parentRoute: typeof rootRoute
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutLazyImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
 // Create and export the route tree
 
 export interface FileRoutesByFullPath {
-  "/": typeof IndexRoute;
-  "/apply-for-loan": typeof ApplyForLoanRoute;
-  "/login": typeof LoginRoute;
-  "/about": typeof AboutLazyRoute;
+  '/': typeof IndexRoute
+  '/apply-for-loan': typeof ApplyForLoanRoute
+  '/login': typeof LoginRoute
+  '/user-homepage': typeof UserHomepageRoute
+  '/about': typeof AboutLazyRoute
 }
 
 export interface FileRoutesByTo {
-  "/": typeof IndexRoute;
-  "/apply-for-loan": typeof ApplyForLoanRoute;
-  "/login": typeof LoginRoute;
-  "/about": typeof AboutLazyRoute;
+  '/': typeof IndexRoute
+  '/apply-for-loan': typeof ApplyForLoanRoute
+  '/login': typeof LoginRoute
+  '/user-homepage': typeof UserHomepageRoute
+  '/about': typeof AboutLazyRoute
 }
 
 export interface FileRoutesById {
-  __root__: typeof rootRoute;
-  "/": typeof IndexRoute;
-  "/apply-for-loan": typeof ApplyForLoanRoute;
-  "/login": typeof LoginRoute;
-  "/about": typeof AboutLazyRoute;
+  __root__: typeof rootRoute
+  '/': typeof IndexRoute
+  '/apply-for-loan': typeof ApplyForLoanRoute
+  '/login': typeof LoginRoute
+  '/user-homepage': typeof UserHomepageRoute
+  '/about': typeof AboutLazyRoute
 }
 
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath;
-  fullPaths: "/" | "/apply-for-loan" | "/login" | "/about";
-  fileRoutesByTo: FileRoutesByTo;
-  to: "/" | "/apply-for-loan" | "/login" | "/about";
-  id: "__root__" | "/" | "/apply-for-loan" | "/login" | "/about";
-  fileRoutesById: FileRoutesById;
+  fileRoutesByFullPath: FileRoutesByFullPath
+  fullPaths: '/' | '/apply-for-loan' | '/login' | '/user-homepage' | '/about'
+  fileRoutesByTo: FileRoutesByTo
+  to: '/' | '/apply-for-loan' | '/login' | '/user-homepage' | '/about'
+  id:
+    | '__root__'
+    | '/'
+    | '/apply-for-loan'
+    | '/login'
+    | '/user-homepage'
+    | '/about'
+  fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute;
-  ApplyForLoanRoute: typeof ApplyForLoanRoute;
-  LoginRoute: typeof LoginRoute;
-  AboutLazyRoute: typeof AboutLazyRoute;
+  IndexRoute: typeof IndexRoute
+  ApplyForLoanRoute: typeof ApplyForLoanRoute
+  LoginRoute: typeof LoginRoute
+  UserHomepageRoute: typeof UserHomepageRoute
+  AboutLazyRoute: typeof AboutLazyRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ApplyForLoanRoute: ApplyForLoanRoute,
   LoginRoute: LoginRoute,
+  UserHomepageRoute: UserHomepageRoute,
   AboutLazyRoute: AboutLazyRoute,
 };
 
@@ -142,6 +167,7 @@ export const routeTree = rootRoute
         "/",
         "/apply-for-loan",
         "/login",
+        "/user-homepage",
         "/about"
       ]
     },
@@ -153,6 +179,9 @@ export const routeTree = rootRoute
     },
     "/login": {
       "filePath": "login.tsx"
+    },
+    "/user-homepage": {
+      "filePath": "user-homepage.tsx"
     },
     "/about": {
       "filePath": "about.lazy.tsx"

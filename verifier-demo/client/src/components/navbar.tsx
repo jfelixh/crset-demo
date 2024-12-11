@@ -22,6 +22,12 @@ export const NavBar = () => {
                 </Link>
               </Button>
               <Button asChild variant="ghost">
+                <Link to="/user-homepage" className="[&.active]:font-bold">
+                  Dashboard
+                </Link>
+              </Button>
+
+              <Button asChild variant="ghost">
                 <Link to="/about" className="[&.active]:font-bold">
                   About
                 </Link>
