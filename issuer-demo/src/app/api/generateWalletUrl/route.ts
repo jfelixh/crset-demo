@@ -1,4 +1,4 @@
-import { keyToDID} from "@spruceid/didkit-wasm-node";
+import * as DIDKit from "@spruceid/didkit-wasm";
 import crypto from "crypto";
 
 
@@ -9,11 +9,17 @@ export async function GET(req: Request) {
       { status: 405, headers: { "Allow": "GET" } }
     );
   }
+  const jwkString = JSON.stringify({
+    kty: "OKP",
+    crv: "Ed25519",
+    x: "cwa3dufHNLg8aQb2eEUqTyoM1cKQW3XnOkMkj_AAl5M",
+    d: "me03qhLByT-NKrfXDeji-lpADSpVOKWoaMUzv5EyzKY"
+  });
 
   try {
 
     console.log("generateWalletURL in backend");
-    
+    console.log("DID Key JWK: " + process.env.PORT);
     let loginChallenge;
     try {
       loginChallenge = crypto.randomUUID();
@@ -22,18 +28,20 @@ export async function GET(req: Request) {
       console.error("Error generating login challenge: ", error);
       return new Response(JSON.stringify({ error: "Error generating login challenge" }), { status: 500 });
     }
+    console.log("testing")
+    console.log("externalUrl: " + DIDKit.keyToDID("key", process.env.DID_KEY_JWK!));
     const externalUrl = process.env.NEXT_PUBLIC_URL!;
     const walletUrl =
       "openid-vc://?client_id=" +
-      keyToDID("key", process.env.DID_KEY_JWK!) +
+      DIDKit.keyToDID("key", process.env.DID_KEY_JWK!) +
       "&request_uri=" +
       encodeURIComponent(
-        externalUrl + "/presentCredential?login_id=" + loginChallenge
+        externalUrl + "/api/presentCredential?login_id=" + loginChallenge
       );
       return new Response(JSON.stringify({  
         message: "Wallet URL generated successfully",
         walletUrl: walletUrl,
-        externalUrl: externalUrl,
+        login_id: loginChallenge,
       }));
 
     //   console.log("Wallet URL: " + walletUrl);

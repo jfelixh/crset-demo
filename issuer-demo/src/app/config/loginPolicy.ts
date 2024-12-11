@@ -15,29 +15,36 @@ dotenv.config();
 
 let configuredPolicy: LoginPolicy | undefined = undefined;
 
-export const reloadConfiguredLoginPolicy = () => {
+export const reloadConfiguredLoginPolicy = async () => {
   if (process.env.LOGIN_POLICY) {
     try {
-      fs.readFile(process.env.LOGIN_POLICY as string, "utf8").then((file) => {
-        configuredPolicy = JSON.parse(file);
-        /*  if (!isLoginPolicy(configuredPolicy)) {
-          throw Error(
-            "Configured login policy has syntax error: " + configuredPolicy,
-          );
-        } */
-      });
-    } catch (error) {
-      throw Error(
+      const file = await fs.readFile(process.env.LOGIN_POLICY as string, "utf8");
+      configuredPolicy = JSON.parse(file);
+      console.log("logging the policy", configuredPolicy);
+
+      /*  if (!isLoginPolicy(configuredPolicy)) {
+        throw Error(
+          "Configured login policy has syntax error: " + configuredPolicy,
+        );
+      } */
+  }
+catch
+  (error)
+  {
+    throw Error(
         "Failed loading login policy from file: " + process.env.LOGIN_POLICY
-      );
-    }
-  } else {
+    );
+  }
+} else {
     throw Error("No login policy file path set");
   }
 };
 
-reloadConfiguredLoginPolicy();
 
-export const getConfiguredLoginPolicy = () => {
+export const getConfiguredLoginPolicy = async () => {
+  // Ensure we wait for reloadConfiguredLoginPolicy to complete
+  if (!configuredPolicy) {
+    await reloadConfiguredLoginPolicy();
+  }
   return configuredPolicy;
 };

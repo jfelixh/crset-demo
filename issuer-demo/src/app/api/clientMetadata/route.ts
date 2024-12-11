@@ -1,5 +1,5 @@
 import { getMetadata } from "@/lib/getMetadata";
-export async function GET (req: Request) {
+export async function GET (req: Request, res: Response) {
   console.log("getClientMetadata");
   try {
     const { method } = req;
@@ -12,7 +12,12 @@ export async function GET (req: Request) {
       // step 13
       console.log(JSON.stringify(metadata));
       //res.status(200).json(metadata);
-      return new Response(JSON.stringify(metadata), {status: 200});
+      return new Response(JSON.stringify(metadata), {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
     } else {
       //res.status(500).end();
       return new Response(JSON.stringify({ error: "Method not allowed" }), { status: 500 });
@@ -21,4 +26,4 @@ export async function GET (req: Request) {
     //res.status(500).end();
     return new Response(JSON.stringify({ error: e.message }), { status: 500 });
   }
-};
+}
