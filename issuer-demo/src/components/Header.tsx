@@ -6,9 +6,11 @@ import { LogOut } from "lucide-react";
 const Header = ({
   showLinks,
   pathname,
+  logout,
 }: {
   showLinks: boolean;
   pathname: string;
+  logout: () => void;
 }) => {
   return (
     <>
@@ -49,6 +51,7 @@ const Header = ({
             <div className="mr-4">
               <Link
                 href="/"
+                onClick={logout}
                 className="text-white flex items-center space-x-2 group"
               >
                 <LogOut className="w-6 h-6" />
