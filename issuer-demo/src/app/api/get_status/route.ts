@@ -7,7 +7,12 @@ export async function POST(req: Request) {
     }
     function getStatusUser(user) {
         const vc = JSON.parse(user.VC);
-        return vc.credentialStatus[0].id;
+        // TODO: remove array check after reinitializing database with vcs that have single credentialStatus
+        if (Array.isArray(vc.credentialStatus)) {
+            return vc.credentialStatus[0].id;
+        }else {
+            return vc.credentialStatus.id;
+        }
     }
     try{
         const user = await req.json()
