@@ -93,7 +93,7 @@ export default function LoginPage() {
           const credentialSubjectId = jwt.decode(result["token"])[
             "credentialSubject"
           ]["id"];
-          throw new Error("Credential Subject ID: " + credentialSubjectId);
+          // throw new Error("Credential Subject ID: " + credentialSubjectId);
           await authorizationCheck(credentialSubjectId);
           //   toast({
           //     title: "Authentication successful",

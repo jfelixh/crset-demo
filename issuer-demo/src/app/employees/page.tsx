@@ -11,6 +11,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Card, CardContent } from "@/components/ui/card";
 
 const UsersPage = () => {
   const [users, setUsers] = useState([]);
@@ -39,22 +40,23 @@ const UsersPage = () => {
     setTopUsers(filteredUsers.slice(0, 20));
   }, [users, searchTerm]);
 
-  useEffect(() => {
-    const fetchStatusForTopUsers = async () => {
-      const userStatuses: { [key: string]: string } = {};
-      for (const user of topUsers) {
-        console.log("user:", user);
-        const validity = await getCredentialStatus(user);
-        if (validity) {
-          userStatuses[user.email_address] = "Valid";
-        } else {
-          userStatuses[user.email_address] = "Invalid";
-        }
-        console.log("userStatuses:", userStatuses[user.email_address]);
+  const fetchStatusForTopUsers = async (topUsers) => {
+    const userStatuses: { [key: string]: string } = {};
+    for (const user of topUsers) {
+      console.log("user:", user);
+      const validity = await getCredentialStatus(user);
+      if (validity) {
+        userStatuses[user.email_address] = "Valid";
+      } else {
+        userStatuses[user.email_address] = "Invalid";
       }
-      setStatuses(userStatuses);
-    };
-    fetchStatusForTopUsers();
+      console.log("userStatuses:", userStatuses[user.email_address]);
+    }
+    setStatuses(userStatuses);
+  };
+
+  useEffect(() => {
+    fetchStatusForTopUsers(topUsers);
   }, [topUsers]);
 
   const handleCheckboxChange = (user) => {
@@ -76,6 +78,7 @@ const UsersPage = () => {
         throw new Error("Failed to revoke users");
       }
       setSelectedUser(null);
+      fetchStatusForTopUsers(topUsers);
     } catch (error) {
       console.error("Error revoking users:", error);
     }
@@ -131,7 +134,13 @@ const UsersPage = () => {
                   <TableCell>{user.email_address}</TableCell>
                   <TableCell>{user.jobTitle}</TableCell>
                   <TableCell>{statuses[user.email_address]}</TableCell>
-                  <TableCell>{user.VC}</TableCell>
+                  <TableCell>
+                    <Card>
+                      <CardContent className="!max-w-screen-md">
+                        {user.VC}
+                      </CardContent>
+                    </Card>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
