@@ -92,7 +92,7 @@ export async function POST(req: Request) {
           },
         },
       ],
-      id: "urn:uuid:3978344f-344d-46a2-8556-1e67196186c6", //crypto.randomUUID(),
+      id: "urn:uuid:" + crypto.randomUUID(),
       type: ["VerifiableCredential", "EmploymentCredential",],
       issuer: `did:key:${keyPair.publicKeyMultibase}`,
       credentialSubject: {
