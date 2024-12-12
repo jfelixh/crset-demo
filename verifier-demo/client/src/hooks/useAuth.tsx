@@ -1,4 +1,5 @@
 import { AuthContext } from "@/context/authContext";
+import { CustomJwtPayload } from "@/context/authContextProvider";
 import { useContext } from "react";
 
 export const useAuth = () => {
@@ -8,10 +9,14 @@ export const useAuth = () => {
   }
   // TODO: fix unnecessary rerenders
   const { token, isAuthenticated, onLogout } = context;
+  const credentialSubject = token
+    ? (token as CustomJwtPayload).credentialSubject
+    : null;
 
   return {
     isAuthenticated,
     onLogout,
     token,
+    ...credentialSubject,
   };
 };

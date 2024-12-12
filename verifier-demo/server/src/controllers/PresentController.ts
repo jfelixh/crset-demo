@@ -147,16 +147,16 @@ export const presentCredentialPost = async (req: Request, res: Response) => {
     if (vc[0]["type"].includes("EmploymentCredential")) {
       console.log("Checking Employee credential revocation status…");
       // TODO: Implement revocation check
-      // const isRevoked = await checkRevocationStatus(vc[0]);
-      // if (isRevoked) {
-      //   console.log("Employee credential is revoked");
-      //   res.status(401).end();
-      //   return;
-      // }
+      const isRevoked = await checkRevocationStatus(vc[0]);
+      if (isRevoked) {
+        console.log("Employee credential is revoked");
+        redisSet(`challenge:${challenge}`, "false", 3600);
+        res.status(401).end();
+        return;
+      }
 
       console.log("Employee credential is valid");
-      // redisSet(`challenge:${challenge}`, isRevoked + "", 3600);
-      redisSet(`challenge:${challenge}`, true + "", 3600);
+      redisSet(`challenge:${challenge}`, "true", 3600);
       res.status(200).end();
       return;
     }
@@ -238,11 +238,15 @@ export const loginCallback = async (req: Request, res: Response) => {
         return;
       }
 
-      if (isRevoked === "true") {
+      if (isRevoked !== "true") {
         console.log("Employee credential is revoked");
         res.status(401).end();
         return;
       }
+
+      console.log("Employee credential is valid");
+      res.status(200).json({ success: true });
+      return;
     }
 
     let idToken;
@@ -263,8 +267,8 @@ export const loginCallback = async (req: Request, res: Response) => {
       res.status(202).end();
       return;
     }
-    req.session.token = idToken;
     // if an ID token is found, create a session
+    req.session.token = idToken;
     res.cookie("token", idToken, {
       httpOnly: false, // https://stackoverflow.com/questions/17508027/cant-access-cookies-from-document-cookie-in-js-but-browser-shows-cookies-exist
       secure: false,

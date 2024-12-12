@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { LoanRequest } from "@/models/loan";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowBigLeftIcon, ArrowBigRightIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { z } from "zod";
 import { formSchema } from "./schemas";
@@ -15,6 +15,7 @@ import EmployeeCredentialInfoStep from "./steps/employee-credential-info";
 import LoanInfoStep from "./steps/loan-info";
 import PreviewStep from "./steps/overview";
 import PersonalInfoStep from "./steps/personal-info";
+import LoanApplicationConfirmation from "./steps/submit-confirmation";
 
 type FormData = z.infer<typeof formSchema>;
 
@@ -23,6 +24,7 @@ const steps = [
   "Loan Details",
   "Confirm Employment",
   "Submit Application",
+  "Successful Submission",
 ];
 
 const SteppedForm = () => {
@@ -47,6 +49,7 @@ const SteppedForm = () => {
   const { handleSubmit, trigger } = form;
   const { toast } = useToast();
   const { token } = useAuth();
+  const nextButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (token) {
@@ -78,6 +81,11 @@ const SteppedForm = () => {
     try {
       const response = await postLoan(payload);
       console.log(response);
+      toast({
+        title: "Application submitted",
+        description: "Your application has been submitted successfully",
+      });
+      setStep(steps.length);
     } catch (error) {
       console.error(error);
     }
@@ -91,6 +99,8 @@ const SteppedForm = () => {
       fieldsToValidate = ["loanAmount", "annualIncome", "purpose"];
     } else if (step === 3) {
       fieldsToValidate = ["employeeCredentialConfirmed"];
+    } else if (step === 4) {
+      return;
     }
 
     const isValid = await trigger(fieldsToValidate);
@@ -112,46 +122,61 @@ const SteppedForm = () => {
       case 2:
         return <LoanInfoStep />;
       case 3:
-        return <EmployeeCredentialInfoStep />;
+        return <EmployeeCredentialInfoStep nextButtonRef={nextButtonRef} />;
       case 4:
         return <PreviewStep />;
+      case 5:
+        return <LoanApplicationConfirmation />;
       default:
-        return null;
+        return <></>;
     }
   };
 
   return (
-    <FormProvider {...form}>
-      <h1 className="text-3xl font-bold text-center mb-6">Loan Application</h1>
+    <div>
+      <FormProvider {...form}>
+        <h1 className="text-3xl font-bold text-center mb-6">
+          Loan Application
+        </h1>
 
-      <Stepper steps={steps} currentStep={step} />
+        <Stepper steps={steps} currentStep={step} />
 
-      <form onSubmit={handleSubmit(onSubmit)}>
-        {renderStep()}
-        <div
-          className={cn(
-            "flex justify-end mt-6",
-            (step > 1 && step < steps.length) || step === steps.length
-              ? "justify-between"
-              : ""
-          )}
-        >
-          {step > 1 && (
-            <Button type="button" variant="outline" onClick={handleBack}>
-              <ArrowBigLeftIcon />
-              Back
-            </Button>
-          )}
-          {step < steps.length && (
-            <Button type="button" onClick={handleNext}>
-              Next
-              <ArrowBigRightIcon />
-            </Button>
-          )}
-          {step === steps.length && <Button type="submit">Submit</Button>}
-        </div>
-      </form>
-    </FormProvider>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          {renderStep()}
+          <div
+            className={cn(
+              "flex justify-end mt-6",
+              (step > 1 && step < steps.length) || step === steps.length
+                ? "justify-between"
+                : ""
+            )}
+          >
+            {step > 1 && step !== steps.length && (
+              <Button type="button" variant="outline" onClick={handleBack}>
+                <ArrowBigLeftIcon />
+                Back
+              </Button>
+            )}
+            {step === steps.length ||
+              (step === steps.length - 1 && (
+                <Button
+                  type="submit"
+                  className="bg-gradient-to-tr from-primary via-blue-500 to-blue-200 hover:from-primary hover:scale-105 transition-all"
+                >
+                  Submit
+                </Button>
+              ))}
+
+            {step < steps.length && step !== steps.length - 1 && (
+              <Button type="button" onClick={handleNext} ref={nextButtonRef}>
+                Next
+                <ArrowBigRightIcon />
+              </Button>
+            )}
+          </div>
+        </form>
+      </FormProvider>
+    </div>
   );
 };
 

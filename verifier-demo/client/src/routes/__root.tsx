@@ -1,10 +1,15 @@
 import { NavBar } from "@/components/navbar";
-import { createRootRoute, Outlet } from "@tanstack/react-router";
-import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 import { Toaster } from "@/components/ui/toaster";
+import { AuthContextType } from "@/context/authContextProvider";
+import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
+import { TanStackRouterDevtools } from "@tanstack/router-devtools";
+
+interface RouterContext {
+  auth: AuthContextType;
+}
 
 // Layout for the entire application
-export const Route = createRootRoute({
+export const Route = createRootRouteWithContext<RouterContext>()({
   component: () => (
     <>
       <div className="min-h-screen">
@@ -19,4 +24,12 @@ export const Route = createRootRoute({
       </div>
     </>
   ),
+  beforeLoad: ({ context }) => {
+    console.log(context);
+    // if (!context.auth.isAuthenticated) {
+    //   throw redirect({
+    //     to: "/login",
+    //   });
+    // }
+  },
 });

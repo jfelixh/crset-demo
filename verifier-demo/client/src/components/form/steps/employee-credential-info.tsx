@@ -12,13 +12,29 @@ import { useToast } from "@/hooks/use-toast";
 import { useCallbackPolling } from "@/hooks/useCallbackPolling";
 import useIsMobileDevice from "@/hooks/useIsMobileDevice";
 import { QRCodeCanvas } from "qrcode.react";
+import { RefObject } from "react";
 import { useFormContext } from "react-hook-form";
 
-const EmployeeCredentialInfoStep = () => {
-  const { challenge, walletUrl, isLoading, error } = useGenerateWalletURL();
+type EmployeeCredentialInfoStepProps = {
+  nextButtonRef: RefObject<HTMLButtonElement>;
+};
+
+const EmployeeCredentialInfoStep = ({
+  nextButtonRef,
+}: EmployeeCredentialInfoStepProps) => {
+  const form = useFormContext();
+  const confirmed = form.watch("employeeCredentialConfirmed");
+  const {
+    challenge,
+    walletUrl,
+    isLoading,
+    error,
+    isError,
+    refetch,
+    isFetching,
+  } = useGenerateWalletURL();
   const { isMobile } = useIsMobileDevice();
   const { toast } = useToast();
-  const form = useFormContext();
 
   useCallbackPolling({
     walletUrl,
@@ -30,13 +46,23 @@ const EmployeeCredentialInfoStep = () => {
         description:
           'You have successfully presented your employee credential and confirmed your employment status. Click on the "Next" to proceed.',
       });
+      nextButtonRef.current?.click();
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Please provide a valid employee credential.",
+        variant: "destructive",
+      });
+      console.error("Error:", error);
     },
     isEmployeeCredential: true,
+    enabled: !confirmed,
   });
 
   return (
-    <div className="max-w-xl md:max-w-3xl lg:max-w-4xl py-6">
-      <Card>
+    <div className="flex justify-center items-center py-6">
+      <Card className="w-[60rem]">
         <CardHeader>
           <CardTitle>Confirm Your Employment Status</CardTitle>
           <CardDescription>
@@ -45,22 +71,39 @@ const EmployeeCredentialInfoStep = () => {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
+          {confirmed && (
+            <>
+              <p className="text-primary font-medium">
+                You have successfully presented your employee credential and
+                confirmed your employment status.
+              </p>
+            </>
+          )}
           <div className="w-full flex justify-center">
-            {!isMobile && isLoading && (
-              <Skeleton className="w-[25rem] h-[25rem]" />
-            )}
-            {!isMobile && !isLoading && !error ? (
-              <QRCodeCanvas value={walletUrl} size={400} />
-            ) : (
+            {!confirmed &&
+              !isMobile &&
+              (isLoading || isFetching ? (
+                <Skeleton className="w-[25rem] h-[25rem]" />
+              ) : (
+                !isError && <QRCodeCanvas value={walletUrl} size={400} />
+              ))}
+            {!confirmed && isMobile ? (
               <Button>
                 <a href={walletUrl}>Confirm Employment Status</a>
               </Button>
+            ) : (
+              <></>
             )}
           </div>
-          {error && <p>Error: {error.message}</p>}
-          <pre className="max-w-full text-wrap overflow-auto bg-secondary p-2">
-            {JSON.stringify(walletUrl, null, 2)}
-          </pre>
+          {isError ||
+            (error && (
+              <div>
+                <p>Error: {error.message}</p>
+                <Button variant="destructive" onClick={() => refetch}>
+                  Retry
+                </Button>
+              </div>
+            ))}
         </CardContent>
       </Card>
     </div>

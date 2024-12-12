@@ -3,9 +3,14 @@ import { Link } from "@tanstack/react-router";
 import { LoginModal } from "./modals/loginModal";
 import { LogoutModal } from "./modals/logoutModal";
 import { Button } from "./ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 export const NavBar = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, givenName, familyName } = useAuth();
+
+  const getInitials = (givenName?: string, familyName?: string) => {
+    return `${givenName?.[0] ?? ""}${familyName?.[0] ?? ""}`;
+  };
 
   return (
     <nav className="flex justify-between py-4 border-b-[0.5px]">
@@ -16,30 +21,37 @@ export const NavBar = () => {
               <Logo />
             </Link>
             <div>
-              <Button asChild variant="ghost">
-                <Link to="/" className="[&.active]:font-bold">
-                  Home
-                </Link>
-              </Button>
-              <Button asChild variant="ghost">
-                <Link to="/user-homepage" className="[&.active]:font-bold">
-                  Dashboard
-                </Link>
-              </Button>
-
-              <Button asChild variant="ghost">
-                <Link to="/about" className="[&.active]:font-bold">
-                  About
-                </Link>
-              </Button>
+              {isAuthenticated && (
+                <Button asChild variant="ghost">
+                  <Link to="/dashboard" className="[&.active]:font-bold">
+                    Dashboard
+                  </Link>
+                </Button>
+              )}
             </div>
           </div>
-          <div className="space-x-4">
-            {!isAuthenticated ? <LoginModal /> : <LogoutModal />}
+          <div className="flex space-x-4">
+            {!isAuthenticated ? (
+              <LoginModal />
+            ) : (
+              <>
+                <LogoutModal />
+                <Avatar>
+                  <AvatarImage />
+                  <AvatarFallback>
+                    {getInitials(givenName, familyName)}
+                  </AvatarFallback>
+                </Avatar>
+              </>
+            )}
 
-            <Button asChild>
-              <Link to="/apply-for-loan">Apply for loan now!</Link>
-            </Button>
+            {!isAuthenticated && (
+              <>
+                <Button asChild>
+                  <Link to="/apply-for-loan">Apply for loan now!</Link>
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </div>

@@ -36,42 +36,8 @@ export const LoginModal = () => {
         description: "You are now logged in.",
       });
     },
-    modalOpen: isOpen,
+    enabled: isOpen,
   });
-
-  // useEffect(() => {
-  //   if (!walletUrl || !isOpen) return;
-
-  //   const interval = setInterval(async () => {
-  //     try {
-  //       const response = await fetch(
-  //         encodeURI(`${baseUrl}/login/callback?login_id=${challenge}`),
-  //         {
-  //           credentials: "include",
-  //         }
-  //       );
-
-  //       // Server acknowledges the login request, still waiting for auth
-  //       if (response.status === 202) return;
-
-  //       const result = await response.json();
-
-  //       if (result.success === true) {
-  //         setIsOpen(false);
-  //         toast({
-  //           title: "Authentication successful",
-  //           description: "You are now logged in.",
-  //         });
-  //       }
-  //     } catch (err) {
-  //       console.error("Error checking auth status:", err);
-  //     }
-  //   }, 5000);
-
-  //   return () => {
-  //     return clearInterval(interval);
-  //   };
-  // }, [isOpen, challenge, toast, walletUrl]);
 
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
@@ -93,7 +59,7 @@ export const LoginModal = () => {
             <QRCodeCanvas value={walletUrl} size={400} />
           ) : (
             <Button>
-              <a href={walletUrl}>Authenticate</a>
+              <a href={walletUrl}>Log in</a>
             </Button>
           )}
         </div>

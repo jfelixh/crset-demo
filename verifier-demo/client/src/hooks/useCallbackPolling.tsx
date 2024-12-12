@@ -6,8 +6,9 @@ interface CallbackPollingProps {
   challenge: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onSuccess: (result: { success: boolean; [key: string]: any }) => void;
+  onError?: (error: Error) => void;
   intervalMs?: number;
-  modalOpen?: boolean;
+  enabled?: boolean;
   isEmployeeCredential?: boolean;
 }
 
@@ -15,12 +16,13 @@ export const useCallbackPolling = ({
   walletUrl,
   challenge,
   onSuccess,
+  onError,
   intervalMs = 5000,
-  modalOpen,
+  enabled,
   isEmployeeCredential = false,
 }: CallbackPollingProps) => {
   useEffect(() => {
-    if (!walletUrl || modalOpen === false) return;
+    if (!walletUrl || enabled === false) return;
 
     const fetchCallback = async () => {
       const params = new URLSearchParams({ challenge });
@@ -36,13 +38,19 @@ export const useCallbackPolling = ({
 
         if (response.status === 202) return;
 
-        const result = await response.json();
-        if (result.success) {
+        if (response.ok) {
+          const result = await response.json();
+          if (result.success) {
+            onSuccess(result);
+          }
+          return;
+        } else if (response.status === 401) {
+          onError?.(new Error("Employee credential is revoked or invalid"));
           clearInterval(intervalId);
-          onSuccess(result);
         }
       } catch (err) {
         console.error("Error:", err);
+        clearInterval(intervalId);
       }
     };
 
@@ -53,8 +61,9 @@ export const useCallbackPolling = ({
     walletUrl,
     challenge,
     onSuccess,
+    onError,
     intervalMs,
-    modalOpen,
+    enabled,
     isEmployeeCredential,
   ]);
 };

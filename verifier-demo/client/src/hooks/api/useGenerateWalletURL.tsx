@@ -9,7 +9,7 @@ const useGenerateWalletURL = (enabled = true) => {
     return { walletUrl, challenge };
   };
 
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error, isError, refetch, isFetching } = useQuery({
     queryKey: ["walletUrl"],
     queryFn: generateWalletURL,
     enabled,
@@ -23,6 +23,9 @@ const useGenerateWalletURL = (enabled = true) => {
     challenge,
     isLoading,
     error,
+    isError,
+    refetch,
+    isFetching,
   };
 };
 

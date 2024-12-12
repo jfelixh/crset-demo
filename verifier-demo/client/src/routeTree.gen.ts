@@ -8,55 +8,43 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { createFileRoute } from "@tanstack/react-router";
-
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as UserHomepageImport } from './routes/user-homepage'
 import { Route as LoginImport } from './routes/login'
+import { Route as DashboardImport } from './routes/dashboard'
 import { Route as ApplyForLoanImport } from './routes/apply-for-loan'
 import { Route as IndexImport } from './routes/index'
 
-// Create Virtual Routes
-
-const AboutLazyImport = createFileRoute("/about")();
-
 // Create/Update Routes
 
-const AboutLazyRoute = AboutLazyImport.update({
-  id: "/about",
-  path: "/about",
-  getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/about.lazy').then((d) => d.Route))
-
-const UserHomepageRoute = UserHomepageImport.update({
-  id: '/user-homepage',
-  path: '/user-homepage',
+const LoginRoute = LoginImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRoute,
 } as any)
 
-const LoginRoute = LoginImport.update({
-  id: "/login",
-  path: "/login",
+const DashboardRoute = DashboardImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => rootRoute,
-} as any);
+} as any)
 
 const ApplyForLoanRoute = ApplyForLoanImport.update({
-  id: "/apply-for-loan",
-  path: "/apply-for-loan",
+  id: '/apply-for-loan',
+  path: '/apply-for-loan',
   getParentRoute: () => rootRoute,
-} as any);
+} as any)
 
 const IndexRoute = IndexImport.update({
-  id: "/",
-  path: "/",
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRoute,
-} as any);
+} as any)
 
 // Populate the FileRoutesByPath interface
 
-declare module "@tanstack/react-router" {
+declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
     '/': {
       id: '/'
@@ -72,25 +60,18 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof ApplyForLoanImport
       parentRoute: typeof rootRoute
     }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardImport
+      parentRoute: typeof rootRoute
+    }
     '/login': {
       id: '/login'
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginImport
-      parentRoute: typeof rootRoute
-    }
-    '/user-homepage': {
-      id: '/user-homepage'
-      path: '/user-homepage'
-      fullPath: '/user-homepage'
-      preLoaderRoute: typeof UserHomepageImport
-      parentRoute: typeof rootRoute
-    }
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutLazyImport
       parentRoute: typeof rootRoute
     }
   }
@@ -101,62 +82,51 @@ declare module "@tanstack/react-router" {
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/apply-for-loan': typeof ApplyForLoanRoute
+  '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
-  '/user-homepage': typeof UserHomepageRoute
-  '/about': typeof AboutLazyRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/apply-for-loan': typeof ApplyForLoanRoute
+  '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
-  '/user-homepage': typeof UserHomepageRoute
-  '/about': typeof AboutLazyRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/apply-for-loan': typeof ApplyForLoanRoute
+  '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
-  '/user-homepage': typeof UserHomepageRoute
-  '/about': typeof AboutLazyRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/apply-for-loan' | '/login' | '/user-homepage' | '/about'
+  fullPaths: '/' | '/apply-for-loan' | '/dashboard' | '/login'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/apply-for-loan' | '/login' | '/user-homepage' | '/about'
-  id:
-    | '__root__'
-    | '/'
-    | '/apply-for-loan'
-    | '/login'
-    | '/user-homepage'
-    | '/about'
+  to: '/' | '/apply-for-loan' | '/dashboard' | '/login'
+  id: '__root__' | '/' | '/apply-for-loan' | '/dashboard' | '/login'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ApplyForLoanRoute: typeof ApplyForLoanRoute
+  DashboardRoute: typeof DashboardRoute
   LoginRoute: typeof LoginRoute
-  UserHomepageRoute: typeof UserHomepageRoute
-  AboutLazyRoute: typeof AboutLazyRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ApplyForLoanRoute: ApplyForLoanRoute,
+  DashboardRoute: DashboardRoute,
   LoginRoute: LoginRoute,
-  UserHomepageRoute: UserHomepageRoute,
-  AboutLazyRoute: AboutLazyRoute,
-};
+}
 
 export const routeTree = rootRoute
   ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>();
+  ._addFileTypes<FileRouteTypes>()
 
 /* ROUTE_MANIFEST_START
 {
@@ -166,9 +136,8 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/apply-for-loan",
-        "/login",
-        "/user-homepage",
-        "/about"
+        "/dashboard",
+        "/login"
       ]
     },
     "/": {
@@ -177,14 +146,11 @@ export const routeTree = rootRoute
     "/apply-for-loan": {
       "filePath": "apply-for-loan.tsx"
     },
+    "/dashboard": {
+      "filePath": "dashboard.tsx"
+    },
     "/login": {
       "filePath": "login.tsx"
-    },
-    "/user-homepage": {
-      "filePath": "user-homepage.tsx"
-    },
-    "/about": {
-      "filePath": "about.lazy.tsx"
     }
   }
 }
