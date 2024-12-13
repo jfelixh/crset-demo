@@ -17,12 +17,14 @@ const Header = ({
       <header className="bg-black text-white py-2 px-16">
         <nav className="flex justify-between items-center">
           <div className="flex gap-4 items-center">
-            <Image
-              src="/images/logoVC.png"
-              alt="Company Logo"
-              width={55}
-              height={22}
-            />
+            <Link href="/">
+              <Image
+                src="/images/logoVC.png"
+                alt="Company Logo"
+                width={55}
+                height={22}
+              />
+            </Link>
 
             {showLinks && (
               <Link

@@ -42,6 +42,10 @@ var sqlite = require("sqlite3");
 var fs = require("node:fs");
 var csv = require("csv-parser");
 var path = require("path");
+var unique_names_generator_1 = require("unique-names-generator");
+var config = {
+    dictionaries: [unique_names_generator_1.names]
+};
 var db;
 function connectToDb(databaseLocation) {
     return new Promise(function (resolve, reject) {
@@ -84,88 +88,56 @@ function createTableCompany(db) {
         console.log("companyDataBase table is ready.");
     });
 }
+function clearTableCompany(db) {
+    console.log("Clearing content of companyDataBase table...");
+    db.run("DELETE FROM companyDataBase", function (err) {
+        if (err) {
+            console.error("Error clearing table content:", err.message);
+            return;
+        }
+        console.log("companyDataBase table is now empty.");
+    });
+}
+function clearCredentialStatusTable(db) {
+    console.log("Clearing content of credentialStatus table...");
+    db.run("DELETE FROM credentialStatus", function (err) {
+        if (err) {
+            console.error("Error clearing table content:", err.message);
+            return;
+        }
+        console.log("credentialStatus table is now empty.");
+    });
+}
 function populateDbCompany(db, filePath) {
+    var _this = this;
     var insertStmt = db.prepare('INSERT INTO companyDataBase (name,email,jobTitle,VC) VALUES ( ?,?,?,?)');
     fs.createReadStream(filePath)
         .pipe(csv({
     // separator: ";"
     }))
-        .on("data", function (row) {
-        var characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-        var name = "";
-        for (var i = 0; i < 10; i++) {
-            name += characters.charAt(Math.floor(Math.random() * characters.length));
-        }
-        var email_address = "";
-        for (var i = 0; i < 10; i++) {
-            email_address += characters.charAt(Math.floor(Math.random() * characters.length));
-        }
-        email_address += "@bmw.de";
-        var jobTitle = ["Software Engineer", "Accountant", "HR", "Manager", "Director", "Intern"];
-        var vc = JSON.stringify({
-            "@context": [
-                "https://www.w3.org/2018/credentials/v1",
-                {
-                    "EmailPass": {
-                        "@context": {
-                            "@protected": true,
-                            "@version": 1.1,
-                            "email": "schema:email",
-                            "id": "@id",
-                            "issuedBy": {
-                                "@context": {
-                                    "@protected": true,
-                                    "@version": 1.1,
-                                    "logo": {
-                                        "@id": "schema:image",
-                                        "@type": "@id"
-                                    },
-                                    "name": "schema:name"
-                                },
-                                "@id": "schema:issuedBy"
-                            },
-                            "schema": "https://schema.org/",
-                            "type": "@type"
-                        },
-                        "@id": "https://github.com/TalaoDAO/context#emailpass"
-                    }
-                }
-            ],
-            "id": "urn:uuid:c2ceaca0-8e9b-11ee-9aa4-0a5bad1dad00",
-            "type": ["VerifiableCredential", "EmailPass"],
-            "credentialSubject": {
-                "id": "did:key:z6MkkdC46uhBGjMYS2ZDLUwCrTWdaqZdTD3596sN4397oRNd",
-                "email": "felix.hoops@tum.de",
-                "type": "EmailPass",
-                "issuedBy": {
-                    "name": "Altme"
-                }
-            },
-            "issuer": "did:web:app.altme.io:issuer",
-            "issuanceDate": "2023-11-29T09:43:33Z",
-            "proof": {
-                "type": "Ed25519Signature2018",
-                "proofPurpose": "assertionMethod",
-                "verificationMethod": "did:web:app.altme.io:issuer#key-1",
-                "created": "2023-11-29T09:43:33.482Z",
-                "jws": "eyJhbGciOiJFZERTQSIsImNyaXQiOlsiYjY0Il0sImI2NCI6ZmFsc2V9..wl9s4OXCG5vV_sDvxn0E8DmHqQ482e2BlKy-sRsIN9WSwO0ZTU3O75wnEl0PtAcwIFPz_3VIlpz9hjJcRUqABA"
-            },
-            "expirationDate": "2024-11-28T09:43:33.446349Z",
-            "credentialStatus": [
-                {
-                    "id": row.id,
-                    "type": "BFCStatusEntry",
-                    "statusPurpose": "revocation",
-                    "statusPublisher": "<some sort of URL (CAIP-10)>"
-                }
-            ]
-        });
-        insertStmt.run([name, email_address, jobTitle[Math.floor(Math.random() * 6)], vc], function (err) {
-            if (err) {
-                console.error("Error inserting rowsss ".concat(JSON.stringify(row), ":"), err.message);
+        .on("data", function (row) { return __awaiter(_this, void 0, void 0, function () {
+        var firstName, lastName, name, email_address, jobTitle, vc;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, (0, unique_names_generator_1.uniqueNamesGenerator)(config)];
+                case 1:
+                    firstName = _a.sent();
+                    return [4 /*yield*/, (0, unique_names_generator_1.uniqueNamesGenerator)(config)];
+                case 2:
+                    lastName = _a.sent();
+                    name = firstName + " " + lastName;
+                    email_address = firstName.toLowerCase() + "." + lastName.toLowerCase() + "@cmw.de";
+                    jobTitle = ["Software Engineer", "Accountant", "HR", "Manager", "Director", "Intern"];
+                    vc = JSON.stringify({ "@context": ["https://www.w3.org/2018/credentials/v1", { "BFCStatusEntry": { "@context": { "@protected": true, "id": "@id", "type": "@type", "statusPurpose": "schema:Text", "schema": "https://schema.org/" }, "@id": "urn:bfcstatusentry" }, "EmploymentCredential": { "@context": { "@protected": true, "@version": 1.1, "email": "schema:email", "name": "schema:name", "familyName": "schema:givenName", "jobTitle": "schema:jobTitle", "companyName": "schema:legalName", "comment": "schema:Text", "id": "@id", "schema": "https://schema.org/", "type": "@type" }, "@id": "urn:employmentcredential" } }, "https://w3id.org/security/suites/ed25519-2020/v1"], "id": "urn:uuid:0579c3ec-143a-44f8-9d15-b2d396fe4e07", "type": ["VerifiableCredential", "EmploymentCredential"], "issuer": "did:key:z6Mkii9oRJhUyQNBS3LXbCHSCv2vXkzD8NUbmL1KrSQ8t6YM", "credentialSubject": { "id": row.id, "email": "".concat(email_address), "name": "".concat(firstName), "familyName": "".concat(lastName), "jobTitle": "".concat(jobTitle), "companyName": "CMW Group", "comment": "I am just a test employment credential.", "type": "EmploymentCredential" }, "credentialStatus": { "id": "urn:eip155:1:0x32328bfaea51ce120db44f7755a1170e9cc43653:d777baa7585fce9be1dd319c7145c01e57cb6cd505d83ae641e8542454c694e7b4d30cb5d6523aed87a67055fdc42dc8ee2c35f879a1698235312435cd2cee7f", "type": "BFCStatusEntry", "statusPurpose": "revocation" }, "issuanceDate": "2024-12-12T16:27:32Z", "proof": { "type": "Ed25519Signature2020", "created": "2024-12-12T16:27:32Z", "verificationMethod": "did:key:z6Mkii9oRJhUyQNBS3LXbCHSCv2vXkzD8NUbmL1KrSQ8t6YM#z6Mkii9oRJhUyQNBS3LXbCHSCv2vXkzD8NUbmL1KrSQ8t6YM", "proofPurpose": "assertionMethod", "proofValue": "z2U2LHtQYhY7s6T9UHvpQs2aPdQsxk2UcPdWm1AF3pFfEUmhFDEvBkiqBnGcKiiPzBoof2j5acVpqSy3eoy9opSBD" } });
+                    insertStmt.run([name, email_address, jobTitle[Math.floor(Math.random() * 6)], vc], function (err) {
+                        if (err) {
+                            console.error("Error inserting rowsss ".concat(JSON.stringify(row), ":"), err.message);
+                        }
+                    });
+                    return [2 /*return*/];
             }
         });
-    })
+    }); })
         .on("end", function () {
         console.log("CSV file successfully processed.");
         insertStmt.finalize();
@@ -221,6 +193,61 @@ function populateDb(db, filePath) {
         console.error('Error reading CSV file:', err.message);
     });
 }
+//create VC using the /credential Issuance
+// scan the vc and insert it here
+//use the same credential you have in your wallet to login
+// after creating an admin delete the user you created in the companyDatabase when issuing the VC
+function createAdmin(db) {
+    var insertStmt = db.prepare('INSERT INTO companyDataBase (name,email,jobTitle,VC) VALUES ( ?,?,?,?)');
+    var insertStmt2 = db.prepare('INSERT INTO credentialStatus (id,status) VALUES ( ?,?)');
+    var name = "Natalia";
+    var familyName = "Milanova";
+    var email_address = "natalia.m@cmw.de";
+    var jobTitle = "admin";
+    var credentialSubjectId = "did:example:ohjfleskel";
+    var status = "Valid";
+    var vc = JSON.stringify({ "@context": ["https://www.w3.org/2018/credentials/v1", { "BFCStatusEntry": { "@context": { "@protected": true, "id": "@id", "type": "@type", "statusPurpose": "schema:Text", "schema": "https://schema.org/" }, "@id": "urn:bfcstatusentry" }, "EmploymentCredential": { "@context": { "@protected": true, "@version": 1.1, "email": "schema:email", "name": "schema:name", "familyName": "schema:givenName", "jobTitle": "schema:jobTitle", "companyName": "schema:legalName", "comment": "schema:Text", "id": "@id", "schema": "https://schema.org/", "type": "@type" }, "@id": "urn:employmentcredential" } }, "https://w3id.org/security/suites/ed25519-2020/v1"], "id": "urn:uuid:90d5d148-84b0-4edf-815f-efc24cb549da", "type": ["VerifiableCredential", "EmploymentCredential"], "issuer": "did:key:z6MkjtA4jt4wzUnxYw3fbYkY94PxHZBe8CxTpGKWk2VkH81g", "credentialSubject": { "id": "".concat(credentialSubjectId), "email": "".concat(email_address), "name": "".concat(name), "familyName": "".concat(familyName), "jobTitle": "".concat(jobTitle), "companyName": "CMW Group", "comment": "I am just a test employment credential.", "type": "EmploymentCredential" }, "credentialStatus": { "id": "urn:eip155:1:0x32328bfaea51ce120db44f7755a1170e9cc43653:55ce299cfb7348e85d4dca2fd0158520f93c310a1fa6c30eba98095dfcf5e1c55ad059b13718ba5c12fe14668f214101036e99975e24ccc487fc2c7b99eedd34", "type": "BFCStatusEntry", "statusPurpose": "revocation" }, "issuanceDate": "2024-12-13T17:04:27Z", "proof": { "type": "Ed25519Signature2020", "created": "2024-12-13T17:04:27Z", "verificationMethod": "did:key:z6MkjtA4jt4wzUnxYw3fbYkY94PxHZBe8CxTpGKWk2VkH81g#z6MkjtA4jt4wzUnxYw3fbYkY94PxHZBe8CxTpGKWk2VkH81g", "proofPurpose": "assertionMethod", "proofValue": "z3dvtZsdeTZafy7DXB6UwvJm8Z8ypEu7DvGTKf3S8XSnK9Sxi444T2prEU9q3C8GLtpXXU739U9jcjF5CrbVa9ys4" } });
+    insertStmt.run([name, email_address, jobTitle, vc], function (err) {
+        if (err) {
+            console.error("Error inserting admin into companyDataBase: ".concat(err.message));
+        }
+        else {
+            console.log("Admin inserted into companyDataBase successfully.");
+        }
+    });
+    insertStmt2.run([credentialSubjectId, status], function (err) {
+        if (err) {
+            console.error("Error inserting admin into credentialStatus table: ".concat(err.message));
+        }
+        else {
+            console.log("Admin inserted into credentialStatus table successfully.");
+        }
+    });
+}
+function deleteUserByEmail(db, email) {
+    db.get('SELECT email FROM companyDataBase WHERE email = ?', [email], function (err, row) {
+        if (err) {
+            console.error("Error checking email existence:", err.message);
+            return;
+        }
+        if (!row) {
+            console.log("No user found with email: ".concat(email));
+        }
+        else {
+            // Delete the user if the email exists
+            var deleteStmt = db.prepare('DELETE FROM companyDataBase WHERE email = ?');
+            deleteStmt.run([email], function (err) {
+                if (err) {
+                    console.error("Error deleting user: ".concat(err.message));
+                }
+                else {
+                    console.log("User with email ".concat(email, " successfully deleted."));
+                }
+            });
+            deleteStmt.finalize();
+        }
+    });
+}
 function initDB() {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
@@ -228,8 +255,16 @@ function initDB() {
             console.log("creating Table");
             console.log("Initializing database...");
             connectToDb("./bfc.db");
+            // deleteUserByEmail(db, "natalia.m@gmail.com");
+            //createAdmin(db)
+            //  clearTableCompany(db)
+            //createTableCompany(db);
+            // createTable(db)
+            //clearCredentialStatusTable(db)
+            // populateDb(db, "/Users/Natalia M/Desktop/Project/idSet.csv");
+            populateDbCompany(db, "/Users/Natalia M/Desktop/Project/idSet.csv");
             return [2 /*return*/];
         });
     });
 }
-//initDB();
+initDB();

@@ -5,6 +5,7 @@ import {
   useEffect,
   useState,
 } from "react";
+import { useRouter } from "next/navigation";
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -16,6 +17,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const router = useRouter();
 
   useEffect(() => {
     const token = localStorage.getItem("authToken");
@@ -27,6 +29,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const login = (token: string) => {
     localStorage.setItem("authToken", token);
     setIsAuthenticated(true);
+    router.push("/credentialIssuance");
   };
 
   const logout = () => {

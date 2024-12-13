@@ -15,6 +15,8 @@ import jwt from "jsonwebtoken";
 import { JWTPayload } from "jose";
 import { useAuth } from "./contexts/AuthContext";
 import { redirect } from "next/dist/server/api-utils";
+import { UsersRound } from "lucide-react";
+import { homePageImage } from "../../public/images/teamwork-vector-illustration-style_717774-90944-removebg-preview.png";
 
 export default function LoginPage() {
   let result;
@@ -31,6 +33,12 @@ export default function LoginPage() {
     return { walletUrl, login_id };
   };
 
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const toggleDialog = () => {
+    setIsDialogOpen(!isDialogOpen);
+  };
+
   const authorizationCheck = async (idToCheck: string) => {
     if (idToCheck) {
       const response = await fetch("/api/authorizationCheck", {
@@ -43,12 +51,15 @@ export default function LoginPage() {
       if (!response.ok) {
         throw new Error(`Response is not ok! status: ${response.status}`);
       }
-      const isAuthorized = await response.json();
-      if (isAuthorized) {
+      console.log("Response from authorizationCheck: ", response);
+      const { success } = await response.json();
+
+      console.log("Is authorized: ", success);
+      if (success) {
         console.log("Set authorization to true and set token");
         login(idToCheck);
       }
-      return isAuthorized;
+      return success;
     }
     return null;
   };
@@ -80,16 +91,18 @@ export default function LoginPage() {
             credentials: "include",
           }
         );
+        console.log("Response from callback: ", response);
 
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
         const result = await response.json();
-        // console.log("Result should be sucessful:", );
+        console.log("Result should be sucessful:");
         if (result.success === true) {
           console.log("Auth successful");
           clearInterval(interval);
 
+          console.log("Verifiable Credential that tries to login:", result);
           const credentialSubjectId = jwt.decode(result["token"])[
             "credentialSubject"
           ]["id"];
@@ -99,9 +112,9 @@ export default function LoginPage() {
           //     title: "Authentication successful",
           //     description: "You are now logged in.",
           //   });
-          if (isAuthenticated) {
-            window.location.href = "/credentialIssuance";
-          }
+          // if (isAuthenticated) {
+          //   window.location.href = "/credentialIssuance";
+          // }
         }
       } catch (err) {
         console.error("Error checking auth status:", err);
@@ -114,38 +127,70 @@ export default function LoginPage() {
     }, 5000);
   });
 
-  useEffect(() => {
-    toast({
-      title: "Test Toast",
-      description: "This is a test toast message.",
-    });
-  }, []);
-
   return (
     <div className="min-h-screen flex">
-      <div className="w-1/2 bg-white-100 flex flex-col justify-center px-36">
-        <div className="container justify-center">
+      <div className="w-1/2 bg-white-100 flex flex-col justify-center items-center px-36">
+        <div className="container flex justify-center ">
           <div>
-            {!isAuthenticated && (
-              <Card>
-                <CardTitle>Login using your wallet</CardTitle>
-                <CardDescription>
-                  Scan the QR code with your wallet to sign in.
-                </CardDescription>
+            {
+              <div className="flex flex-col items-center">
+                <Image
+                  src="/images/teamwork-vector-illustration-style_717774-90944-removebg-preview.png"
+                  alt="Teamwork Vector Illustration Style"
+                  width={500}
+                  height={500}
+                />
+                <Button
+                  className="w-full"
+                  onClick={toggleDialog}
+                  disabled={isAuthenticated}
+                >
+                  Authenticate
+                </Button>
+                <>
+                  {isDialogOpen && (
+                    <div
+                      className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+                      role="dialog"
+                      aria-modal="true"
+                      aria-labelledby="dialog-title"
+                    >
+                      <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+                        <div className="flex justify-between items-center">
+                          <h2
+                            id="dialog-title"
+                            className="text-xl font-semibold"
+                          >
+                            Login using your wallet
+                          </h2>
+                          <button
+                            className="text-gray-500 hover:text-gray-800 text-3xl"
+                            onClick={toggleDialog}
+                          >
+                            &times;
+                          </button>
+                        </div>
+                        <p className="text-gray-700 mt-2">
+                          Scan the QR code with your wallet to sign in.
+                        </p>
 
-                <CardContent className="!max-w-screen-md">
-                  <div className="w-full flex justify-center">
-                    <QRCodeCanvas value={walletUrl} size={400} />
-                  </div>
-                  {/*<Button>
-                                                <a href={walletUrl}>Authenticate</a> //TODO: add this button and mobile
-                                            </Button>*/}
-                  <pre className="w-auto overflow-auto">
-                    {JSON.stringify(walletUrl, null, 2)}
-                  </pre>
-                </CardContent>
-              </Card>
-            )}
+                        <div className="mt-4 flex justify-center">
+                          <QRCodeCanvas value={walletUrl} size={200} />
+                        </div>
+
+                        <pre className="mt-4 bg-gray-100 p-2 rounded text-sm break-words whitespace-pre-wrap">
+                          {JSON.stringify(walletUrl, null, 2)}
+                        </pre>
+
+                        <div className="mt-6 flex justify-end">
+                          <Button onClick={toggleDialog}>Close</Button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </>
+              </div>
+            }
           </div>
         </div>
       </div>

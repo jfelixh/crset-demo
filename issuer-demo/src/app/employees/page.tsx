@@ -19,6 +19,11 @@ const UsersPage = () => {
   const [selectedUser, setSelectedUser] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [statuses, setStatuses] = useState<{ [key: string]: string }>({});
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const toggleDialog = () => {
+    setIsDialogOpen(!isDialogOpen);
+  };
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -84,6 +89,23 @@ const UsersPage = () => {
     }
   };
 
+  const publishtoBFC = async () => {
+    try {
+      const response = await fetch("/api/publishBFC", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Response is not ok! status: ${response.status}`);
+      }
+    } catch (error) {
+      console.error("Error publishing to BFC:", error);
+    }
+  };
+
   const getCredentialStatus = async (user) => {
     const response = await fetch("/api/get_status", {
       method: "POST",
@@ -122,35 +144,89 @@ const UsersPage = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {topUsers.map((user) => (
-                <TableRow key={user.email_address}>
-                  <TableCell>
-                    <Checkbox
-                      checked={selectedUser === user}
-                      onCheckedChange={() => handleCheckboxChange(user)}
-                    />
-                  </TableCell>
-                  <TableCell>{user.name}</TableCell>
-                  <TableCell>{user.email_address}</TableCell>
-                  <TableCell>{user.jobTitle}</TableCell>
-                  <TableCell>{statuses[user.email_address]}</TableCell>
-                  <TableCell>
-                    <Card>
-                      <CardContent className="!max-w-screen-md">
-                        {user.VC}
-                      </CardContent>
-                    </Card>
-                  </TableCell>
-                </TableRow>
-              ))}
+              {topUsers.map((user) => {
+                const vcData = JSON.parse(user.VC);
+                return (
+                  <TableRow key={user.email_address}>
+                    <TableCell>
+                      <Checkbox
+                        checked={selectedUser === user}
+                        onCheckedChange={() => handleCheckboxChange(user)}
+                      />
+                    </TableCell>
+                    <TableCell>{user.name}</TableCell>
+                    <TableCell>{user.email_address}</TableCell>
+                    <TableCell>{user.jobTitle}</TableCell>
+                    <TableCell>{statuses[user.email_address]}</TableCell>
+                    <TableCell>
+                      {/* <Card>
+                        <CardContent className="!max-w-screen-md">
+                          {JSON.stringify(vcData.credentialSubject)}
+                        </CardContent>
+                      </Card> */}
+                      <span
+                        className="text-sm text-gray-600 cursor-pointer hover:text-gray-800 underline"
+                        onClick={toggleDialog}
+                      >
+                        View
+                      </span>
+                      <>
+                        {isDialogOpen && (
+                          <div
+                            className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+                            role="dialog"
+                            aria-modal="true"
+                            aria-labelledby="dialog-title"
+                          >
+                            <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+                              <div className="flex justify-between items-center">
+                                <h2
+                                  id="dialog-title"
+                                  className="text-xl font-semibold"
+                                >
+                                  Verifiable Credential
+                                </h2>
+                                <button
+                                  className="text-gray-500 hover:text-gray-800"
+                                  onClick={toggleDialog}
+                                >
+                                  &times;
+                                </button>
+                              </div>
+
+                              {/* <div className="mt-4 flex justify-center whitespace-pre-wrap break-words">
+                                {JSON.stringify(user.VC, null, 2)}
+                              </div> */}
+                              <div className="mt-4 bg-gray-100 p-4 rounded-md font-mono text-sm overflow-y-auto h-[60vh]">
+                                <pre className="whitespace-pre-wrap break-words">
+                                  {JSON.stringify(user.VC, null, 2).replace(
+                                    /\\"/g,
+                                    '"'
+                                  )}
+                                </pre>
+                              </div>
+
+                              <div className="mt-6 flex justify-end">
+                                <Button onClick={toggleDialog}>Close</Button>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         </div>
       </div>
-      <div className="sticky bottom-0 bg-white border-t border-gray-200 pt-4">
+
+      <div className="sticky bottom-0 bg-white border-t border-gray-200 pt-4 flex justify-start gap-2">
         <Button onClick={revokeSelectedUser} disabled={selectedUser === null}>
           Revoke
         </Button>
+        <Button onClick={publishtoBFC}>Publish to BFC</Button>
       </div>
     </div>
   );

@@ -124,7 +124,10 @@ export async function POST(req: Request) {
       documentLoader,
     });
 
+    console.log("Start inserting into database")
+  //  db = await database.connectToDb("database/bfc.db");
     await insertEmployee(db, name, rawPayload.email, rawPayload.jobTitle, JSON.stringify(signedCredential));
+    console.log("Finished inserting into database")
 
     const uuid = crypto.randomUUID();
     const MAX_AGE = 300; // 300 seconds = 5min
@@ -155,8 +158,8 @@ export async function insertEmployee(
   VC: string,
 ): Promise<string> {
   console.log("Start inserting employee into companyDataBase");
-  db = await database.connectToDb("./database/bfc.db");
-  // await logDatabaseTables(db); Log database tables if needed
+  db = await database.connectToDb("database/bfc.db");
+  await logDatabaseTables(db); 
   console.log("Connected to SQLite database in companyDataBase", { db });
   return new Promise((resolve, reject) => {
     db.run(
@@ -169,6 +172,13 @@ export async function insertEmployee(
           return "";
         }
         console.log("Employee inserted successfully with email_address:", email);
+        db.all("SELECT * FROM companyDataBase", [], (err, rows) => {
+          if (err) {
+            console.error("Error fetching data:", err.message);
+          } else {
+            console.log("Current table content:", rows);
+          }
+        });
         resolve(email);
       }
     );
