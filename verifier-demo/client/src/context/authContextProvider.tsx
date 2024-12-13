@@ -14,6 +14,7 @@ export type CredentialSubject = PassportCredential & { email: string };
 export interface AuthContextType {
   token: CustomJwtPayload | null;
   isAuthenticated: boolean;
+  isLoading: boolean;
   onLogout: () => void;
 }
 
@@ -26,6 +27,7 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   const [appState, setAppState] = useState({
     token: null as CustomJwtPayload | null,
     isAuthenticated: false,
+    isLoading: true,
   });
 
   useEffect(() => {
@@ -36,18 +38,22 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
         const newState = {
           token: decodedToken,
           isAuthenticated: true,
+          isLoading: false,
         };
         setAppState(newState);
         sessionStorage.setItem("appState", JSON.stringify(newState));
       } catch (error) {
         console.error("Invalid token:", error);
         removeToken("token", "");
+        setAppState((prevState) => ({ ...prevState, isLoading: false }));
       }
+    } else {
+      setAppState((prevState) => ({ ...prevState, isLoading: false }));
     }
   }, [cookies.token]);
 
   const onLogout = () => {
-    setAppState({ token: null, isAuthenticated: false });
+    setAppState({ token: null, isAuthenticated: false, isLoading: false });
     removeToken("token", "");
     sessionStorage.removeItem("appState");
   };
@@ -57,6 +63,7 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
       value={{
         token: appState.token,
         isAuthenticated: appState.isAuthenticated,
+        isLoading: appState.isLoading,
         onLogout,
       }}
     >

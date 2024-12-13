@@ -8,7 +8,7 @@ export const useAuth = () => {
     throw new Error("useAuth must be used within an AuthProvider");
   }
   // TODO: fix unnecessary rerenders
-  const { token, isAuthenticated, onLogout } = context;
+  const { token, isAuthenticated, onLogout, isLoading } = context;
   const credentialSubject = token
     ? (token as CustomJwtPayload).credentialSubject
     : null;
@@ -17,6 +17,7 @@ export const useAuth = () => {
     isAuthenticated,
     onLogout,
     token,
+    isLoading,
     ...credentialSubject,
   };
 };

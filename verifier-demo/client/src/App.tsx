@@ -5,6 +5,9 @@ import { router } from "./router";
 export const App = () => {
   const auth = useAuth();
 
-  console.log("fock off", auth);
+  if (auth.isLoading) {
+    return;
+  }
+
   return <RouterProvider router={router} context={{ auth }} />;
 };
