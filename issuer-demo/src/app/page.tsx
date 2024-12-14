@@ -28,7 +28,7 @@ export default function LoginPage() {
 
     // console.log("walletUrl", walletUrl);
     // console.log("login_id", login_id);
-    console.log("Result is ", result);
+    console.log("Result from api/generateWalletUrl", result);
     const { walletUrl, login_id } = await result.json();
     return { walletUrl, login_id };
   };
@@ -51,12 +51,10 @@ export default function LoginPage() {
       if (!response.ok) {
         throw new Error(`Response is not ok! status: ${response.status}`);
       }
-      console.log("Response from authorizationCheck: ", response);
+      console.log("Response from api/authorizationCheck: ", response);
       const { success } = await response.json();
-
-      console.log("Is authorized: ", success);
       if (success) {
-        console.log("Set authorization to true and set token");
+        //console.log("Set authorization to true and set token");
         login(idToCheck);
       }
       return success;
@@ -67,12 +65,12 @@ export default function LoginPage() {
   useEffect(() => {
     const getWalletUrl = async () => {
       try {
-        console.log("getWalletUrl");
+        // console.log("getWalletUrl");
         const { walletUrl, login_id } = await generateWalletURL();
         setWalletUrl(walletUrl);
-        console.log("Wallet URL:", walletUrl);
+        // console.log("Wallet URL:", walletUrl);
         setLogInID(login_id);
-        console.log("Login ID:", login_id);
+        //  console.log("Login ID:", login_id);
       } catch (error) {
         console.error("Error generating wallet URL:", error);
       }
@@ -91,18 +89,16 @@ export default function LoginPage() {
             credentials: "include",
           }
         );
-        console.log("Response from callback: ", response);
+        console.log("Response from api/callback: ", response);
 
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
         const result = await response.json();
-        console.log("Result should be sucessful:");
         if (result.success === true) {
-          console.log("Auth successful");
           clearInterval(interval);
 
-          console.log("Verifiable Credential that tries to login:", result);
+          //console.log("Verifiable Credential that tries to login:", result);
           const credentialSubjectId = jwt.decode(result["token"])[
             "credentialSubject"
           ]["id"];

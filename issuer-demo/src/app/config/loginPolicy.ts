@@ -20,7 +20,7 @@ export const reloadConfiguredLoginPolicy = async () => {
     try {
       const file = await fs.readFile(process.env.LOGIN_POLICY as string, "utf8");
       configuredPolicy = JSON.parse(file);
-      console.log("logging the policy", configuredPolicy);
+     // console.log("logging the policy", configuredPolicy);
 
       /*  if (!isLoginPolicy(configuredPolicy)) {
         throw Error(

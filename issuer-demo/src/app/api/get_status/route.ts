@@ -8,17 +8,18 @@ export async function POST(req: Request) {
     function getStatusUser(user) {
         const vc = JSON.parse(user.VC);
         // TODO: remove array check after reinitializing database with vcs that have single credentialStatus
+        // It is not needed to remove the array check
         if (Array.isArray(vc.credentialStatus)) {
             return vc.credentialStatus[0].id;
         }else {
             return vc.credentialStatus.id;
-        }
+       // }
     }
     try{
         const user = await req.json()
-        console.log("user", user)
+       // console.log("user", user)
         const credentialStatusID=getStatusUser(user.user);
-        console.log("credentialStatusID:",credentialStatusID)
+       // console.log("credentialStatusID:",credentialStatusID)
         const response = await fetch(`http://localhost:5050/api/status/getStatus?id=${credentialStatusID}`, {
             method: 'POST',
         });

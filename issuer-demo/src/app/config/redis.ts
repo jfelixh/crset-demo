@@ -25,7 +25,7 @@ try {
 }
 
 export const redisGet = async (key: RedisKey): Promise<string | null> => {
-    console.debug("redisGet");
+   // console.debug("redisGet");
     let res = null;
     res = await redis.get(key, (error) => {
         if (error) {
@@ -43,7 +43,7 @@ export const redisSet = (
     value: RedisValue,
     seconds: string | number
 ) => {
-    console.debug("redisSet");
+   // console.debug("redisSet");
     redis.set(key, value, "EX", seconds, (error) => {
         if (error) {
             console.error(

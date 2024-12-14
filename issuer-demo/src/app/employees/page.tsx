@@ -12,7 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
-import {useRouter} from "next/navigation";
+import { useRouter } from "next/navigation";
 
 const UsersPage = () => {
   const router = useRouter();
@@ -50,14 +50,14 @@ const UsersPage = () => {
   const fetchStatusForTopUsers = async (topUsers) => {
     const userStatuses: { [key: string]: string } = {};
     for (const user of topUsers) {
-      console.log("user:", user);
+      // console.log("user:", user);
       const validity = await getCredentialStatus(user);
       if (validity) {
         userStatuses[user.email_address] = "Valid";
       } else {
         userStatuses[user.email_address] = "Invalid";
       }
-      console.log("userStatuses:", userStatuses[user.email_address]);
+      //  console.log("userStatuses:", userStatuses[user.email_address]);
     }
     setStatuses(userStatuses);
   };
@@ -118,7 +118,7 @@ const UsersPage = () => {
       body: JSON.stringify({ user: user }),
     });
     const result = await response.json(); // Wait for the Promise to resolve
-    console.log("getCredentialStatus result:", result); // Ensure result is what you expect
+    //  console.log("getCredentialStatus result:", result); // Ensure result is what you expect
     return result.data.status;
   };
 

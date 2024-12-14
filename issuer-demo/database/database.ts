@@ -13,11 +13,9 @@ let db: sqlite.Database;
 
 export function connectToDb(databaseLocation: string): Promise<sqlite.Database> {
     return new Promise((resolve, reject) => {
-        console.log("Test connection to db")
-        console.log(process.cwd())
         if (!db) {
             const dbPath = path.resolve(process.cwd(), databaseLocation);
-            console.log('Connecting to SQLite database:', dbPath);
+            console.log('Connecting to SQLite database with path:', dbPath);
             db = new sqlite.Database(dbPath, (err) => {
                 if (err) {
                     console.error('Error connecting to SQLite:', err.message);
@@ -94,7 +92,6 @@ function clearCredentialStatusTable(db: sqlite.Database) {
 
 function populateDbCompany(db: sqlite.Database, filePath: string) {
     const insertStmt = db.prepare('INSERT INTO companyDataBase (name,email,jobTitle,VC) VALUES ( ?,?,?,?)');
-    console.log("making cmw group")
     fs.createReadStream(filePath)
         .pipe(
             csv({
@@ -135,7 +132,8 @@ function populateDb(db: sqlite.Database, filePath: string) {
             })
         )
         .on("data", (row) => {
-            insertStmt.run([row.id, row.status], (err) => {
+            const credentialStatusId = "urn:eip155:1:0x32328bfaea51ce120db44f7755a1170e9cc43653:"+row.id;	
+            insertStmt.run([credentialStatusId, row.status], (err) => {
                 if (err) {
                     console.error(
                         `Error inserting row ${JSON.stringify(row)}:`,
@@ -243,14 +241,15 @@ export async function initDB() {
     console.log("creating Table")
     console.log("Initializing database...");
     connectToDb("./bfc.db");
+    //clearCredentialStatusTable(db)
    // deleteUserByEmail(db, "natalia.m@gmail.com");
     //createAdmin(db)
-  clearTableCompany(db)
-    //createTableCompany(db);
-    //createTable(db)
+ // clearTableCompany(db)
+   // createTableCompany(db);
+  // createTable(db)
    //clearCredentialStatusTable(db)
-  //populateDb(db, "/Users/ichan-yeong/Downloads/idSet.csv");
-   //populateDbCompany(db, "/Users/ichan-yeong/Downloads/idSet.csv");
+ // populateDb(db, "/Users/Natalia M/Desktop/Project/idSet.csv");
+ // populateDbCompany(db, "/Users/Natalia M/Desktop/Project/idSet.csv");
 // }
 }
 

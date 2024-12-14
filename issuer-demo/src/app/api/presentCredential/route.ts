@@ -8,17 +8,18 @@ import { redisGet, redisSet } from "../../config/redis";
 
 export const GET = async (req: Request) => {
   try {
-    console.log("presentCredentialGet");
+  //  console.log("presentCredentialGet");
+  console.log("Get the presentation definition to know the format of the VC that the wallet can present and the endpoint where the VP can be submitted")
     const url = new URL(req.url);
     const login_id = url.searchParams.get("login_id");
-    console.log("login_id", login_id);
-    console.log("Policy: " + JSON.stringify(configuredPolicy, null, 2));
+ //   console.log("login_id", login_id);
+  //  console.log("Policy: " + JSON.stringify(configuredPolicy, null, 2));
 
     const presentation_definition = generatePresentationDefinition(
       /* getConfiguredLoginPolicy()!, */
       configuredPolicy!
     );
-   console.log("Presentation Definition: " + JSON.stringify(presentation_definition, null, 2));
+  // console.log("Presentation Definition: " + JSON.stringify(presentation_definition, null, 2));
     const did = keyToDID("key", process.env.DID_KEY_JWK!);
     const verificationMethod = await keyToVerificationMethod(
       "key",
@@ -43,7 +44,7 @@ export const GET = async (req: Request) => {
       JSON.parse(process.env.DID_KEY_JWK!),
       "EdDSA"
     );
-    console.log("Payload: " + JSON.stringify(payload, null, 2));
+   // console.log("Payload: " + JSON.stringify(payload, null, 2));
     const token = await new jose.SignJWT(payload)
       .setProtectedHeader({
         alg: "EdDSA",
@@ -76,11 +77,12 @@ export const GET = async (req: Request) => {
 
 
 export const POST = async (req: Request, res: Response) => {
-    console.log("presentCredentialPost");
-    console.log(req.body);
+  console.log("Post the VP with a corresponding proof and let the verifier do the actual verification")
+  //  console.log("presentCredentialPost");
+  //  console.log(req.body);
     try {
         const bodyText = await req.text();
-        console.log("Raw Body Text:", bodyText);
+  //      console.log("Raw Body Text:", bodyText);
 
         // Parse the URL-encoded form data
         const params = new URLSearchParams(bodyText);
@@ -118,7 +120,7 @@ export const POST = async (req: Request, res: Response) => {
             const vc = Array.isArray(presentation.verifiableCredential)
                 ? presentation.verifiableCredential
                 : [presentation.verifiableCredential];
-            console.log("VC: ", vc);
+           // console.log("VC: ", vc);
 
             const credSubject = vc[0]["credentialSubject"];
 
@@ -152,13 +154,13 @@ export const POST = async (req: Request, res: Response) => {
                     }
                 );
             }
-            console.log("ID token: ", idToken);
+          //  console.log("ID token: ", idToken);
 
             // Store the session token in Redis
 
             redisSet(`login_id:${login_id}`, idToken, 3600); // Session (and JWT) last for 1 hour
 
-            console.log("User claims: ", credSubject);
+          //  console.log("User claims: ", credSubject);
             return new Response(null, {status: 200});
         }
     } catch (error: any) {

@@ -18,8 +18,9 @@ export async function GET(req: Request) {
 
   try {
 
-    console.log("generateWalletURL in backend");
-    console.log("DID Key JWK: " + process.env.PORT);
+   // console.log("generateWalletURL in backend");
+  //  console.log("DID Key JWK: " + process.env.PORT);
+  console.log("Generate a challenge and send it together with URL that the wallet can use to receive metadata")
     let loginChallenge;
     try {
       loginChallenge = crypto.randomUUID();
@@ -28,8 +29,7 @@ export async function GET(req: Request) {
       console.error("Error generating login challenge: ", error);
       return new Response(JSON.stringify({ error: "Error generating login challenge" }), { status: 500 });
     }
-    console.log("testing")
-    console.log("externalUrl: " + DIDKit.keyToDID("key", process.env.DID_KEY_JWK!));
+    //console.log("externalUrl: " + DIDKit.keyToDID("key", process.env.DID_KEY_JWK!));
     const externalUrl = process.env.NEXT_PUBLIC_URL!;
     const walletUrl =
       "openid-vc://?client_id=" +
