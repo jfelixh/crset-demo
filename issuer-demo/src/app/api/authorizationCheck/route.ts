@@ -81,12 +81,10 @@ async function getCredentialSubjectInfo(db: sqlite.Database, credentialSubjectId
                         try {
                             // Parse the VC JSON
                             const vc = JSON.parse(row.VC);
-                            console.log("VC from my function: ", vc);
                             
                             // Check if the credentialSubject id matches the provided id
                             if (vc.credentialSubject?.id === credentialSubjectId) {
                                 const credentialSubject = vc.credentialSubject;
-                                console.log("Credential Subject: FROM MY FUNCTION: ", credentialSubject);
                                 
                                 // Push relevant information to the results array
                                 results.push({

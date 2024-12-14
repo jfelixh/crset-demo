@@ -12,8 +12,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
+import {useRouter} from "next/navigation";
 
 const UsersPage = () => {
+  const router = useRouter();
   const [users, setUsers] = useState([]);
   const [topUsers, setTopUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState<number | null>(null);
@@ -104,6 +106,7 @@ const UsersPage = () => {
     } catch (error) {
       console.error("Error publishing to BFC:", error);
     }
+    router.push("/bfc");
   };
 
   const getCredentialStatus = async (user) => {

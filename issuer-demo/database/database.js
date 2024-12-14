@@ -50,6 +50,7 @@ var db;
 function connectToDb(databaseLocation) {
     return new Promise(function (resolve, reject) {
         console.log("Test connection to db");
+        console.log(process.cwd());
         if (!db) {
             var dbPath = path.resolve(process.cwd(), databaseLocation);
             console.log('Connecting to SQLite database:', dbPath);
@@ -111,6 +112,7 @@ function clearCredentialStatusTable(db) {
 function populateDbCompany(db, filePath) {
     var _this = this;
     var insertStmt = db.prepare('INSERT INTO companyDataBase (name,email,jobTitle,VC) VALUES ( ?,?,?,?)');
+    console.log("making cmw group");
     fs.createReadStream(filePath)
         .pipe(csv({
     // separator: ";"
@@ -255,6 +257,9 @@ function initDB() {
             console.log("creating Table");
             console.log("Initializing database...");
             connectToDb("./bfc.db");
+            // deleteUserByEmail(db, "natalia.m@gmail.com");
+            //createAdmin(db)
+            clearTableCompany(db);
             return [2 /*return*/];
         });
     });
