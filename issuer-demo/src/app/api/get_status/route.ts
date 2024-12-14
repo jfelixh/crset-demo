@@ -13,7 +13,7 @@ export async function POST(req: Request) {
             return vc.credentialStatus[0].id;
         }else {
             return vc.credentialStatus.id;
-       // }
+        }
     }
     try{
         const user = await req.json()
