@@ -4,8 +4,8 @@ import { Logo } from "./navbar";
 
 export function Footer() {
   return (
-    <footer className="bg-primary text-primary-foreground">
-      <div className="container mx-auto py-8 px-4">
+    <footer className="bg-primary text-primary-foreground grid grid-cols-[1fr_10fr_1fr] w-full">
+      <div className="col-start-2 py-8">
         <div className="flex flex-col md:flex-row justify-between items-center">
           <div className="mb-6 md:mb-0">
             <Logo />
