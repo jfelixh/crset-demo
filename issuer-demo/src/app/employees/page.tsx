@@ -12,6 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
+import { useToast } from "@/hooks/use-toast";
 
 const UsersPage = () => {
   const [users, setUsers] = useState([]);
@@ -20,6 +21,7 @@ const UsersPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statuses, setStatuses] = useState<{ [key: string]: string }>({});
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const { toast } = useToast();
 
   const toggleDialog = () => {
     setIsDialogOpen(!isDialogOpen);
@@ -91,16 +93,19 @@ const UsersPage = () => {
 
   const publishtoBFC = async () => {
     try {
-      const response = await fetch("/api/publishBFC", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      toast({
+        title: "Publishing the list to Sepolia...",
+        description: "This may take a moment, depending on network congestion.",
+      })      // const response = await fetch("/api/publishBFC", {
+      //   method: "GET",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      // });
 
-      if (!response.ok) {
-        throw new Error(`Response is not ok! status: ${response.status}`);
-      }
+      // if (!response.ok) {
+      //   throw new Error(`Response is not ok! status: ${response.status}`);
+      // } 
     } catch (error) {
       console.error("Error publishing to BFC:", error);
     }

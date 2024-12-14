@@ -5,6 +5,7 @@ import Header from "@/components/Header";
 import { usePathname } from "next/navigation";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { ToastProvider } from "@radix-ui/react-toast";
+import { Toaster } from "@/components/ui/toaster";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -25,6 +26,7 @@ export default function RootLayout({
   return (
     <AuthProvider>
       <html lang="en">
+        <Toaster />
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
