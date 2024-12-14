@@ -128,7 +128,7 @@ function populateDbCompany(db, filePath) {
                     name = firstName + " " + lastName;
                     email_address = firstName.toLowerCase() + "." + lastName.toLowerCase() + "@cmw.de";
                     jobTitle = ["Software Engineer", "Accountant", "HR", "Manager", "Director", "Intern"];
-                    vc = JSON.stringify({ "@context": ["https://www.w3.org/2018/credentials/v1", { "BFCStatusEntry": { "@context": { "@protected": true, "id": "@id", "type": "@type", "statusPurpose": "schema:Text", "schema": "https://schema.org/" }, "@id": "urn:bfcstatusentry" }, "EmploymentCredential": { "@context": { "@protected": true, "@version": 1.1, "email": "schema:email", "name": "schema:name", "familyName": "schema:givenName", "jobTitle": "schema:jobTitle", "companyName": "schema:legalName", "comment": "schema:Text", "id": "@id", "schema": "https://schema.org/", "type": "@type" }, "@id": "urn:employmentcredential" } }, "https://w3id.org/security/suites/ed25519-2020/v1"], "id": "urn:uuid:0579c3ec-143a-44f8-9d15-b2d396fe4e07", "type": ["VerifiableCredential", "EmploymentCredential"], "issuer": "did:key:z6Mkii9oRJhUyQNBS3LXbCHSCv2vXkzD8NUbmL1KrSQ8t6YM", "credentialSubject": { "id": row.id, "email": "".concat(email_address), "name": "".concat(firstName), "familyName": "".concat(lastName), "jobTitle": "".concat(jobTitle), "companyName": "CMW Group", "comment": "I am just a test employment credential.", "type": "EmploymentCredential" }, "credentialStatus": { "id": "urn:eip155:1:0x32328bfaea51ce120db44f7755a1170e9cc43653:d777baa7585fce9be1dd319c7145c01e57cb6cd505d83ae641e8542454c694e7b4d30cb5d6523aed87a67055fdc42dc8ee2c35f879a1698235312435cd2cee7f", "type": "BFCStatusEntry", "statusPurpose": "revocation" }, "issuanceDate": "2024-12-12T16:27:32Z", "proof": { "type": "Ed25519Signature2020", "created": "2024-12-12T16:27:32Z", "verificationMethod": "did:key:z6Mkii9oRJhUyQNBS3LXbCHSCv2vXkzD8NUbmL1KrSQ8t6YM#z6Mkii9oRJhUyQNBS3LXbCHSCv2vXkzD8NUbmL1KrSQ8t6YM", "proofPurpose": "assertionMethod", "proofValue": "z2U2LHtQYhY7s6T9UHvpQs2aPdQsxk2UcPdWm1AF3pFfEUmhFDEvBkiqBnGcKiiPzBoof2j5acVpqSy3eoy9opSBD" } });
+                    vc = JSON.stringify({ "@context": ["https://www.w3.org/2018/credentials/v1", { "BFCStatusEntry": { "@context": { "@protected": true, "id": "@id", "type": "@type", "statusPurpose": "schema:Text", "schema": "https://schema.org/" }, "@id": "urn:bfcstatusentry" }, "EmploymentCredential": { "@context": { "@protected": true, "@version": 1.1, "email": "schema:email", "name": "schema:name", "familyName": "schema:givenName", "jobTitle": "schema:jobTitle", "companyName": "schema:legalName", "comment": "schema:Text", "id": "@id", "schema": "https://schema.org/", "type": "@type" }, "@id": "urn:employmentcredential" } }, "https://w3id.org/security/suites/ed25519-2020/v1"], "id": "urn:uuid:0579c3ec-143a-44f8-9d15-b2d396fe4e07", "type": ["VerifiableCredential", "EmploymentCredential"], "issuer": "did:key:z6Mkii9oRJhUyQNBS3LXbCHSCv2vXkzD8NUbmL1KrSQ8t6YM", "credentialSubject": { "id": row.id, "email": "".concat(email_address), "name": "".concat(firstName), "familyName": "".concat(lastName), "jobTitle": "".concat(jobTitle), "companyName": "CMW Group", "comment": "I am just a test employment credential.", "type": "EmploymentCredential" }, "credentialStatus": { "id": row.id, "type": "BFCStatusEntry", "statusPurpose": "revocation" }, "issuanceDate": "2024-12-12T16:27:32Z", "proof": { "type": "Ed25519Signature2020", "created": "2024-12-12T16:27:32Z", "verificationMethod": "did:key:z6Mkii9oRJhUyQNBS3LXbCHSCv2vXkzD8NUbmL1KrSQ8t6YM#z6Mkii9oRJhUyQNBS3LXbCHSCv2vXkzD8NUbmL1KrSQ8t6YM", "proofPurpose": "assertionMethod", "proofValue": "z2U2LHtQYhY7s6T9UHvpQs2aPdQsxk2UcPdWm1AF3pFfEUmhFDEvBkiqBnGcKiiPzBoof2j5acVpqSy3eoy9opSBD" } });
                     insertStmt.run([name, email_address, jobTitle[Math.floor(Math.random() * 6)], vc], function (err) {
                         if (err) {
                             console.error("Error inserting rowsss ".concat(JSON.stringify(row), ":"), err.message);
@@ -255,16 +255,8 @@ function initDB() {
             console.log("creating Table");
             console.log("Initializing database...");
             connectToDb("./bfc.db");
-            // deleteUserByEmail(db, "natalia.m@gmail.com");
-            //createAdmin(db)
-            //  clearTableCompany(db)
-            //createTableCompany(db);
-            // createTable(db)
-            //clearCredentialStatusTable(db)
-            // populateDb(db, "/Users/Natalia M/Desktop/Project/idSet.csv");
-            populateDbCompany(db, "/Users/Natalia M/Desktop/Project/idSet.csv");
             return [2 /*return*/];
         });
     });
 }
-initDB();
+//initDB();

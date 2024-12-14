@@ -173,12 +173,12 @@ const UsersPage = () => {
                       <>
                         {isDialogOpen && (
                           <div
-                            className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+                            className="fixed inset-0 flex items-center justify-center z-50"
                             role="dialog"
                             aria-modal="true"
                             aria-labelledby="dialog-title"
                           >
-                            <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+                            <div className="bg-white p-6 rounded-lg shadow-sm max-w-md w-full">
                               <div className="flex justify-between items-center">
                                 <h2
                                   id="dialog-title"
@@ -187,7 +187,7 @@ const UsersPage = () => {
                                   Verifiable Credential
                                 </h2>
                                 <button
-                                  className="text-gray-500 hover:text-gray-800"
+                                  className="text-gray-500 hover:text-gray-800 text-3xl"
                                   onClick={toggleDialog}
                                 >
                                   &times;
