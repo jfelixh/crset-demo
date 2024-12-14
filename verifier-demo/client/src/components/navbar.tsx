@@ -59,7 +59,7 @@ export const NavBar = () => {
   );
 };
 
-const Logo = () => (
+export const Logo = () => (
   <h1 className="font-medium text-2xl hover:scale-105 duration-300 transition-all">
     <span className="underline">
       <span className="overline">M</span>

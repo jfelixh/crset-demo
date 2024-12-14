@@ -18,6 +18,7 @@ export const formSchema = personalInfoSchema.merge(loanInfoSchema).merge(
   z.object({
     id: z.string(),
     employeeCredentialConfirmed: z.boolean(),
+    employeeCredentialSubject: z.object({}),
   })
 );
 

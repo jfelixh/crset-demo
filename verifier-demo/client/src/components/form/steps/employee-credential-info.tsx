@@ -11,6 +11,7 @@ import useGenerateWalletURL from "@/hooks/api/useGenerateWalletURL";
 import { useToast } from "@/hooks/use-toast";
 import { useCallbackPolling } from "@/hooks/useCallbackPolling";
 import useIsMobileDevice from "@/hooks/useIsMobileDevice";
+import { EmployeeCredential } from "@/models/employee";
 import { QRCodeCanvas } from "qrcode.react";
 import { RefObject } from "react";
 import { useFormContext } from "react-hook-form";
@@ -36,11 +37,16 @@ const EmployeeCredentialInfoStep = ({
   const { isMobile } = useIsMobileDevice();
   const { toast } = useToast();
 
-  useCallbackPolling({
+  const { isPending } = useCallbackPolling({
     walletUrl,
     challenge,
-    onSuccess: () => {
-      void form.setValue("employeeCredentialConfirmed", true);
+    onSuccess: ({ success, credential }) => {
+      const parsedCredential = JSON.parse(credential.replace(/\\/g, ""));
+      void form.setValue("employeeCredentialSubject", {
+        ...parsedCredential,
+      } as EmployeeCredential);
+      void form.setValue("employeeCredentialConfirmed", success);
+
       toast({
         title: "Confirmed.",
         description:
@@ -94,6 +100,7 @@ const EmployeeCredentialInfoStep = ({
             ) : (
               <></>
             )}
+            {isPending && <p>Waiting for confirmation...</p>}
           </div>
           {isError ||
             (error && (

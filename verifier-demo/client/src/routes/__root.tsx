@@ -24,12 +24,4 @@ export const Route = createRootRouteWithContext<RouterContext>()({
       </div>
     </>
   ),
-  beforeLoad: ({ context }) => {
-    console.log(context);
-    // if (!context.auth.isAuthenticated) {
-    //   throw redirect({
-    //     to: "/login",
-    //   });
-    // }
-  },
 });

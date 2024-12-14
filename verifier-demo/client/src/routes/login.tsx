@@ -1,3 +1,4 @@
+import AuthLoader from "@/components/loading-auth";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -30,7 +31,7 @@ function Index() {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  useCallbackPolling({
+  const { isPending } = useCallbackPolling({
     walletUrl,
     challenge,
     onSuccess: () => {
@@ -48,11 +49,11 @@ function Index() {
       <Card className="w-[60rem]">
         <CardHeader>
           <CardTitle className="text-3xl">Login using your wallet</CardTitle>
-          <CardDescription>
+          <CardDescription className="text-base">
             Scan the QR code with your wallet to log in.
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-6">
           <div className="w-full flex justify-center">
             {!isAuthenticated &&
               !isMobile &&
@@ -69,6 +70,7 @@ function Index() {
               <></>
             )}
           </div>
+          {isPending && <AuthLoader />}
           {isError ||
             (error && (
               <div>

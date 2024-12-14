@@ -9,5 +9,5 @@ export type Loan = {
 
 export type LoanRequest = Pick<
   Loan,
-  "amount" | "applicant" | "application_dump"
+  "amount" | "applicant" | "application_dump" | "employed_by"
 >;

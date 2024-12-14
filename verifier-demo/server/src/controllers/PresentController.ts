@@ -146,7 +146,7 @@ export const presentCredentialPost = async (req: Request, res: Response) => {
     // else cred is used for login so continue with the current flow
     if (vc[0]["type"].includes("EmploymentCredential")) {
       console.log("Checking Employee credential revocation status…");
-      // TODO: Implement revocation check
+
       const isRevoked = await checkRevocationStatus(vc[0]);
       if (isRevoked) {
         console.log("Employee credential is revoked");
@@ -156,7 +156,8 @@ export const presentCredentialPost = async (req: Request, res: Response) => {
       }
 
       console.log("Employee credential is valid");
-      redisSet(`challenge:${challenge}`, "true", 3600);
+      console.log("comeon work", JSON.stringify(credSubject));
+      redisSet(`challenge:${challenge}`, JSON.stringify(credSubject), 3600); // Credential subject stored in Redis
       res.status(200).end();
       return;
     }
@@ -238,17 +239,18 @@ export const loginCallback = async (req: Request, res: Response) => {
         return;
       }
 
-      if (isRevoked !== "true") {
+      if (isRevoked === "false") {
         console.log("Employee credential is revoked");
         res.status(401).end();
         return;
       }
 
       console.log("Employee credential is valid");
-      res.status(200).json({ success: true });
+      res.status(200).json({ success: true, credential: isRevoked }); // Return the presented credential to the client
       return;
     }
 
+    // Alternative login flow
     let idToken;
     try {
       idToken = await redisGet(`challenge:${challenge}`);
@@ -267,6 +269,7 @@ export const loginCallback = async (req: Request, res: Response) => {
       res.status(202).end();
       return;
     }
+
     // if an ID token is found, create a session
     req.session.token = idToken;
     res.cookie("token", idToken, {

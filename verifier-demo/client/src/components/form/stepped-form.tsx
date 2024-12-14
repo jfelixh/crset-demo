@@ -16,6 +16,7 @@ import LoanInfoStep from "./steps/loan-info";
 import PreviewStep from "./steps/overview";
 import PersonalInfoStep from "./steps/personal-info";
 import LoanApplicationConfirmation from "./steps/submit-confirmation";
+import { EmployeeCredential } from "@/models/employee";
 
 type FormData = z.infer<typeof formSchema>;
 
@@ -42,6 +43,7 @@ const SteppedForm = () => {
       annualIncome: undefined,
       purpose: "",
       employeeCredentialConfirmed: false,
+      employeeCredentialSubject: {},
     },
     mode: "onChange",
   });
@@ -61,7 +63,7 @@ const SteppedForm = () => {
       );
       form.setValue("birthDate", new Date(credentialSubject?.birthDate || ""));
       form.setValue("address", credentialSubject?.address || "");
-      // toast to notify user that the form has been pre-filled
+
       toast({
         title: "Form pre-filled",
         description: "Your information has been pre-filled from your ID",
@@ -71,11 +73,13 @@ const SteppedForm = () => {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
-    const { id, loanAmount } = values;
+    const { id, loanAmount, employeeCredentialSubject } = values;
     const payload = {
       amount: loanAmount,
       applicant: id,
       application_dump: JSON.stringify(values),
+      employed_by: (employeeCredentialSubject as EmployeeCredential)
+        .companyName,
     } as LoanRequest;
 
     try {

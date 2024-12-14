@@ -54,9 +54,9 @@ const Dashboard = () => {
 
   return (
     <div className="grid grid-cols-[1fr_10fr_1fr] w-full min-h-[55vh] py-4">
-      <div className="col-start-2 col-span-1 h-full w-full gap-8 flex flex-col">
+      <div className="col-start-2 col-span-1 h-full w-full gap-6 flex flex-col">
         <h1 className="text-3xl font-bold flex justify-start">
-          Welcome back, {givenName}!
+          Welcome back, {givenName}
         </h1>
         <Separator />
         <div className="flex flex-row gap-4">

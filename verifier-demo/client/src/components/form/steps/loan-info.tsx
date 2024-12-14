@@ -22,7 +22,7 @@ const LoanInfoStep = () => {
           name="loanAmount"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Loan Amount</FormLabel>
+              <FormLabel>Loan Amount (€)</FormLabel>
               <FormControl>
                 <Input placeholder="" type="number" {...field} />
               </FormControl>
@@ -38,7 +38,7 @@ const LoanInfoStep = () => {
           name="annualIncome"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Annual Income</FormLabel>
+              <FormLabel>Annual Income (€)</FormLabel>
               <FormControl>
                 <Input placeholder="" type="number" {...field} />
               </FormControl>

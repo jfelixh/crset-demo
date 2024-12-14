@@ -9,8 +9,10 @@ import useGenerateWalletURL from "@/hooks/api/useGenerateWalletURL";
 import { useToast } from "@/hooks/use-toast";
 import { useCallbackPolling } from "@/hooks/useCallbackPolling";
 import useIsMobileDevice from "@/hooks/useIsMobileDevice";
+import { useNavigate } from "@tanstack/react-router";
 import { QRCodeCanvas } from "qrcode.react";
 import { useState } from "react";
+import AuthLoader from "../loading-auth";
 import { Button } from "../ui/button";
 import { DialogHeader } from "../ui/dialog";
 import { Skeleton } from "../ui/skeleton";
@@ -21,12 +23,13 @@ export const LoginModal = () => {
     useGenerateWalletURL(isOpen);
   const { isMobile } = useIsMobileDevice();
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleOpenChange = (open: boolean) => {
     setIsOpen(open);
   };
 
-  useCallbackPolling({
+  const { isPending } = useCallbackPolling({
     walletUrl,
     challenge,
     onSuccess: () => {
@@ -35,6 +38,7 @@ export const LoginModal = () => {
         title: "Authentication successful",
         description: "You are now logged in.",
       });
+      navigate({ to: "/dashboard" });
     },
     enabled: isOpen,
   });
@@ -44,9 +48,11 @@ export const LoginModal = () => {
       <DialogTrigger asChild>
         <Button variant="secondary">Log in</Button>
       </DialogTrigger>
-      <DialogContent className="!max-w-screen-md">
+      <DialogContent className="!max-w-screen-md space-y-4">
         <DialogHeader>
-          <DialogTitle>Login using your wallet</DialogTitle>
+          <DialogTitle className="text-2xl">
+            Login using your wallet
+          </DialogTitle>
           <DialogDescription>
             Scan the QR code with your wallet to sign in.
           </DialogDescription>
@@ -63,10 +69,8 @@ export const LoginModal = () => {
             </Button>
           )}
         </div>
+        {isPending && <AuthLoader />}
         {error && <p>Error: {error.message}</p>}
-        <pre className="max-w-full text-wrap overflow-auto bg-secondary p-2">
-          {JSON.stringify(walletUrl, null, 2)}
-        </pre>
       </DialogContent>
     </Dialog>
   );

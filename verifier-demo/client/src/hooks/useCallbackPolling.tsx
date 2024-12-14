@@ -12,6 +12,8 @@ interface CallbackPollingProps {
   isEmployeeCredential?: boolean;
 }
 
+import { useState } from "react";
+
 export const useCallbackPolling = ({
   walletUrl,
   challenge,
@@ -21,6 +23,8 @@ export const useCallbackPolling = ({
   enabled,
   isEmployeeCredential = false,
 }: CallbackPollingProps) => {
+  const [isPending, setIsPending] = useState(true);
+
   useEffect(() => {
     if (!walletUrl || enabled === false) return;
 
@@ -42,11 +46,13 @@ export const useCallbackPolling = ({
           const result = await response.json();
           if (result.success) {
             onSuccess(result);
+            setIsPending(false);
           }
           return;
         } else if (response.status === 401) {
           onError?.(new Error("Employee credential is revoked or invalid"));
           clearInterval(intervalId);
+          setIsPending(false);
         }
       } catch (err) {
         console.error("Error:", err);
@@ -66,4 +72,6 @@ export const useCallbackPolling = ({
     enabled,
     isEmployeeCredential,
   ]);
+
+  return { isPending };
 };
