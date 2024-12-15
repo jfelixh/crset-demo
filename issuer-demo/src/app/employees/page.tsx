@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const UsersPage = () => {
   const router = useRouter();
@@ -22,6 +23,7 @@ const UsersPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statuses, setStatuses] = useState<{ [key: string]: string }>({});
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const skeletonStyle = "w-[40px] h-[20px] bg-gray-300 rounded-full";
 
   const toggleDialog = () => {
     setIsDialogOpen(!isDialogOpen);
@@ -133,103 +135,106 @@ const UsersPage = () => {
           className="flex-1"
         />
       </div>
-      <div className="overflow-x-auto max-w-full">
-        <div className="overflow-y-auto max-h-screen">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Select</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>Email Address</TableHead>
-                <TableHead>Job Title</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>VC</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {topUsers.map((user) => {
-                const vcData = JSON.parse(user.VC);
-                return (
-                  <TableRow key={user.email_address}>
-                    <TableCell>
-                      <Checkbox
-                        checked={selectedUser === user}
-                        onCheckedChange={() => handleCheckboxChange(user)}
-                      />
-                    </TableCell>
-                    <TableCell>{user.name}</TableCell>
-                    <TableCell>{user.email_address}</TableCell>
-                    <TableCell>{user.jobTitle}</TableCell>
-                    <TableCell>{statuses[user.email_address]}</TableCell>
-                    <TableCell>
-                      {/* <Card>
-                        <CardContent className="!max-w-screen-md">
-                          {JSON.stringify(vcData.credentialSubject)}
-                        </CardContent>
-                      </Card> */}
-                      <span
-                        className="text-sm text-gray-600 cursor-pointer hover:text-gray-800 underline"
-                        onClick={toggleDialog}
-                      >
-                        View
-                      </span>
-                      <>
-                        {isDialogOpen && (
-                          <div
-                            className="fixed inset-0 flex items-center justify-center z-50"
-                            role="dialog"
-                            aria-modal="true"
-                            aria-labelledby="dialog-title"
-                          >
-                            <div className="bg-white p-6 rounded-lg shadow-sm max-w-md w-full">
-                              <div className="flex justify-between items-center">
-                                <h2
-                                  id="dialog-title"
-                                  className="text-xl font-semibold"
-                                >
-                                  Verifiable Credential
-                                </h2>
-                                <button
-                                  className="text-gray-500 hover:text-gray-800 text-3xl"
-                                  onClick={toggleDialog}
-                                >
-                                  &times;
-                                </button>
-                              </div>
 
-                              {/* <div className="mt-4 flex justify-center whitespace-pre-wrap break-words">
-                                {JSON.stringify(user.VC, null, 2)}
-                              </div> */}
-                              <div className="mt-4 bg-gray-100 p-4 rounded-md font-mono text-sm overflow-y-auto h-[60vh]">
-                                <pre className="whitespace-pre-wrap break-words">
-                                  {JSON.stringify(user.VC, null, 2).replace(
-                                    /\\"/g,
-                                    '"'
-                                  )}
-                                </pre>
-                              </div>
-
-                              <div className="mt-6 flex justify-end">
-                                <Button onClick={toggleDialog}>Close</Button>
+      {topUsers && topUsers.length > 0 ? (
+        <div className="overflow-x-auto max-w-full">
+          <div className="overflow-y-auto max-h-screen">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Select</TableHead>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Email Address</TableHead>
+                  <TableHead>Job Title</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>VC</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {topUsers.map((user) => {
+                  const vcData = JSON.parse(user.VC);
+                  return (
+                    <TableRow key={user.email_address}>
+                      <TableCell>
+                        <Checkbox
+                          checked={selectedUser === user}
+                          onCheckedChange={() => handleCheckboxChange(user)}
+                        />
+                      </TableCell>
+                      <TableCell>{user.name}</TableCell>
+                      <TableCell>{user.email_address}</TableCell>
+                      <TableCell>{user.jobTitle}</TableCell>
+                      <TableCell>
+                        {statuses[user.email_address] ? (
+                          statuses[user.email_address]
+                        ) : (
+                          <Skeleton className={skeletonStyle} />
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <span
+                          className="text-sm text-gray-600 cursor-pointer hover:text-gray-800 underline"
+                          onClick={toggleDialog}
+                        >
+                          View
+                        </span>
+                        <>
+                          {isDialogOpen && (
+                            <div
+                              className="fixed inset-0 flex items-center justify-center z-50"
+                              role="dialog"
+                              aria-modal="true"
+                              aria-labelledby="dialog-title"
+                            >
+                              <div className="bg-white p-6 rounded-lg shadow-sm max-w-md w-full">
+                                <div className="flex justify-between items-center">
+                                  <h2
+                                    id="dialog-title"
+                                    className="text-xl font-semibold"
+                                  >
+                                    Verifiable Credential
+                                  </h2>
+                                  <button
+                                    className="text-gray-500 hover:text-gray-800 text-3xl"
+                                    onClick={toggleDialog}
+                                  >
+                                    &times;
+                                  </button>
+                                </div>
+                                <div className="mt-4 bg-gray-100 p-4 rounded-md font-mono text-sm overflow-y-auto h-[60vh]">
+                                  <pre className="whitespace-pre-wrap break-words">
+                                    {JSON.stringify(user.VC, null, 2).replace(
+                                      /\\"/g,
+                                      '"'
+                                    )}
+                                  </pre>
+                                </div>
+                                <div className="mt-6 flex justify-end">
+                                  <Button onClick={toggleDialog}>Close</Button>
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        )}
-                      </>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
+                          )}
+                        </>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="flex justify-center items-center h-96">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-grey-500"></div>
+        </div>
+      )}
 
       <div className="sticky bottom-0 bg-white border-t border-gray-200 pt-4 flex justify-start gap-2">
         <Button onClick={revokeSelectedUser} disabled={selectedUser === null}>
           Revoke
         </Button>
-        <Button onClick={publishtoBFC}>Publish to BFC</Button>
+        <Button onClick={publishtoBFC}>Publish BFC</Button>
       </div>
     </div>
   );

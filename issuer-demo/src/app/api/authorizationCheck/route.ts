@@ -18,10 +18,11 @@ export async function POST(req: Request){
            // const credentialSubjectInfo = await getCredentialSubjectInfo(db, "did:key:z6MkkdC46uhBGjMYS2ZDLUwCrTWdaqZdTD3596sN4397oRNd");
            const credentialSubjectInfo = await getCredentialSubjectInfo(db, idToCheck);
           // console.log("Credential Subject Info: ", credentialSubjectInfo);
-           console.log("Success:",(credentialSubjectInfo[0].jobTitle as string).toLowerCase() === "admin")
+           console.log("Success for admin:",(credentialSubjectInfo[0].jobTitle as string).toLowerCase() === "admin")
           return new Response(JSON.stringify({ success: (credentialSubjectInfo[0].jobTitle as string).toLowerCase() === "admin" }), { status: 200 })
           // return new Response(JSON.stringify({ success: (credentialSubjectInfo.email as string) === 'felix.hoops@tum.de' }))
         }
+        console.log("Success for non-admin:", result)
         return new Response(JSON.stringify({ success: result }), { status: 200 })
 
     }catch(err){
