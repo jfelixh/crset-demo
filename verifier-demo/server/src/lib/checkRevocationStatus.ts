@@ -10,6 +10,6 @@ export const checkRevocationStatus = async (VC: any) => {
     return status;
   } catch (error: any) {
     console.error(error);
-    return false;
+    return true;
   }
 };
