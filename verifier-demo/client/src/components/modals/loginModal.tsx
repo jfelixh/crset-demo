@@ -57,7 +57,7 @@ export const LoginModal = () => {
             Scan the QR code with your wallet to sign in.
           </DialogDescription>
         </DialogHeader>
-        <div className="w-full flex justify-center">
+        <div className="w-full flex flex-col space-y-4 justify-center items-center">
           {!isMobile && isLoading && (
             <Skeleton className="w-[25rem] h-[25rem]" />
           )}
