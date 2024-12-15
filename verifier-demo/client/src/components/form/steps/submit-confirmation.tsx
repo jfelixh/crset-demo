@@ -7,6 +7,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Link } from "@tanstack/react-router";
+import ConfettiExplosion from "react-confetti-explosion";
 
 const LoanApplicationConfirmation = () => {
   return (
@@ -29,6 +30,14 @@ const LoanApplicationConfirmation = () => {
           </Button>
         </CardFooter>
       </Card>
+      <ConfettiExplosion
+        {...{
+          force: 0.8,
+          duration: 3000,
+          particleCount: 250,
+          width: 1600,
+        }}
+      />
     </div>
   );
 };

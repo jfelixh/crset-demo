@@ -1,3 +1,4 @@
+import AuthLoader from "@/components/loading-auth";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -50,14 +51,15 @@ const EmployeeCredentialInfoStep = ({
       toast({
         title: "Confirmed.",
         description:
-          'You have successfully presented your employee credential and confirmed your employment status. Click on the "Next" to proceed.',
+          'You have successfully presented your employee credential and confirmed your employment status. Click on "Next" to proceed.',
       });
       nextButtonRef.current?.click();
     },
     onError: (error) => {
       toast({
         title: "Error",
-        description: "Please provide a valid employee credential.",
+        description:
+          "Please rescan the QR code and provide a valid employee credential.",
         variant: "destructive",
       });
       console.error("Error:", error);
@@ -85,13 +87,18 @@ const EmployeeCredentialInfoStep = ({
               </p>
             </>
           )}
-          <div className="w-full flex justify-center">
+          <div className="w-full flex flex-col justify-center items-center mx-auto space-y-4">
             {!confirmed &&
               !isMobile &&
               (isLoading || isFetching ? (
                 <Skeleton className="w-[25rem] h-[25rem]" />
               ) : (
-                !isError && <QRCodeCanvas value={walletUrl} size={400} />
+                !isError && (
+                  <>
+                    <QRCodeCanvas value={walletUrl} size={400} />
+                    {isPending && <AuthLoader />}
+                  </>
+                )
               ))}
             {!confirmed && isMobile ? (
               <Button>
@@ -100,7 +107,6 @@ const EmployeeCredentialInfoStep = ({
             ) : (
               <></>
             )}
-            {isPending && <p>Waiting for confirmation...</p>}
           </div>
           {isError ||
             (error && (

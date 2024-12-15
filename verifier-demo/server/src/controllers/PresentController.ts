@@ -156,7 +156,6 @@ export const presentCredentialPost = async (req: Request, res: Response) => {
       }
 
       console.log("Employee credential is valid");
-      console.log("comeon work", JSON.stringify(credSubject));
       redisSet(`challenge:${challenge}`, JSON.stringify(credSubject), 3600); // Credential subject stored in Redis
       res.status(200).end();
       return;
@@ -208,8 +207,8 @@ declare module "express-session" {
   }
 }
 
-export const loginCallback = async (req: Request, res: Response) => {
-  console.log("loginCallback");
+export const presentCallback = async (req: Request, res: Response) => {
+  console.log("presentCallback");
   try {
     const { challenge, isEmployeeCredential } = req.query;
 

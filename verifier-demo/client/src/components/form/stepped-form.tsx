@@ -72,7 +72,6 @@ const SteppedForm = () => {
   }, [form, toast, token]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
     const { id, loanAmount, employeeCredentialSubject } = values;
     const payload = {
       amount: loanAmount,
@@ -110,6 +109,11 @@ const SteppedForm = () => {
     const isValid = await trigger(fieldsToValidate);
     if (!isValid) {
       console.log("Validation errors:", form.formState.errors);
+      toast({
+        title: "Form incomplete/incorrect",
+        description: "Please fill in all required fields",
+        variant: "destructive",
+      });
     } else {
       setStep((prev) => prev + 1);
     }
@@ -172,7 +176,15 @@ const SteppedForm = () => {
               ))}
 
             {step < steps.length && step !== steps.length - 1 && (
-              <Button type="button" onClick={handleNext} ref={nextButtonRef}>
+              <Button
+                type="button"
+                onClick={handleNext}
+                ref={nextButtonRef}
+                disabled={
+                  form.getValues("employeeCredentialConfirmed") === false &&
+                  step === 3 // User should not be able to proceed before successfully presenting a valid employee VC
+                }
+              >
                 Next
                 <ArrowBigRightIcon />
               </Button>

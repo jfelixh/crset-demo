@@ -68,8 +68,8 @@ export const LoginModal = () => {
               <a href={walletUrl}>Log in</a>
             </Button>
           )}
+          {isPending && <AuthLoader />}
         </div>
-        {isPending && <AuthLoader />}
         {error && <p>Error: {error.message}</p>}
       </DialogContent>
     </Dialog>

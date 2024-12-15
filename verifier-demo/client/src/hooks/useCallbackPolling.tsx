@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { baseUrl } from "./api/base";
 
 interface CallbackPollingProps {
@@ -11,8 +11,6 @@ interface CallbackPollingProps {
   enabled?: boolean;
   isEmployeeCredential?: boolean;
 }
-
-import { useState } from "react";
 
 export const useCallbackPolling = ({
   walletUrl,
@@ -40,7 +38,7 @@ export const useCallbackPolling = ({
           { credentials: "include" }
         );
 
-        if (response.status === 202) return;
+        if (response.status === 202) return; // Pending
 
         if (response.ok) {
           const result = await response.json();
@@ -50,7 +48,9 @@ export const useCallbackPolling = ({
           }
           return;
         } else if (response.status === 401) {
-          onError?.(new Error("Employee credential is revoked or invalid"));
+          onError?.(
+            new Error("The presented credential is revoked or invalid")
+          );
           clearInterval(intervalId);
           setIsPending(false);
         }
