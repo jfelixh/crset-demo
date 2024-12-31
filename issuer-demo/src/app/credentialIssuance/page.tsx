@@ -6,167 +6,194 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FormEvent, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import QRCode from "qrcode";
-import Image from "next/image";
-import { DialogHeader } from "@/components/ui/dialog";
-import { Dialog, DialogContent, DialogTitle } from "@radix-ui/react-dialog";
-
-type IssuedVC = {
-  id: string;
-  type: string;
-  issuer: {
-    id: string;
-    name: string;
-    url: string;
-  };
-  subject: {
-    id: string;
-    name: string;
-    dateOfBirth: string;
-    credentialType: string;
-  };
-  credentialStatus: {
-    id: string;
-    status: string;
-  };
-  issuedAt: string;
-  expirationDate: string;
-  metadata: {
-    schema: string;
-    signature: string;
-  };
-};
 
 const formSchema = z.object({
-  name: z.string(),
-  lastName: z.string(),
-  email: z.string(),
+  name: z
+    .string()
+    .min(2, { message: "Name must be at least 2 characters long" }) // Custom error message
+    .regex(/^[^\d]*$/, { message: "Name cannot contain numbers" }), // Custom error message for regex
+  lastName: z
+    .string()
+    .min(2, { message: "Last Name must be at least 2 characters long" })
+    .regex(/^[^\d]*$/, { message: "Last Name cannot contain numbers" }), // Custom error message
+  email: z
+    .string()
+    .min(1, { message: "Email is required" })
+    .email({ message: "Invalid email format" }), // Custom error message for email format
+  jobTitle: z
+    .string()
+    .min(2, { message: "Job Title must be at least 2 characters long" })
+    .regex(/^[^\d]*$/, { message: "Job Title cannot contain numbers" }), // Custom error message
+  manager: z
+    .string()
+    .min(2, { message: "Manager name must be at least 2 characters long" })
+    .regex(/^[^\d]*$/, { message: "Manager name cannot contain numbers" }), // Custom error message
+  employmentType: z.string().min(1),
 });
 
 export default function Home() {
-  const [name, setName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [issuedVC, setIssuedVC] = useState<IssuedVC | null>(null);
-  const [qrCode, setQrCode] = useState("");
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: "",
+      lastName: "",
+      email: "",
+      jobTitle: "",
+      manager: "",
+      employmentType: "",
+    },
   });
 
-  useEffect(() => {
-    const generateQrCode = async () => {
-      if (issuedVC) {
-        const qr = await QRCode.toDataURL(JSON.stringify(issuedVC));
-        setQrCode(qr);
-      }
-    };
-
-    generateQrCode();
-  }, [issuedVC]);
-
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const handleSubmit = async (data: z.infer<typeof formSchema>) => {
     try {
       const response = await fetch("/api/generateVC", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: name,
-          lastName: lastName,
-          email: email,
-          status: true,
+          name: data.name,
+          lastName: data.lastName,
+          email: data.email,
+          jobTitle: data.jobTitle,
         }),
       });
-      const data = await response.json();
-      console.log("VC", JSON.stringify(data));
-      setIssuedVC(data);
+      const responseData = await response.json();
+      if (responseData?.uuid) {
+        window.location.href = `/vci/${responseData.uuid}`;
+      } else {
+        console.error("Missing UUID in the response");
+      }
     } catch (error) {
       console.error("Form submission error", error);
     }
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen">
+    <div className="page-container">
       <Form {...form}>
-        <form
-          onSubmit={(e) => handleSubmit(e)}
-          className="space-y-8 max-w-3xl mx-auto py-10"
-        >
-          <FormField
-            name="name"
-            render={() => (
-              <FormItem>
-                <FormLabel>Name</FormLabel>
-                <FormControl>
-                  <Input
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
+          <div className="flex space-x-4">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem className="flex-1">
+                  <FormLabel>Name</FormLabel>
+                  <FormControl>
+                    <Input type="text" {...field} />
+                  </FormControl>
+                  {form.formState.errors.name && (
+                    <FormMessage>
+                      {form.formState.errors.name.message}
+                    </FormMessage>
+                  )}
+                </FormItem>
+              )}
+            />
 
-          <FormField
-            name="lastName"
-            render={() => (
-              <FormItem>
-                <FormLabel>Last Name</FormLabel>
-                <FormControl>
-                  <Input
-                    type="text"
-                    value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-
+            <FormField
+              name="lastName"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem className="flex-1">
+                  <FormLabel>Last Name</FormLabel>
+                  <FormControl>
+                    <Input type="text" {...field} />
+                  </FormControl>
+                  {form.formState.errors.lastName && (
+                    <FormMessage>
+                      {form.formState.errors.lastName.message}
+                    </FormMessage>
+                  )}
+                </FormItem>
+              )}
+            />
+          </div>
           <FormField
             name="email"
-            render={() => (
+            control={form.control}
+            render={({ field }) => (
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input
-                    type="text"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
+                  <Input type="text" {...field} />
                 </FormControl>
+                {form.formState.errors.email && (
+                  <FormMessage>
+                    {form.formState.errors.email.message}
+                  </FormMessage>
+                )}
               </FormItem>
             )}
           />
+          <FormField
+            name="jobTitle"
+            control={form.control}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Job Title</FormLabel>
+                <FormControl>
+                  <Input type="text" {...field} />
+                </FormControl>
+                {form.formState.errors.jobTitle && (
+                  <FormMessage>
+                    {form.formState.errors.jobTitle.message}
+                  </FormMessage>
+                )}
+              </FormItem>
+            )}
+          />
+          <div className="flex space-x-4">
+            <FormField
+              name="manager"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem className="flex-1">
+                  <FormLabel>Manager</FormLabel>
+                  <FormControl>
+                    <Input type="text" {...field} />
+                  </FormControl>
+                  {form.formState.errors.manager && (
+                    <FormMessage>
+                      {form.formState.errors.manager.message}
+                    </FormMessage>
+                  )}
+                </FormItem>
+              )}
+            />
+            <FormField
+              name="employmentType"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem className="flex-1">
+                  <FormLabel>Employment Type</FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <select
+                        {...field}
+                        className="input py-2 pl-3 text-gray-900 border border-gray-300 rounded-md w-full"
+                      >
+                        <option value="" disabled>
+                          Choose an Employment Type
+                        </option>
+                        <option value="Full Time">Full Time</option>
+                        <option value="Part Time">Part Time</option>
+                        <option value="Intern">Intern</option>
+                      </select>
+                    </div>
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </div>
           <Button type="submit">Generate Verifiable Credential</Button>
         </form>
       </Form>
-      {qrCode && (
-        <>
-          <h3>As a holder, you can scan the VC:</h3>
-          <Image src={qrCode} alt="QR Code" width={200} height={200} />
-        </>
-      )}
-      {/* <Dialog open={!!vc} onOpenChange={() => setVC(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Verifiable Credential</DialogTitle>
-          </DialogHeader>
-          <div className="flex justify-center">
-            {vc && <QRCode value={vc} />}
-          </div>
-          <Button onClick={() => setVC(null)} className="mt-4">
-            Close
-          </Button>
-        </DialogContent>
-      </Dialog> */}
     </div>
   );
 }

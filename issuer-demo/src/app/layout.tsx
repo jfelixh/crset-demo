@@ -1,9 +1,11 @@
 "use client";
-import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import Header from "@/components/Header";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
+import { AuthProvider, useAuth } from "./contexts/AuthContext";
+import { ToastProvider } from "@radix-ui/react-toast";
+import { Toaster } from "@/components/ui/toaster";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -21,16 +23,28 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const pathname = usePathname();
-  const isHomePage = pathname === "/" || pathname === "/logIn";
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <Header showLinks={!isHomePage} />
-        {children}
-      </body>
-    </html>
+    <AuthProvider>
+      <html lang="en">
+        <Toaster />
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        >
+          <AuthWrapper>{children}</AuthWrapper>
+        </body>
+      </html>
+    </AuthProvider>
   );
 }
+
+const AuthWrapper = ({ children }: { children: React.ReactNode }) => {
+  const { isAuthenticated, logout } = useAuth();
+  const pathname = usePathname();
+  // const isHomePage = pathname === "/";
+  return (
+    <>
+      <Header showLinks={isAuthenticated} pathname={pathname} logout={logout} />
+      {children}
+    </>
+  );
+};

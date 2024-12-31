@@ -3,101 +3,143 @@ import { Ed25519Signature2020 } from
   '@digitalcredentials/ed25519-signature-2020';
 import { issue } from "@digitalcredentials/vc";
 import documentLoader from "@/lib/documentLoader";
-import { createJWT } from 'did-jwt'
+import Redis from "ioredis";
+import * as sqlite from "sqlite3";
+import * as database from "../../../../database/database";
+
+let db: sqlite.Database;
+
+async function createStatusEntry() {
+  try {
+    const response = await fetch(`http://localhost:5050/api/status/createStatusEntry`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Response is not ok! status: ${response.status}`);
+    }
+    const data = await response.json();
+    console.log("Revocation results:", data); // Logs the data for debugging
+    return data; // Returns the actual data
+  } catch (error) {
+    console.error("Error fetching status entry:", error);
+    throw error; // Re-throws the error to be handled by the caller
+  }
+}
 
 
 export async function POST(req: Request) {
   if (req.method !== "POST") {
     return new Response(
-      `Method ${req.method} Not Allowed`, 
+      `Method ${req.method} Not Allowed`,
       { status: 405, headers: { "Allow": "POST" } }
     );
   }
 
+  let redis: Redis | undefined;
+
   try {
-    const rawPayload = await req.json()
+    redis = new Redis();
+  } catch (error) {
+    console.error("Failed to connect to Redis:", error);
+    return new Response(
+      JSON.stringify({ error: "Redis connection failed" }),
+      { status: 500 }
+    );
+  }
+  
+  try {
+
+    // Needed for creating cryptographically secure proofs on the credential
     const keyPair = await Ed25519VerificationKey2020.generate();
     const suite = new Ed25519Signature2020({ key: keyPair });
   
     suite.verificationMethod = "did:key:" + keyPair.publicKeyMultibase + "#" + keyPair.publicKeyMultibase;
-    console.log("suite", JSON.stringify(suite))
-
+    const rawPayload = await req.json();
+ 
     const credentialPayload = {
-      "@context": ["https://www.w3.org/2018/credentials/v1"],
-      type: ["VerifiableCredential", "ProofOfEmploymentCredential"],
+      "@context": [
+        "https://www.w3.org/2018/credentials/v1",
+        {
+          BFCStatusEntry: {
+            "@context": {
+              "@protected": true,
+              id: "@id",
+              type: "@type",
+              statusPurpose: "schema:Text",
+              schema: "https://schema.org/",
+            },
+            "@id": "urn:bfcstatusentry",
+          },
+          EmploymentCredential: {
+            "@context": {
+              "@protected": true,
+              "@version": 1.1,
+              email: "schema:email",
+              name: "schema:name",
+              familyName: "schema:givenName",
+              jobTitle: "schema:jobTitle",
+              companyName: "schema:legalName",
+              comment: "schema:Text",
+              id: "@id",
+              schema: "https://schema.org/",
+              type: "@type",
+            },
+            "@id": "urn:employmentcredential",
+          },
+        },
+      ],
+      id: "urn:uuid:" + crypto.randomUUID(),
+      type: ["VerifiableCredential", "EmploymentCredential",],
+      issuer: `did:key:${keyPair.publicKeyMultibase}`,
       credentialSubject: {
-        //Does the user/issuer in the frontend needs to provide the did or it something that it is generated in the backend?
-        id: `did:example:${rawPayload.id || Math.random().toString(36).substr(2)}`,
-        name: rawPayload.name,
-        lastName: rawPayload.lastName,
+        id: `did:example:${Math.random().toString(36).substr(2)}`, //crypto.randomUUID(),
         email: rawPayload.email,
+        name: rawPayload.name,
+        familyName: rawPayload.lastName,
+        jobTitle: rawPayload.jobTitle,
+        companyName: "CMW Group",
+        comment: "I am just a test employment credential.",
+        type: "EmploymentCredential",
       },
-      issuanceDate: new Date().toISOString(), 
-      issuer: `did:key:${keyPair.publicKeyMultibase}`, 
     };
-    console.log("Payload", credentialPayload)
-  
-     //Already put inside the credential Payload
-    // credentialPayload.issuer = "did:key:" + keyPair.publicKeyMultibase;
+
+   const result = await createStatusEntry();
+   const credential = {...credentialPayload, credentialStatus: 
+    {
+      id: result.id,
+      type: result.type,
+      statusPurpose: result.statusPurpose,
+    }
+  }
+
+    const name = rawPayload.name + " " + rawPayload.lastName;
    
-    console.log("Signature Suite", JSON.stringify(suite));
-    console.log("Document Loader:", documentLoader);
-    console.log("Credential Payload:", JSON.stringify(credentialPayload));
     const signedCredential = await issue({
-      credential: credentialPayload,
+      credential: credential,
       suite,
       documentLoader,
     });
 
-    // Store the signedCredential
+    console.log("Start inserting into database")
+  //  db = await database.connectToDb("database/bfc.db");
+    await insertEmployee(db, name, rawPayload.email, rawPayload.jobTitle, JSON.stringify(signedCredential));
+    console.log("Finished inserting into database")
 
-    console.log("signedCredential", JSON.stringify(signedCredential))
-  
-    //USing JWT instead
-    // const rawPayload = await req.json();
+    const uuid = crypto.randomUUID();
+    const MAX_AGE = 300; // 300 seconds = 5min
+    const EXPIRY_MS = "EX"; // seconds
+    redis.set(
+      "vc-" + uuid,
+      JSON.stringify(signedCredential),
+      EXPIRY_MS,
+      MAX_AGE
+    );
 
-    // // Generate a key pair for signing
-    // const keyPair = await Ed25519VerificationKey2020.generate();
-    // const privateKey = keyPair.privateKeyMultibase;
-    // const publicKey = keyPair.publicKeyMultibase;
-
-    // // Prepare the JWT Header
-    // const header = {
-    //   alg: "EdDSA", // Algorithm
-    //   typ: "JWT", // Token type
-    // };
-
-    // // Prepare the JWT Payload (VC Claims)
-    // const payload = {
-    //   sub: rawPayload.did || `did:example:${Math.random().toString(36).substr(2)}`, // Subject
-    //   iss: `did:key:${publicKey}`, // Issuer
-    //   iat: Math.floor(Date.now() / 1000), // Issued at (timestamp)
-    //   nbf: Math.floor(Date.now() / 1000), // Not before (timestamp)
-    //   vc: {
-    //     "@context": ["https://www.w3.org/2018/credentials/v1"],
-    //     type: ["VerifiableCredential", "ProofOfEmploymentCredential"],
-    //     credentialSubject: {
-    //       name: rawPayload.name,
-    //       lastName: rawPayload.lastName,
-    //       email: rawPayload.email,
-    //     },
-    //   },
-    // };
-
-    // // Sign the JWT with the private key
-    // const signedJwt = await createJWT(payload, { key: keyPair.privateKey, header });
-
-    // console.log("Signed JWT VC:", signedJwt);
-
-    // // Return the signed JWT
-    // return new Response(
-    //   JSON.stringify({ jwt: signedJwt }, null, 2),
-    //   {
-    //     status: 200,
-    //   }
-    // );
-
-    return new Response(JSON.stringify({ vc: signedCredential }), { status: 200 });
+    return new Response(JSON.stringify({ vc: signedCredential, uuid: uuid }), { status: 200 });
   } catch (error) {
     console.error("Error generating VC:", error);
     return new Response(
@@ -106,3 +148,61 @@ export async function POST(req: Request) {
     );
   }
 }
+
+
+export async function insertEmployee(
+  db: sqlite.Database,
+  name: string,
+  email: string,
+  jobTitle: string,
+  VC: string,
+): Promise<string> {
+  console.log("Start inserting employee into companyDataBase");
+  db = await database.connectToDb("database/bfc.db");
+  await logDatabaseTables(db); 
+  console.log("Connected to SQLite database in companyDataBase", { db });
+  return new Promise((resolve, reject) => {
+    db.run(
+      "INSERT INTO companyDataBase (name,email,jobTitle,VC) VALUES (?,?,?,?)",
+      [name, email, jobTitle, VC],
+      (err) => {
+        if (err) {
+          console.error("Error inserting employee:", err.message);
+          reject(err);
+          return "";
+        }
+        console.log("Employee inserted successfully with email_address:", email);
+        db.all("SELECT * FROM companyDataBase", [], (err, rows) => {
+          if (err) {
+            console.error("Error fetching data:", err.message);
+          } else {
+            console.log("Current table content:", rows);
+          }
+        });
+        resolve(email);
+      }
+    );
+  });
+}
+
+export async function logDatabaseTables(db: sqlite.Database): Promise<void> {
+  try {
+    console.log("Fetching tables from the database...");
+    db.all("SELECT name FROM sqlite_master WHERE type='table'", [], (err, rows) => {
+      if (err) {
+        console.error("Error fetching tables:", err.message);
+        return;
+      }
+      if (rows.length === 0) {
+        console.log("No tables found in the database.");
+      } else {
+        console.log("Tables in the database:");
+        rows.forEach((row) => console.log(row.name));
+      }
+    });
+  } catch (error) {
+    console.error("Error logging database tables:", error.message);
+  }
+}
+
+

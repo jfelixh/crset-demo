@@ -9,6 +9,10 @@ export default {
   ],
   theme: {
   	extend: {
+		maxHeight: {
+			'128': '32rem',   // Custom value for max-h-128
+			'150': '37.5rem', // Custom value for max-h-150
+		},
   		colors: {
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
