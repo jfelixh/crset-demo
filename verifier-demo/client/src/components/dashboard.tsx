@@ -144,11 +144,11 @@ const Dashboard = () => {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-3xl font-bold">€9,341.87</p>
+                  <p className="text-3xl font-bold">€1,341.87</p>
                 </CardContent>
                 <CardFooter>
                   <p className="text-xs text-gray-500">
-                    +20.1% from last month
+                    -12.1% from last month
                   </p>
                 </CardFooter>
               </Card>
@@ -368,18 +368,18 @@ const Dashboard = () => {
 };
 
 const IE = [
-  { month: "January", income: 4000, expense: 4800 },
+  { month: "January", income: 4000, expense: 4200 },
   { month: "February", income: 3000, expense: 2500 },
   { month: "March", income: 3000, expense: 2800 },
-  { month: "April", income: 3000, expense: 2700 },
-  { month: "May", income: 3000, expense: 1800 },
-  { month: "June", income: 3000, expense: 2200 },
+  { month: "April", income: 3000, expense: 3100 },
+  { month: "May", income: 3000, expense: 2700 },
+  { month: "June", income: 3000, expense: 2500 },
   { month: "July", income: 4000, expense: 4800 },
-  { month: "August", income: 3000, expense: 2500 },
+  { month: "August", income: 3000, expense: 2600 },
   { month: "September", income: 3000, expense: 2800 },
   { month: "October", income: 3000, expense: 2700 },
-  { month: "November", income: 3000, expense: 1800 },
-  { month: "December", income: 3500, expense: 2200 },
+  { month: "November", income: 3000, expense: 2800 },
+  { month: "December", income: 3500, expense: 4700 },
 ];
 
 const AI = IE.map((item) => {
@@ -387,13 +387,13 @@ const AI = IE.map((item) => {
 });
 
 const expenseCategories = [
-  { category: "Groceries", percentage: 25, fill: "var(--color-groceries)" },
-  { category: "Rent", percentage: 40, fill: "var(--color-rent)" },
+  { category: "Groceries", percentage: 10, fill: "var(--color-groceries)" },
+  { category: "Rent", percentage: 30, fill: "var(--color-rent)" },
   { category: "Utilities", percentage: 10, fill: "var(--color-utilities)" },
   { category: "Transport", percentage: 15, fill: "var(--color-transport)" },
   {
     category: "Entertainment",
-    percentage: 10,
+    percentage: 35,
     fill: "var(--color-entertainment)",
   },
 ];
