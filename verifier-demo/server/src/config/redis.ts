@@ -1,7 +1,7 @@
 import { Redis, RedisKey, RedisOptions, RedisValue } from "ioredis";
 
 const redisConfig: RedisOptions = {
-  port: parseInt(process.env.REDIS_PORT ? process.env.REDIS_PORT : "6379", 10),
+  port: parseInt(process.env.REDIS_PORT ? process.env.REDIS_PORT : "6380", 10),
   host: process.env.REDIS_HOST,
   lazyConnect: true,
   maxRetriesPerRequest: 3,
