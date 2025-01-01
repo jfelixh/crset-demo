@@ -81,11 +81,10 @@ Create an `.env` file in the `bfc-status-issuer-backend` directory with the foll
 
 - `issuer-demo/.env`
 Create an `.env` file in the `issuer-demo` directory with the following variables:
-    **TODO**
+
     ```
-    DATABASE_URL=your_database_url
-    API_KEY=your_api_key
-    SECRET_KEY=your_secret_key
+    NEXT_PUBLIC_URL=<ngrok url for port 3000>
+    DID_KEY_JWK={"kty":"OKP","crv":"Ed25519","x":"cwa3dufHNLg8aQb2eEUqTyoM1cKQW3XnOkMkj_AAl5M","d":"me03qhLByT-NKrfXDeji-lpADSpVOKWoaMUzv5EyzKY"}
     ```
 
 - `verifier-demo/server/.env`
@@ -109,7 +108,7 @@ Create an `.env` file here with the following variables:
 Create an `.env` file here with the following variables:
 
     ```
-    EXTERNAL_URL=<ngrok url for port 3000>
+    EXTERNAL_URL=<ngrok url for port 8080>
     ```
 
 ## Running the Demo
