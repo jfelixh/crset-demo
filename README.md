@@ -50,11 +50,7 @@ ngrok http 3000
 Both of these URLs will be required in the `.env` files for the verifier-demo and issuer-demo, specified in the forthcoming section.
 
 ### Redis
-The verifier-demo requires Redis to be installed in order to store the state of the demo. To install Redis, follow the instructions on the [Redis website](https://redis.io/download). Once installed, run the following command to start the Redis server:
-
-```sh
-redis-server
-```
+Both the issuer and verifier demos require Redis to store the state of the demo. Two Redis instances are run using a Docker Compose file.
 
 ### Initializing Dependencies
 Before running the demo, you need to install the dependencies for each submodule. To do this, navigate to the root directory of the bfc-status-demo repository and run the following command:
@@ -72,11 +68,11 @@ The bfc-status-demo requires several environment files to be created in order to
 Create an `.env` file in the `bfc-status-issuer-backend` directory with the following variables:
 
     ```
-    PORT=8080
+    PORT=5050
     INFURA_API_KEY=<your infura api key>
     ADDRESS=<your crypto wallet address>
     PRIVATE_KEY=<private key of your crypto wallet>
-    DB_LOCATION='./src/db/bfc.db'
+    DB_LOCATION='..issuer-demo/database/bfc.db'
     ```
 
 - `issuer-demo/.env`
@@ -119,10 +115,15 @@ To run the demo, navigate (starting from the root project directory) to the `bfc
 npm run dev
 ```
 
-Then navigate back to the `issuer-demo` directory and run the following commands:
+Both the issuer and verifier demos require Redis to store the state of the demo. To run Redis, navigate to the `padded-bloom-filter-cascade` directory and run the following command:
 
 ```sh
 docker-compose up
+```
+
+Then navigate back to the `issuer-demo` directory and run the following commands:
+
+```sh
 npm run dev
 ```
 

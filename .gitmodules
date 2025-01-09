@@ -1,9 +1,12 @@
 [submodule "padded-bloom-filter-cascade"]
 	path = padded-bloom-filter-cascade
 	url = https://github.com/jfelixh/padded-bloom-filter-cascade.git
+	branch = demo-for-paper
 [submodule "bfc-status-check"]
 	path = bfc-status-check
 	url = https://github.com/jfelixh/bfc-status-check.git
+	branch = demo-for-paper
 [submodule "bfc-status-issuer-backend"]
 	path = bfc-status-issuer-backend
 	url = https://github.com/jfelixh/bfc-status-issuer-backend.git
+	branch = demo-for-paper

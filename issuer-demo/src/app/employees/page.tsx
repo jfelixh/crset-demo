@@ -1,5 +1,7 @@
 "use client";
-import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -8,11 +10,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
+import { useEffect, useState } from "react";
 
 const UsersPage = () => {
   const [users, setUsers] = useState([]);
@@ -94,18 +93,19 @@ const UsersPage = () => {
   const publishtoBFC = async () => {
     try {
       toast({
-        title: "Publishing the list to Sepolia...",
+        title: "Publishing the list tƒo Sepolia...",
         description: "This may take a moment, depending on network congestion.",
-      })      // const response = await fetch("/api/publishBFC", {
-      //   method: "GET",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      // });
+      });
+      const response = await fetch("/api/publishBFC", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
-      // if (!response.ok) {
-      //   throw new Error(`Response is not ok! status: ${response.status}`);
-      // } 
+      if (!response.ok) {
+        throw new Error(`Response is not ok! status: ${response.status}`);
+      }
     } catch (error) {
       console.error("Error publishing to BFC:", error);
     }
