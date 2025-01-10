@@ -1,14 +1,8 @@
 # bfc-status-demo
-A monorepo containing everything required to demo the BFC-Status for VCs.
+A monorepo containing everything required to demo the CRSet revocatino mechanism for VCs.
 
 ## Getting Started
 To get started with the bfc-status-demo, you need to clone the repository along with serveral submodules. Use the following command:
-
-```sh
-git clone --recurse-submodules https://github.com/jfelixh/bfc-status-demo.git
-```
-
-Alternatively, you can clone the repository as you would normally and then run the following command to initialize the submodules:
 
 ```sh
 git submodule update --init --recursive --remote
