@@ -1,7 +1,7 @@
 [submodule "padded-bloom-filter-cascade"]
 	path = padded-bloom-filter-cascade
 	url = XXX
-[submodule "bfc-status-check"]
+[submodule "crset-status-check"]
 	path = crset-status-check
 	url = XXX
 [submodule "crset-issuer-backend"]
