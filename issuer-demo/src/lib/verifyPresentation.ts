@@ -10,7 +10,7 @@ import {
 
 export const verifyAuthenticationPresentation = async (VP: any) => {
     try {
-        console.log("Verifying VP",VP.verifiableCredential);
+        //console.log("Verifying VP",VP.verifiableCredential);
         if (!VP.verifiableCredential) {
             console.log("Unable to find VCs in VP");
             return false;

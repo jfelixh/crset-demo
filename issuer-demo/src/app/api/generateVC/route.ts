@@ -22,7 +22,7 @@ async function createStatusEntry() {
       throw new Error(`Response is not ok! status: ${response.status}`);
     }
     const data = await response.json();
-    console.log("Revocation results:", data); // Logs the data for debugging
+  //  console.log("Revocation results:", data); // Logs the data for debugging
     return data; // Returns the actual data
   } catch (error) {
     console.error("Error fetching status entry:", error);
@@ -124,10 +124,10 @@ export async function POST(req: Request) {
       documentLoader,
     });
 
-    console.log("Start inserting into database")
+   // console.log("Start inserting into database")
   //  db = await database.connectToDb("database/bfc.db");
     await insertEmployee(db, name, rawPayload.email, rawPayload.jobTitle, JSON.stringify(signedCredential));
-    console.log("Finished inserting into database")
+  //  console.log("Finished inserting into database")
 
     const uuid = crypto.randomUUID();
     const MAX_AGE = 300; // 300 seconds = 5min
@@ -157,10 +157,10 @@ export async function insertEmployee(
   jobTitle: string,
   VC: string,
 ): Promise<string> {
-  console.log("Start inserting employee into companyDataBase");
+ // console.log("Start inserting employee into companyDataBase");
   db = await database.connectToDb("database/bfc.db");
-  await logDatabaseTables(db); 
-  console.log("Connected to SQLite database in companyDataBase", { db });
+  //await logDatabaseTables(db); 
+ // console.log("Connected to SQLite database in companyDataBase", { db });
   return new Promise((resolve, reject) => {
     db.run(
       "INSERT INTO companyDataBase (name,email,jobTitle,VC) VALUES (?,?,?,?)",
@@ -171,7 +171,7 @@ export async function insertEmployee(
           reject(err);
           return "";
         }
-        console.log("Employee inserted successfully with email_address:", email);
+       // console.log("Employee inserted successfully with email_address:", email);
         db.all("SELECT * FROM companyDataBase", [], (err, rows) => {
           if (err) {
             console.error("Error fetching data:", err.message);
@@ -187,7 +187,7 @@ export async function insertEmployee(
 
 export async function logDatabaseTables(db: sqlite.Database): Promise<void> {
   try {
-    console.log("Fetching tables from the database...");
+   // console.log("Fetching tables from the database...");
     db.all("SELECT name FROM sqlite_master WHERE type='table'", [], (err, rows) => {
       if (err) {
         console.error("Error fetching tables:", err.message);

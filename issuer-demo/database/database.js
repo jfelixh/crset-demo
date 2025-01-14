@@ -49,10 +49,9 @@ var config = {
 var db;
 function connectToDb(databaseLocation) {
     return new Promise(function (resolve, reject) {
-        console.log("Test connection to db");
         if (!db) {
             var dbPath = path.resolve(process.cwd(), databaseLocation);
-            console.log('Connecting to SQLite database:', dbPath);
+            console.log('Connecting to SQLite database with path:', dbPath);
             db = new sqlite.Database(dbPath, function (err) {
                 if (err) {
                     console.error('Error connecting to SQLite:', err.message);
@@ -128,7 +127,7 @@ function populateDbCompany(db, filePath) {
                     name = firstName + " " + lastName;
                     email_address = firstName.toLowerCase() + "." + lastName.toLowerCase() + "@cmw.de";
                     jobTitle = ["Software Engineer", "Accountant", "HR", "Manager", "Director", "Intern"];
-                    vc = JSON.stringify({ "@context": ["https://www.w3.org/2018/credentials/v1", { "BFCStatusEntry": { "@context": { "@protected": true, "id": "@id", "type": "@type", "statusPurpose": "schema:Text", "schema": "https://schema.org/" }, "@id": "urn:bfcstatusentry" }, "EmploymentCredential": { "@context": { "@protected": true, "@version": 1.1, "email": "schema:email", "name": "schema:name", "familyName": "schema:givenName", "jobTitle": "schema:jobTitle", "companyName": "schema:legalName", "comment": "schema:Text", "id": "@id", "schema": "https://schema.org/", "type": "@type" }, "@id": "urn:employmentcredential" } }, "https://w3id.org/security/suites/ed25519-2020/v1"], "id": "urn:uuid:0579c3ec-143a-44f8-9d15-b2d396fe4e07", "type": ["VerifiableCredential", "EmploymentCredential"], "issuer": "did:key:z6Mkii9oRJhUyQNBS3LXbCHSCv2vXkzD8NUbmL1KrSQ8t6YM", "credentialSubject": { "id": row.id, "email": "".concat(email_address), "name": "".concat(firstName), "familyName": "".concat(lastName), "jobTitle": "".concat(jobTitle), "companyName": "CMW Group", "comment": "I am just a test employment credential.", "type": "EmploymentCredential" }, "credentialStatus": { "id": row.id, "type": "BFCStatusEntry", "statusPurpose": "revocation" }, "issuanceDate": "2024-12-12T16:27:32Z", "proof": { "type": "Ed25519Signature2020", "created": "2024-12-12T16:27:32Z", "verificationMethod": "did:key:z6Mkii9oRJhUyQNBS3LXbCHSCv2vXkzD8NUbmL1KrSQ8t6YM#z6Mkii9oRJhUyQNBS3LXbCHSCv2vXkzD8NUbmL1KrSQ8t6YM", "proofPurpose": "assertionMethod", "proofValue": "z2U2LHtQYhY7s6T9UHvpQs2aPdQsxk2UcPdWm1AF3pFfEUmhFDEvBkiqBnGcKiiPzBoof2j5acVpqSy3eoy9opSBD" } });
+                    vc = JSON.stringify({ "@context": ["https://www.w3.org/2018/credentials/v1", { "BFCStatusEntry": { "@context": { "@protected": true, "id": "@id", "type": "@type", "statusPurpose": "schema:Text", "schema": "https://schema.org/" }, "@id": "urn:bfcstatusentry" }, "EmploymentCredential": { "@context": { "@protected": true, "@version": 1.1, "email": "schema:email", "name": "schema:name", "familyName": "schema:givenName", "jobTitle": "schema:jobTitle", "companyName": "schema:legalName", "comment": "schema:Text", "id": "@id", "schema": "https://schema.org/", "type": "@type" }, "@id": "urn:employmentcredential" } }, "https://w3id.org/security/suites/ed25519-2020/v1"], "id": "urn:uuid:0579c3ec-143a-44f8-9d15-b2d396fe4e07", "type": ["VerifiableCredential", "EmploymentCredential"], "issuer": "did:key:z6Mkii9oRJhUyQNBS3LXbCHSCv2vXkzD8NUbmL1KrSQ8t6YM", "credentialSubject": { "id": row.id, "email": "".concat(email_address), "name": "".concat(firstName), "familyName": "".concat(lastName), "jobTitle": "".concat(jobTitle), "companyName": "CMW Group", "comment": "I am just a test employment credential.", "type": "EmploymentCredential" }, "credentialStatus": { "id": "urn:eip155:1:0x32328bfaea51ce120db44f7755a1170e9cc43653:" + row.id, "type": "BFCStatusEntry", "statusPurpose": "revocation" }, "issuanceDate": "2024-12-12T16:27:32Z", "proof": { "type": "Ed25519Signature2020", "created": "2024-12-12T16:27:32Z", "verificationMethod": "did:key:z6Mkii9oRJhUyQNBS3LXbCHSCv2vXkzD8NUbmL1KrSQ8t6YM#z6Mkii9oRJhUyQNBS3LXbCHSCv2vXkzD8NUbmL1KrSQ8t6YM", "proofPurpose": "assertionMethod", "proofValue": "z2U2LHtQYhY7s6T9UHvpQs2aPdQsxk2UcPdWm1AF3pFfEUmhFDEvBkiqBnGcKiiPzBoof2j5acVpqSy3eoy9opSBD" } });
                     insertStmt.run([name, email_address, jobTitle[Math.floor(Math.random() * 6)], vc], function (err) {
                         if (err) {
                             console.error("Error inserting rowsss ".concat(JSON.stringify(row), ":"), err.message);
@@ -153,7 +152,8 @@ function populateDb(db, filePath) {
     // separator: ";"
     }))
         .on("data", function (row) {
-        insertStmt.run([row.id, row.status], function (err) {
+        var credentialStatusId = "urn:eip155:1:0x32328bfaea51ce120db44f7755a1170e9cc43653:" + row.id;
+        insertStmt.run([credentialStatusId, row.status], function (err) {
             if (err) {
                 console.error("Error inserting row ".concat(JSON.stringify(row), ":"), err.message);
             }

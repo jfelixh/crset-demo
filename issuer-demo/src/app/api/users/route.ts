@@ -12,7 +12,7 @@ type User = {
 
 export const GET = async () => {
     try {
-        console.log("Fetching users...");
+       // console.log("Fetching users...");
         const users = await getAllUsers();
         return new Response(JSON.stringify(users), {
             status: 200,
@@ -32,10 +32,10 @@ export const GET = async () => {
 };
 
 export const getAllUsers = async (): Promise<User[]> => {
-    console.log("Connecting to SQLite database...");
+    //console.log("Connecting to SQLite database...");
     db = await database.connectToDb("database/bfc.db");
-    console.log("Connected to SQLite database1.");
-    console.log(db)
+   // console.log("Connected to SQLite database1.");
+ //   console.log(db)
 
     try {
         const getUsers = new Promise<User[]>((resolve, reject) => {
@@ -58,7 +58,7 @@ export const getAllUsers = async (): Promise<User[]> => {
         });
         // Usage:
         const userData = await getUsers;
-        console.log("Users:", userData[0]);
+       // console.log("Users:", userData[0]);
         return userData;
     } catch (error) {
         console.error("Error getting users:", error);

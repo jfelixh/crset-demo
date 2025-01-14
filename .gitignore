@@ -134,3 +134,6 @@ dump.rdb
 
 # sqlite DB files
 *.db
+
+# IntelliJ
+.idea/
