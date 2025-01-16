@@ -1,5 +1,5 @@
 import { keyToDID, keyToVerificationMethod } from "@spruceid/didkit-wasm-node";
-import { Request, Response } from "express";
+import e, { Request, Response } from "express";
 import * as jose from "jose";
 import { getConfiguredLoginPolicy } from "src/config/loginPolicy";
 import { redisGet, redisSet } from "src/config/redis";
@@ -7,6 +7,30 @@ import { checkRevocationStatus } from "src/lib/checkRevocationStatus";
 import { generatePresentationDefinition } from "src/lib/generatePresentationDefinition";
 import { getMetadata } from "src/lib/getMetadata";
 import { verifyAuthenticationPresentation } from "src/lib/verifyPresentation";
+import { EventEmitter } from "events";
+import { WebSocketServer, WebSocket } from 'ws';
+
+const emitter = new EventEmitter();
+const wss = new WebSocketServer({ port: 8090 });
+wss.on('connection', (ws: WebSocket) => {
+  console.log('Client connected');
+
+  // Forward events from the EventEmitter to the WebSocket client
+  const handleEvent = (eventData: any) => {
+    if (ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify(eventData));
+    }
+};
+
+// Attach listener to the EventEmitter
+emitter.on('progress', handleEvent);
+
+// Handle client disconnection
+ws.on('close', () => {
+    console.log('Client disconnected');
+    emitter.removeListener('progress', handleEvent);
+});
+});
 
 export const generateWalletURL = async (req: Request, res: any) => {
   try {
@@ -147,7 +171,7 @@ export const presentCredentialPost = async (req: Request, res: Response) => {
     if (vc[0]["type"].includes("EmploymentCredential")) {
       console.log("Checking Employee credential revocation status…");
 
-      const isRevoked = await checkRevocationStatus(vc[0]);
+      const isRevoked = await checkRevocationStatus(vc[0], emitter);
       if (isRevoked) {
         console.log("Employee credential is revoked");
         redisSet(`challenge:${challenge}`, "false", 3600);
