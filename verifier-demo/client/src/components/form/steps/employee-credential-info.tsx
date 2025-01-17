@@ -1,4 +1,5 @@
 import AuthLoader from "@/components/loading-auth";
+import { ProcessTimeline } from "@/components/progressTimeLine";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -14,13 +15,24 @@ import { useToast } from "@/hooks/use-toast";
 import { useCallbackPolling } from "@/hooks/useCallbackPolling";
 import useIsMobileDevice from "@/hooks/useIsMobileDevice";
 import { EmployeeCredential } from "@/models/employee";
+import { time } from "console";
 import { QRCodeCanvas } from "qrcode.react";
 import { RefObject, useState } from "react";
-import { useFormContext } from "react-hook-form";
+import { set, useFormContext } from "react-hook-form";
 
 type EmployeeCredentialInfoStepProps = {
   nextButtonRef: RefObject<HTMLButtonElement>;
 };
+
+interface Step {
+  id: number
+  name: string
+  status: 'not_started' | 'started' | 'completed' | 'failed'
+  timeElapsed?: number
+  additionalMetrics?: {
+    [key: string]: string | number
+  }
+}
 
 const ws = new WebSocket("ws://localhost:8090");
 // Handle connection errors
@@ -50,16 +62,116 @@ const EmployeeCredentialInfoStep = ({
   const { isMobile } = useIsMobileDevice();
   const { toast } = useToast();
 
-  const [verificationStatusList, setVerificationStatusList] = useState<string[]>([]);
+  const [steps, setSteps] = useState<Step[]>([{
+    id: 0,
+    name: 'Extract Publisher Address',
+    status: 'not_started',
+    timeElapsed: 0,
+    additionalMetrics: {}
+  },
+  {
+    id: 1,
+    name: 'Retrieve Transactions',
+    status: 'not_started',
+    timeElapsed: 0,
+    additionalMetrics: {}
+  },
+  {
+    id: 2,
+    name: 'Identify blob transaction & get blob hash',
+    status: 'not_started',
+    timeElapsed: 0,
+    additionalMetrics: {}
+  },
+  {
+    id: 3,
+    name: 'Retrieve & concatenate blob data',
+    status: 'not_started',
+    timeElapsed: 0,
+    additionalMetrics: {}
+  },
+  {
+    id: 4,
+    name: 'Reconstruct blob data',
+    status: 'not_started',
+    timeElapsed: 0,
+    additionalMetrics: {}
+  },
+  {
+    id: 5,
+    name: 'Reconstruct bloom filter cascade',
+    status: 'not_started',
+    timeElapsed: 0,
+    additionalMetrics: {}
+  },
+  {
+    id: 6,
+    name: 'Check revocation status',
+    status: 'not_started',
+    timeElapsed: 0,
+    additionalMetrics: {}
+  }
+]);
+  // const [verificationStatusList, setVerificationStatusList] = useState<string[]>([]);
   let lastTime = new Date().getTime();
   // Handle incoming messages
   ws.onmessage = (event) => {
     const currentTime = new Date().getTime();
-    const eventData = event.data;
-    const verificationStatus = eventData+" "+(currentTime-lastTime);
-    console.log("------------"+eventData+" "+(currentTime-lastTime));
-    // setVerificationStatusList([...verificationStatusList, verificationStatus]);
-    setVerificationStatusList((prev) => [...prev, verificationStatus]);
+    const eventData = JSON.parse(event.data);
+    const timePassed = currentTime - lastTime;
+    // const verificationStatus = eventData.status==="started" ? `Verification step: ${eventData.step} - ${eventData.status}` : `Verification step: ${eventData.step} - ${eventData.status}. Time elapsed: ${currentTime - lastTime}ms`;
+    console.log("------------"+event.data+" "+timePassed);
+    // setVerificationStatusList((prev) => [...prev, verificationStatus]);
+    let stepId = 0;
+    switch (eventData.step) {
+      case "extractPublisherAddress": 
+        stepId = 0; 
+        break;
+      case "getAssetTransfers":
+        stepId = 1;
+        break;
+      case "getBlobVersionedHashes":
+        stepId = 2;
+        break;
+      case "fetchAndConcatBlobData":
+        stepId = 3;
+        break;
+      case "reconstructBlobData":
+        stepId = 4;
+        break;
+      case "reconstructBFC":
+        stepId = 5;
+        break;
+      case "checkRevocation":
+        stepId = 6;
+        break;
+    }
+    // update step status
+    setSteps((prev) => {
+      prev[stepId].status = eventData.status;
+      return [...prev];
+    });
+    // update time elapsed for completed steps
+    if (eventData.status === "completed") {
+      if (eventData.step === "checkRevocation" && eventData.additionalMetrics.isRevoked) {
+        setSteps((prev) => {
+          prev[stepId].status = "failed";
+          return [...prev];
+        });
+      }
+
+      setSteps((prev) => {
+        prev[stepId].timeElapsed = timePassed;
+        return [...prev];
+      });
+    }
+    // update additional metrics
+    if (Object.keys(eventData).length > 2) {
+      setSteps((prev) => {
+        prev[stepId].additionalMetrics = eventData.additionalMetrics;
+        return [...prev];
+      });
+    }
     lastTime = currentTime;
   };
 
@@ -81,12 +193,6 @@ const EmployeeCredentialInfoStep = ({
       nextButtonRef.current?.click();
     },
     onError: (error) => {
-      toast({
-        title: "Error",
-        description:
-          "Please rescan the QR code and provide a valid employee credential.",
-        variant: "destructive",
-      });
       console.error("Error:", error);
     },
     isEmployeeCredential: true,
@@ -104,7 +210,7 @@ const EmployeeCredentialInfoStep = ({
           </CardDescription>
         </CardHeader>
           <CardContent className="space-y-4">
-          <div className="flex flex-col justify-center">
+          <div className="flex flex-row justify-center">
             {confirmed && (
               <>
                 <p className="text-primary font-medium">
@@ -143,15 +249,7 @@ const EmployeeCredentialInfoStep = ({
                   </Button>
                 </div>
               ))}
-              <div className=" pt-6">
-                <Separator />
-                <h3 className="text-lg font-medium">Verification Status</h3>
-                <div className="h-52 overflow-y-auto">
-                  {verificationStatusList.map((status, index) => (
-                    <p key={index}>{status}</p>
-                  ))}
-                </div>
-              </div>
+              <ProcessTimeline steps={steps} />
             </div>
           </CardContent>
       </Card>
