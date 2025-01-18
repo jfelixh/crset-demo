@@ -100,7 +100,11 @@ export default function LoginPage() {
 
           //console.log("Verifiable Credential that tries to login:", result);
           const decodedToken = jwt.decode(result["token"]);
-          if (decodedToken && typeof decodedToken !== "string" && "credentialSubject" in decodedToken) {
+          if (
+            decodedToken &&
+            typeof decodedToken !== "string" &&
+            "credentialSubject" in decodedToken
+          ) {
             const credentialSubjectId = decodedToken["credentialSubject"]["id"];
             await authorizationCheck(credentialSubjectId);
           } else {
@@ -176,9 +180,12 @@ export default function LoginPage() {
                           <QRCodeCanvas value={walletUrl} size={200} />
                         </div>
 
-                        <pre className="mt-4 bg-gray-100 p-2 rounded text-sm break-words whitespace-pre-wrap">
-                          {JSON.stringify(walletUrl, null, 2)}
-                        </pre>
+                        <div className="mt-4 flex flex-row items-center justify-center gap-2">
+                          <div className="w-4 h-4 border-4 border-gray-300 border-t-gray-600 rounded-full animate-spin"></div>
+                          <p className="text-sm font-medium text-gray-600">
+                            Authenticating...
+                          </p>
+                        </div>
 
                         <div className="mt-6 flex justify-end">
                           <Button onClick={toggleDialog}>Close</Button>

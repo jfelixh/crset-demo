@@ -63,8 +63,36 @@ export default function Home() {
         }),
       });
       const responseData = await response.json();
-      if (responseData?.uuid) {
-        window.location.href = `/vci/${responseData.uuid}`;
+      if (responseData?.uuid && data.email) {
+        //window.location.href = `/vci/${responseData.uuid}`;
+        if (!data.email || !responseData.uuid) {
+          alert("Please enter an email and ensure VCID is loaded.");
+          return;
+        }
+
+        try {
+          const response = await fetch("/api/sendEmail", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              vcid: responseData.uuid,
+              email: data.email,
+            }),
+          });
+
+          const result = await response.json();
+
+          if (response.ok) {
+            alert("Email sent successfully!");
+          } else {
+            alert(`Error: ${result.error}`);
+          }
+        } catch (error) {
+          console.log(error);
+          alert("Failed to send email.");
+        }
       } else {
         console.error("Missing UUID in the response");
       }
