@@ -12,24 +12,32 @@ import { WebSocketServer, WebSocket } from 'ws';
 
 const emitter = new EventEmitter();
 const wss = new WebSocketServer({ port: 8090 });
-wss.on('connection', (ws: WebSocket) => {
-  console.log('Client connected');
+// Use client id to send events to the correct client
+let clientId = "";
+wss.on('connection', (ws: WebSocket, req) => {
+  // Client identifier passed through the WebSocket protocol
+  const protocols = req.headers['sec-websocket-protocol'];
+  clientId = protocols ? protocols : "";
+  console.log('Client connected: ' + clientId);
+  (ws as any).clientId = clientId;
 
-  // Forward events from the EventEmitter to the WebSocket client
+  // Forward events from the EventEmitter to the correct WebSocket client
   const handleEvent = (eventData: any) => {
-    if (ws.readyState === WebSocket.OPEN) {
+    wss.clients.forEach((client) => {
+      if ((client as any).clientId === eventData.clientId) {
         ws.send(JSON.stringify(eventData));
-    }
-};
+      }
+    });
+  };
 
-// Attach listener to the EventEmitter
-emitter.on('progress', handleEvent);
+  // Attach listener to the EventEmitter
+  emitter.on('progress', handleEvent);
 
-// Handle client disconnection
-ws.on('close', () => {
-    console.log('Client disconnected');
-    emitter.removeListener('progress', handleEvent);
-});
+  // Handle client disconnection
+  ws.on('close', () => {
+      console.log('Client disconnected');
+      emitter.removeListener('progress', handleEvent);
+  });
 });
 
 export const generateWalletURL = async (req: Request, res: any) => {
@@ -171,7 +179,7 @@ export const presentCredentialPost = async (req: Request, res: Response) => {
     if (vc[0]["type"].includes("EmploymentCredential")) {
       console.log("Checking Employee credential revocation status…");
 
-      const isRevoked = await checkRevocationStatus(vc[0], emitter);
+      const isRevoked = await checkRevocationStatus(vc[0], emitter, clientId);
       if (isRevoked) {
         console.log("Employee credential is revoked");
         redisSet(`challenge:${challenge}`, "false", 3600);

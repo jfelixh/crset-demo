@@ -2,12 +2,14 @@
 import * as bsc from "../../../../../bfc-status-check/src/index";
 import { EventEmitter } from "events";
 
-export const checkRevocationStatus = async (VC: any, emitter:EventEmitter) => {
+export const checkRevocationStatus = async (VC: any, emitter:EventEmitter, clientId: string) => {
   try {
     const status = await bsc.isRevoked(
       VC,
-      new URL("https://bfc-status-check.example.com"),
-      emitter
+      {
+        emitter,
+        clientId
+      }
     );
     return status;
   } catch (error: any) {

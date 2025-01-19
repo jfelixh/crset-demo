@@ -89,7 +89,7 @@ export function ProcessTimeline({ steps }: ProcessTimelineProps) {
                 </p>
                 {step.timeElapsed !== undefined && (
                   <p className="text-xs text-gray-500">
-                    <a className="font-bold">Time elapsed: </a>{step.timeElapsed} ms
+                    <a className="font-bold">Time elapsed: </a>{step.timeElapsed > 0 ? step.timeElapsed : "< 1"} ms
                   </p>
                 )}
                 <Separator className="my-1"/>
