@@ -6,7 +6,7 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json(); 
     const { vcid, email } = body;
-
+    console.log("trying to send email");
     if (!vcid || !email) {
       return NextResponse.json(
         { error: "Missing required parameters" },
@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
       },
     });
 
-  
+    console.log("trying to send email actually");
     await transporter.sendMail({
       from: process.env.EMAIL_USER,
       to: `${process.env.EMAIL_USER}@gmail.com`,

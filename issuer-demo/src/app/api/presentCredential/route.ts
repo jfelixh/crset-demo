@@ -82,7 +82,7 @@ export const POST = async (req: Request, res: Response) => {
   //  console.log(req.body);
     try {
         const bodyText = await req.text();
-  //      console.log("Raw Body Text:", bodyText);
+        //console.log("Raw Body Text:", bodyText);
 
         // Parse the URL-encoded form data
         const params = new URLSearchParams(bodyText);
@@ -95,6 +95,7 @@ export const POST = async (req: Request, res: Response) => {
         //step 18
         // Verify the presentation and the status of the credential
         if (presentationString) {
+            console.log("presenting")
             const presentation = JSON.parse(presentationString);
             if (!(await verifyAuthenticationPresentation(presentation))) {
                 // Evaluate if the VP should be trusted

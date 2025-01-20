@@ -78,7 +78,8 @@ export default function Home() {
             },
             body: JSON.stringify({
               vcid: responseData.uuid,
-              email: data.email,
+              email: 'chan9908181@gmail.com',
+              //data.email,
             }),
           });
 
