@@ -16,6 +16,8 @@
     "@radix-ui/react-checkbox": "^1.1.2",
     "@radix-ui/react-dialog": "^1.1.2",
     "@radix-ui/react-label": "^2.1.0",
+    "@radix-ui/react-progress": "^1.1.1",
+    "@radix-ui/react-separator": "^1.1.1",
     "@radix-ui/react-slot": "^1.1.0",
     "@radix-ui/react-toast": "^1.2.3",
     "@spruceid/didkit-wasm": "^0.2.1",
@@ -55,6 +57,7 @@
     "tailwindcss-animate": "^1.0.7",
     "unique-names-generator": "^4.7.1",
     "uuid": "^11.0.3",
+    "ws": "^8.18.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
@@ -63,6 +66,7 @@
     "@types/qrcode": "^1.5.5",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "@types/ws": "^8.5.13",
     "eslint": "^8",
     "eslint-config-next": "15.0.3",
     "postcss": "^8",

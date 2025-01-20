@@ -96,29 +96,6 @@ const UsersPage = () => {
     }
   };
 
-  const publishtoBFC = async () => {
-    try {
-      /* toast({
-        title: "Publishing the list to Sepolia...",
-        description: "This may take a moment, depending on network congestion.",
-      })       */
-
-      const response = await fetch("/api/publishBFC", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`Response is not ok! status: ${response.status}`);
-      } 
-    } catch (error) {
-      console.error("Error publishing to BFC:", error);
-    }
-    router.push("/bfc");
-  };
-
   const getCredentialStatus = async (user) => {
     const response = await fetch("/api/get_status", {
       method: "POST",
@@ -242,7 +219,13 @@ const UsersPage = () => {
         <Button onClick={revokeSelectedUser} disabled={selectedUser === null}>
           Revoke
         </Button>
-        <Button onClick={publishtoBFC}>Publish BFC</Button>
+        <Button
+          onClick={() => {
+            router.push("/bfc");
+          }}
+        >
+          Publish BFC
+        </Button>
       </div>
     </div>
   );
