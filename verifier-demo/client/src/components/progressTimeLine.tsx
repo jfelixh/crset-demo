@@ -65,7 +65,7 @@ export function ProcessTimeline({ steps }: ProcessTimelineProps) {
   }
 
   return (
-    <Card className="w-full max-w-md">
+    <Card className="w-full max-w-lg">
       <CardHeader>
         <CardTitle>Verification Progress</CardTitle>
         <Progress value={getProgress()} className="w-full mt-2" />
@@ -92,9 +92,9 @@ export function ProcessTimeline({ steps }: ProcessTimelineProps) {
                     <a className="font-bold">Time elapsed: </a>{step.timeElapsed > 0 ? step.timeElapsed : "< 1"} ms
                   </p>
                 )}
-                <Separator className="my-1"/>
                 {step.additionalMetrics && (
-                  <div className="mt-1">
+                  <div className="mt-1 truncate max-w-96">
+                    <Separator/>
                     <div className="space-y-1">
                       {Object.entries(step.additionalMetrics).map(([key, value]) => (
                         <p key={key} className="text-xs text-gray-500 truncate" title={`${key}: ${value}`}>

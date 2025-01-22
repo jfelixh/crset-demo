@@ -15,6 +15,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useCallbackPolling } from "@/hooks/useCallbackPolling";
 import useIsMobileDevice from "@/hooks/useIsMobileDevice";
 import { EmployeeCredential } from "@/models/employee";
+import { CheckCircleIcon } from "lucide-react";
 import { QRCodeCanvas } from "qrcode.react";
 import { RefObject, useEffect, useRef, useState } from "react";
 import { useFormContext } from "react-hook-form";
@@ -205,7 +206,7 @@ useEffect(() => {
 
   return (
     <div className="flex justify-center items-center py-6">
-      <Card className="w-[60rem]">
+      <Card className="w-[85rem]">
         <CardHeader>
           <CardTitle>Confirm Your Employment Status</CardTitle>
           <CardDescription>
@@ -213,16 +214,17 @@ useEffect(() => {
             and presenting your employee credential.
           </CardDescription>
         </CardHeader>
-          <CardContent className="space-y-4">
-          <div className="flex flex-row justify-center">
-            {confirmed && (
-              <>
-                <p className="text-primary font-medium">
-                  You have successfully presented your employee credential and
-                  confirmed your employment status.
-                </p>
-              </>
-            )}
+        <CardContent>
+         <div className="flex flex-row justify-center space-x-4">
+          {confirmed && (
+            <div className="flex items-center text-center">
+              <div className="flex flex-col text-primary font-medium items-center">
+                <CheckCircleIcon size={60} className="mr-2 mb-4" />
+                You have successfully presented your employee credential and confirmed your employment status.
+              </div>
+            </div>
+          )}
+          {!confirmed && (
             <div className="w-full flex flex-col justify-center items-center mx-auto space-y-4">
               {!confirmed &&
                 !isMobile &&
@@ -231,7 +233,7 @@ useEffect(() => {
                 ) : (
                   !isError && (
                     <>
-                      <QRCodeCanvas value={walletUrl} size={400} />
+                      <QRCodeCanvas value={walletUrl} size={400}/>
                       {isPending && <AuthLoader />}
                     </>
                   )
@@ -244,18 +246,19 @@ useEffect(() => {
                 <></>
               )}
             </div>
-            {isError ||
-              (error && (
-                <div>
-                  <p>Error: {error.message}</p>
-                  <Button variant="destructive" onClick={() => refetch}>
-                    Retry
-                  </Button>
-                </div>
-              ))}
-              <ProcessTimeline steps={steps} />
-            </div>
-          </CardContent>
+          )}
+          {isError ||
+            (error && (
+              <div>
+                <p>Error: {error.message}</p>
+                <Button variant="destructive" onClick={() => refetch}>
+                  Retry
+                </Button>
+              </div>
+            ))}
+            <ProcessTimeline steps={steps} />
+          </div>
+        </CardContent>
       </Card>
     </div>
   );
