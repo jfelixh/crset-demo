@@ -11,7 +11,6 @@ const getSessionMiddleware = (req: any, res: any) =>
         });
     });
 export const GET = async (req: Request,res:Response) => {
-   // console.log("loginCallback");
     try {
         await getSessionMiddleware(req, res);
 
@@ -26,7 +25,6 @@ export const GET = async (req: Request,res:Response) => {
         let idToken;
         try {
             idToken = await redisGet(`login_id:${login_id}`);
-          //  console.log("ID token: " + idToken);
         } catch (error) {
             console.error("Error fetching session token from Redis:", error);
             return new Response(JSON.stringify({ error: "Error fetching session token from Redis" }), { status: 404 });
@@ -38,8 +36,8 @@ export const GET = async (req: Request,res:Response) => {
             return new Response(JSON.stringify({ error: "Session token not found" }), { status: 202 });
             }
 
-        req.session.token = idToken;
-        await promisify(req.session.save.bind(req.session))();
+        //req.session.token = idToken;
+        //await promisify(req.session.save.bind(req.session))();
        // console.log("Session token set");
         // if an ID token is found, create a session
 
