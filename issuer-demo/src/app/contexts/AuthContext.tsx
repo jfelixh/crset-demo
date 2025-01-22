@@ -36,6 +36,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const logout = () => {
     localStorage.removeItem("authToken");
     setIsAuthenticated(false);
+    document.cookie = "authToken=; Path=/; SameSite=Lax; Max-Age=0;";
     router.push("/");
   };
 
