@@ -80,7 +80,7 @@ const BFCPage = () => {
   },
   {
     id: 5,
-    name: 'Send transaction',
+    name: 'Send transaction & wait for chain-inclusion',
     status: 'not_started',
     timeElapsed: 0,
     additionalMetrics: {}

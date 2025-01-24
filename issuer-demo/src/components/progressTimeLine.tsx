@@ -88,7 +88,7 @@ export function ProcessTimeline({ steps }: ProcessTimelineProps) {
                 <p className="text-xs text-gray-500">
                   <a className="font-bold">Status: </a>{step.status.replace('_', ' ')}
                 </p>
-                {step.timeElapsed !== undefined && (
+                {step.timeElapsed !== undefined && step.status !== "not_started" && (
                   <p className="text-xs text-gray-500">
                     <a className="font-bold">Time elapsed: </a>{step.timeElapsed > 0 ? step.timeElapsed : "< 1"} ms
                   </p>
