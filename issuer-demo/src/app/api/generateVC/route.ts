@@ -126,7 +126,7 @@ export async function POST(req: Request) {
 
    // console.log("Start inserting into database")
   //  db = await database.connectToDb("database/bfc.db");
-    await insertEmployee(db, name, rawPayload.email, rawPayload.jobTitle, JSON.stringify(signedCredential));
+    await insertEmployee(name, rawPayload.email, rawPayload.jobTitle, JSON.stringify(signedCredential), rawPayload.manager, rawPayload.employmentType, 0);
   //  console.log("Finished inserting into database")
 
     const uuid = crypto.randomUUID();
@@ -151,11 +151,13 @@ export async function POST(req: Request) {
 
 
 export async function insertEmployee(
-  db: sqlite.Database,
   name: string,
   email: string,
   jobTitle: string,
   VC: string,
+  manager: string,
+  employmentType: string,
+  isPublished: number,
 ): Promise<string> {
  // console.log("Start inserting employee into companyDataBase");
   db = await database.connectToDb("database/bfc.db");
@@ -163,8 +165,8 @@ export async function insertEmployee(
  // console.log("Connected to SQLite database in companyDataBase", { db });
   return new Promise((resolve, reject) => {
     db.run(
-      "INSERT INTO companyDataBase (name,email,jobTitle,VC) VALUES (?,?,?,?)",
-      [name, email, jobTitle, VC],
+      "INSERT INTO companyDataBase (name,email,jobTitle,VC, manager, employmentType, isPublished) VALUES (?,?,?,?,?,?,?)",
+      [name, email, jobTitle, VC, manager, employmentType, isPublished],
       (err) => {
         if (err) {
           console.error("Error inserting employee:", err.message);

@@ -60,6 +60,8 @@ export default function Home() {
           lastName: data.lastName,
           email: data.email,
           jobTitle: data.jobTitle,
+          manager: data.manager,
+          employmentType: data.employmentType,
         }),
       });
       const responseData = await response.json();

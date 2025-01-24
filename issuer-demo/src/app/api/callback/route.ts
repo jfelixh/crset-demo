@@ -1,19 +1,11 @@
 import {redisGet} from "@/app/config/redis";
-import { sessionOptions } from "@/lib/session";
-import session from "express-session";
+
+
 import { promisify } from "util";
 
-const getSessionMiddleware = (req: any, res: any) =>
-    new Promise((resolve, reject) => {
-        session(sessionOptions)(req, res, (err: any) => {
-            if (err) reject(err);
-            else resolve(true);
-        });
-    });
 export const GET = async (req: Request,res:Response) => {
    // console.log("loginCallback");
     try {
-        await getSessionMiddleware(req, res);
 
         const url = new URL(req.url);
         const login_id = url.searchParams.get('login_id');

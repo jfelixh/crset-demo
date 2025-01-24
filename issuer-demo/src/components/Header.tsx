@@ -7,10 +7,12 @@ const Header = ({
   showLinks,
   pathname,
   logout,
+  isUnpublished,
 }: {
   showLinks: boolean;
   pathname: string;
   logout: () => void;
+  isUnpublished: boolean;
 }) => {
   return (
     <>
@@ -45,7 +47,22 @@ const Header = ({
                   pathname && pathname === "/employees" && "underline"
                 )}
               >
-                Employee List
+                <div className="flex flexDirection-row items-center">
+                  <div className={isUnpublished ? "animate-pulse" : ""}>
+                    Employee List
+                  </div>
+                </div>
+              </Link>
+            )}
+            {showLinks && (
+              <Link
+                href="/dashboards"
+                className={cn(
+                  "text-white",
+                  pathname && pathname === "/dashboards" && "underline"
+                )}
+              >
+                Dashboards
               </Link>
             )}
           </div>

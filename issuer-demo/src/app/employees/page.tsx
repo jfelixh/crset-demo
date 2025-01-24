@@ -15,6 +15,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/lib/use-toast";
+import { useUnpublishedEntriesContext } from "../contexts/UnpublishedEntriesContext";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { Info, Bell } from "lucide-react";
+import { set } from "react-hook-form";
 
 const UsersPage = () => {
   const router = useRouter();
@@ -25,6 +29,12 @@ const UsersPage = () => {
   const [statuses, setStatuses] = useState<{ [key: string]: string }>({});
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const skeletonStyle = "w-[40px] h-[20px] bg-gray-300 rounded-full";
+  const {
+    thereIsUnpublished,
+    unpublishedEntries,
+    setThereIsUnpublished,
+    setUnpublishedEntries,
+  } = useUnpublishedEntriesContext();
 
   const toast = useToast();
 
@@ -112,7 +122,9 @@ const UsersPage = () => {
 
       if (!response.ok) {
         throw new Error(`Response is not ok! status: ${response.status}`);
-      } 
+      }
+      setThereIsUnpublished(false);
+      setUnpublishedEntries([]);
     } catch (error) {
       console.error("Error publishing to BFC:", error);
     }
@@ -243,6 +255,20 @@ const UsersPage = () => {
           Revoke
         </Button>
         <Button onClick={publishtoBFC}>Publish BFC</Button>
+        {thereIsUnpublished && (
+          <div className="sticky bottom-0 bg-white border-t border-gray-200 flex justify-start gap-2">
+            <Alert className="w-full">
+              <Info className="h-4 w-4 text-blue-500" />
+              <div className="ml-2">
+                <AlertTitle className="font-medium flex items-center gap-2">
+                  Reminder{" "}
+                  <Bell className="ml-2 w-5 h-5 text-red-500 animate-pulse" />
+                </AlertTitle>
+                <AlertDescription>Dont forget to publish!</AlertDescription>
+              </div>
+            </Alert>
+          </div>
+        )}
       </div>
     </div>
   );
