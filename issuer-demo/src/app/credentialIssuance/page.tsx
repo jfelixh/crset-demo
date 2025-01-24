@@ -12,6 +12,37 @@ import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import * as React from "react";
+import { Check, ChevronsUpDown } from "lucide-react";
+import { cn } from "@/lib/utils";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+
+const jobtypes = [
+  {
+    value: "Full Time",
+    label: "Full Time",
+  },
+  {
+    value: "Part Time",
+    label: "Part Time",
+  },
+  {
+    value: "Intern",
+    label: "Intern",
+  },
+];
 
 const formSchema = z.object({
   name: z
@@ -80,7 +111,8 @@ export default function Home() {
             },
             body: JSON.stringify({
               vcid: responseData.uuid,
-              email: data.email,
+              email: "chan9908181@gmail.com",
+              //data.email,
             }),
           });
 
@@ -203,19 +235,58 @@ export default function Home() {
                 <FormItem className="flex-1">
                   <FormLabel>Employment Type</FormLabel>
                   <FormControl>
-                    <div className="relative">
-                      <select
-                        {...field}
-                        className="input py-2 pl-3 text-gray-900 border border-gray-300 rounded-md w-full"
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          aria-expanded={field.value ? true : false}
+                          className="w-full justify-between"
+                        >
+                          {field.value
+                            ? field.value
+                            : "Choose an Employment Type"}
+                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent
+                        align="start"
+                        className="p-0"
+                        style={{ width: "var(--radix-popover-trigger-width)" }}
                       >
-                        <option value="" disabled>
-                          Choose an Employment Type
-                        </option>
-                        <option value="Full Time">Full Time</option>
-                        <option value="Part Time">Part Time</option>
-                        <option value="Intern">Intern</option>
-                      </select>
-                    </div>
+                        <Command>
+                          <CommandInput placeholder="Search Employment Type..." />
+                          <CommandList>
+                            <CommandEmpty>
+                              No employment type found.
+                            </CommandEmpty>
+                            <CommandGroup>
+                              {["Full Time", "Part Time", "Intern"].map(
+                                (type) => (
+                                  <CommandItem
+                                    key={type}
+                                    value={type}
+                                    onSelect={(value) => {
+                                      field.onChange(value);
+                                    }}
+                                  >
+                                    <Check
+                                      className={cn(
+                                        "mr-2 h-4 w-4",
+                                        field.value === type
+                                          ? "opacity-100"
+                                          : "opacity-0"
+                                      )}
+                                    />
+                                    {type}
+                                  </CommandItem>
+                                )
+                              )}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
                   </FormControl>
                 </FormItem>
               )}
