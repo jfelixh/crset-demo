@@ -2,6 +2,8 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { LogOut } from "lucide-react";
+import { Button } from "@/components/ui/button"
+import { useRouter } from "next/navigation";
 
 const Header = ({
   showLinks,
@@ -14,9 +16,10 @@ const Header = ({
   logout: () => void;
   isUnpublished: boolean;
 }) => {
+  const router=useRouter();
   return (
     <>
-      <header className="bg-black text-white py-2 px-16">
+      <header className="bg-blue-900 text-white py-2 px-16">
         <nav className="flex justify-between items-center">
           <div className="flex gap-4 items-center">
             <Link href="/">
@@ -29,22 +32,29 @@ const Header = ({
             </Link>
 
             {showLinks && (
-              <Link
-                href="/credentialIssuance"
+              <Button
+                  onClick={() => {
+                    router.push("/credentialIssuance");
+                  }}
+                  variant="ghost"
+
                 className={cn(
-                  "text-white",
-                  pathname && pathname === "/credentialIssuance" && "underline"
+                  "bg-blue-90 text-white",
+                  pathname && pathname === "/credentialIssuance"
                 )}
               >
                 Verifiable Credential Issuance
-              </Link>
+              </Button>
             )}
             {showLinks && (
-              <Link
-                href="/employees"
+              <Button
+                  variant="ghost"
+                  onClick={() => {
+                    router.push("/employees");
+                  }}
                 className={cn(
-                  "text-white",
-                  pathname && pathname === "/employees" && "underline"
+                  "bg-blue-90 text-white",
+                  pathname && pathname === "/employees"
                 )}
               >
                 <div className="flex flexDirection-row items-center">
@@ -52,18 +62,20 @@ const Header = ({
                     Employee List
                   </div>
                 </div>
-              </Link>
+              </Button>
             )}
             {showLinks && (
-              <Link
-                href="/dashboards"
-                className={cn(
-                  "text-white",
-                  pathname && pathname === "/dashboards" && "underline"
-                )}
-              >
-                Dashboards
-              </Link>
+                <Link href="/dashboards" passHref>
+                  <Button
+                      variant="ghost"
+                      className={cn(
+                          "text-white",
+                          pathname === "/dashboards" && "underline"
+                      )}
+                  >
+                    Dashboards
+                  </Button>
+                </Link>
             )}
           </div>
           {showLinks && (

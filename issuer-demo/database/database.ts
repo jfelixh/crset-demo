@@ -258,6 +258,25 @@ function deleteCompanyTable(db: sqlite.Database) {
         console.log("companyDataBase table is deleted.");
     });
 }
+export default function updatePublishById(db: sqlite.Database,
+                                  email: string,
+                                  isPublished: number
+): Promise<void> {
+    return new Promise(async (resolve, reject) => {
+        await db.run(
+            "UPDATE companyDataBase SET isPublished = ? WHERE email = ?",
+            [isPublished, email],
+            (err) => {
+                if (err) {
+                    console.error("Error updating status:", err.message);
+                    reject(err);
+                    return;
+                }
+                resolve();
+            }
+        );
+    });
+}
 
 
 
@@ -270,12 +289,13 @@ export async function initDB() {
     //clearCredentialStatusTable(db)
     // deleteUserByEmail(db, "natalia.m@gmail.com");
     //createAdmin(db)
-    // clearTableCompany(db)
-    // createTableCompany(db);
-    // createTable(db)
+     //clearTableCompany(db)
+     //createTableCompany(db);
+     //createTable(db)
     //clearCredentialStatusTable(db)
-     //populateDb(db, "/Users/Natalia M/Desktop/Project/idSet.csv");
-    // populateDbCompany(db, "/Users/Natalia M/Desktop/Project/idSet.csv");
+     //populateDb(db, "/Users/ichan-yeong/Downloads/idSet.csv");
+    //populateDbCompany(db, "/Users/ichan-yeong/Downloads/idSet.csv");
+    //createBfcLogsTable(db)
     // }
 }
 

@@ -37,6 +37,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.connectToDb = connectToDb;
+exports.default = updatePublishById;
 exports.initDB = initDB;
 var sqlite = require("sqlite3");
 var fs = require("node:fs");
@@ -247,6 +248,18 @@ function deleteCompanyTable(db) {
             return;
         }
         console.log("companyDataBase table is deleted.");
+    });
+}
+function updatePublishById(db, email, isPublished) {
+    return new Promise(function (resolve, reject) {
+        db.run("UPDATE companyDataBase SET isPublished = ? WHERE email = ?", [isPublished, email], function (err) {
+            if (err) {
+                console.error("Error updating status:", err.message);
+                reject(err);
+                return;
+            }
+            resolve();
+        });
     });
 }
 function initDB() {

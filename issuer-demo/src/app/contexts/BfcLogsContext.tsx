@@ -35,6 +35,7 @@ export const LogProvider = ({ children }: { children: ReactNode }) => {
   const fetchLogs = async () => {
     try {
       const response = await fetch("http://localhost:5050/api/bfcLogs/logs");
+      console.log("Response:", response);
       if (!response.ok) {
         throw new Error("Failed to fetch logs in the frontend");
       }
