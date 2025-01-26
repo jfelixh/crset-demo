@@ -11,12 +11,11 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import useGenerateWalletURL from "@/hooks/api/useGenerateWalletURL";
 import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/hooks/useAuth";
 import { useCallbackPolling } from "@/hooks/useCallbackPolling";
 import useIsMobileDevice from "@/hooks/useIsMobileDevice";
 import { EmployeeCredential } from "@/models/employee";
 import { QRCodeCanvas } from "qrcode.react";
-import { RefObject, useEffect, useRef, useState } from "react";
+import { RefObject, useState } from "react";
 import { useFormContext } from "react-hook-form";
 
 type EmployeeCredentialInfoStepProps = {
@@ -24,14 +23,25 @@ type EmployeeCredentialInfoStepProps = {
 };
 
 interface Step {
-  id: number
-  name: string
-  status: 'not_started' | 'started' | 'completed' | 'failed'
-  timeElapsed?: number
+  id: number;
+  name: string;
+  status: "not_started" | "started" | "completed" | "failed";
+  timeElapsed?: number;
   additionalMetrics?: {
-    [key: string]: string | number
-  }
+    [key: string]: string | number;
+  };
 }
+
+const ws = new WebSocket("ws://localhost:8090");
+// Handle connection errors
+ws.onerror = (error) => {
+  console.error("WebSocket Error:", error);
+};
+
+// Handle connection close
+ws.onclose = () => {
+  console.log("WebSocket connection closed");
+};
 
 const EmployeeCredentialInfoStep = ({
   nextButtonRef,
@@ -50,134 +60,122 @@ const EmployeeCredentialInfoStep = ({
   const { isMobile } = useIsMobileDevice();
   const { toast } = useToast();
 
-  const { id } = useAuth();
-  const protocol = id?.split(":")[id.split(":").length - 1];
-  // Use Ref to store the WebSocket connection: prevents reconnection on re-render
-  const wsRef = useRef<WebSocket | null>(null);
-  const [steps, setSteps] = useState<Step[]>([{
-    id: 0,
-    name: 'Extract Publisher Address',
-    status: 'not_started',
-    timeElapsed: 0,
-    additionalMetrics: {}
-  },
-  {
-    id: 1,
-    name: 'Retrieve Transactions',
-    status: 'not_started',
-    timeElapsed: 0,
-    additionalMetrics: {}
-  },
-  {
-    id: 2,
-    name: 'Identify blob transaction & get blob hash',
-    status: 'not_started',
-    timeElapsed: 0,
-    additionalMetrics: {}
-  },
-  {
-    id: 3,
-    name: 'Retrieve & concatenate blob data',
-    status: 'not_started',
-    timeElapsed: 0,
-    additionalMetrics: {}
-  },
-  {
-    id: 4,
-    name: 'Reconstruct blob data',
-    status: 'not_started',
-    timeElapsed: 0,
-    additionalMetrics: {}
-  },
-  {
-    id: 5,
-    name: 'Reconstruct bloom filter cascade',
-    status: 'not_started',
-    timeElapsed: 0,
-    additionalMetrics: {}
-  },
-  {
-    id: 6,
-    name: 'Check revocation status',
-    status: 'not_started',
-    timeElapsed: 0,
-    additionalMetrics: {}
-  }
-]);
-useEffect(() => {
-  if (!wsRef.current) {
-      // Use websocket protocol to pass client identifier
-      wsRef.current = new WebSocket("ws://localhost:8090", protocol);
-
-      wsRef.current.onerror = (error) => {
-        console.error('WebSocket Error:', error);
-      };
-
-      wsRef.current.onclose = () => {
-        console.log('WebSocket connection closed');
-      };
-
-      let lastTime = new Date().getTime();
-      wsRef.current.onmessage = (event) => {
-        const currentTime = new Date().getTime();
-        const eventData = JSON.parse(event.data);
-        const timePassed = currentTime - lastTime;
-        console.log("------------"+event.data+" "+timePassed);
-        let stepId = 0;
-        switch (eventData.step) {
-          case "extractPublisherAddress": 
-            stepId = 0; 
-            break;
-          case "getAssetTransfers":
-            stepId = 1;
-            break;
-          case "getBlobVersionedHashes":
-            stepId = 2;
-            break;
-          case "fetchAndConcatBlobData":
-            stepId = 3;
-            break;
-          case "reconstructBlobData":
-            stepId = 4;
-            break;
-          case "reconstructBFC":
-            stepId = 5;
-            break;
-          case "checkRevocation":
-            stepId = 6;
-            break;
-        }
-        // update step status
+  const [steps, setSteps] = useState<Step[]>([
+    {
+      id: 0,
+      name: "Extract Publisher Address",
+      status: "not_started",
+      timeElapsed: 0,
+      additionalMetrics: {},
+    },
+    {
+      id: 1,
+      name: "Retrieve Transactions",
+      status: "not_started",
+      timeElapsed: 0,
+      additionalMetrics: {},
+    },
+    {
+      id: 2,
+      name: "Identify blob transaction & get blob hash",
+      status: "not_started",
+      timeElapsed: 0,
+      additionalMetrics: {},
+    },
+    {
+      id: 3,
+      name: "Retrieve & concatenate blob data",
+      status: "not_started",
+      timeElapsed: 0,
+      additionalMetrics: {},
+    },
+    {
+      id: 4,
+      name: "Reconstruct blob data",
+      status: "not_started",
+      timeElapsed: 0,
+      additionalMetrics: {},
+    },
+    {
+      id: 5,
+      name: "Reconstruct bloom filter cascade",
+      status: "not_started",
+      timeElapsed: 0,
+      additionalMetrics: {},
+    },
+    {
+      id: 6,
+      name: "Check revocation status",
+      status: "not_started",
+      timeElapsed: 0,
+      additionalMetrics: {},
+    },
+  ]);
+  // const [verificationStatusList, setVerificationStatusList] = useState<string[]>([]);
+  let lastTime = new Date().getTime();
+  // Handle incoming messages
+  ws.onmessage = (event) => {
+    const currentTime = new Date().getTime();
+    const eventData = JSON.parse(event.data);
+    const timePassed = currentTime - lastTime;
+    // const verificationStatus = eventData.status==="started" ? `Verification step: ${eventData.step} - ${eventData.status}` : `Verification step: ${eventData.step} - ${eventData.status}. Time elapsed: ${currentTime - lastTime}ms`;
+    console.log("------------" + event.data + " " + timePassed);
+    // setVerificationStatusList((prev) => [...prev, verificationStatus]);
+    let stepId = 0;
+    switch (eventData.step) {
+      case "extractPublisherAddress":
+        stepId = 0;
+        break;
+      case "getAssetTransfers":
+        stepId = 1;
+        break;
+      case "getBlobVersionedHashes":
+        stepId = 2;
+        break;
+      case "fetchAndConcatBlobData":
+        stepId = 3;
+        break;
+      case "reconstructBlobData":
+        stepId = 4;
+        break;
+      case "reconstructBFC":
+        stepId = 5;
+        break;
+      case "checkRevocation":
+        stepId = 6;
+        break;
+    }
+    // update step status
+    setSteps((prev) => {
+      prev[stepId].status = eventData.status;
+      return [...prev];
+    });
+    // update time elapsed for completed steps
+    if (eventData.status === "completed") {
+      if (
+        eventData.step === "checkRevocation" &&
+        eventData.additionalMetrics.isRevoked
+      ) {
         setSteps((prev) => {
-          prev[stepId].status = eventData.status;
+          prev[stepId].status = "failed";
           return [...prev];
         });
-        // update time elapsed for completed steps
-        if (eventData.status === "completed") {
-          if (eventData.step === "checkRevocation" && eventData.additionalMetrics.isRevoked) {
-            setSteps((prev) => {
-              prev[stepId].status = "failed";
-              return [...prev];
-            });
-          }
-    
-          setSteps((prev) => {
-            prev[stepId].timeElapsed = timePassed;
-            return [...prev];
-          });
-        }
-        // update additional metrics
-        if (Object.keys(eventData).length > 2) {
-          setSteps((prev) => {
-            prev[stepId].additionalMetrics = eventData.additionalMetrics;
-            return [...prev];
-          });
-        }
-        lastTime = currentTime;
-      };
+      }
+
+      setSteps((prev) => {
+        prev[stepId].timeElapsed = timePassed;
+        return [...prev];
+      });
     }
-  }, []);
-  
+    // update additional metrics
+    if (Object.keys(eventData).length > 2) {
+      setSteps((prev) => {
+        prev[stepId].additionalMetrics = eventData.additionalMetrics;
+        return [...prev];
+      });
+    }
+    lastTime = currentTime;
+  };
 
   const { isPending } = useCallbackPolling({
     walletUrl,
@@ -213,7 +211,7 @@ useEffect(() => {
             and presenting your employee credential.
           </CardDescription>
         </CardHeader>
-          <CardContent className="space-y-4">
+        <CardContent className="space-y-4">
           <div className="flex flex-row justify-center">
             {confirmed && (
               <>
@@ -253,9 +251,9 @@ useEffect(() => {
                   </Button>
                 </div>
               ))}
-              <ProcessTimeline steps={steps} />
-            </div>
-          </CardContent>
+            <ProcessTimeline steps={steps} />
+          </div>
+        </CardContent>
       </Card>
     </div>
   );

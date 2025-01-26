@@ -1,14 +1,26 @@
-//TODO: actually use library instead of relative path
-import * as bsc from "../../../../../bfc-status-check/src/index";
 import { EventEmitter } from "events";
+import { isRevoked } from "bfc-status-check";
+import dotenv from "dotenv";
 
-export const checkRevocationStatus = async (VC: any, emitter:EventEmitter, clientId: string) => {
+dotenv.config();
+
+export const checkRevocationStatus = async (
+  VC: any,
+  emitter: EventEmitter,
+  clientId: string
+) => {
   try {
-    const status = await bsc.isRevoked(
+    const status = await isRevoked(
       VC,
       {
+        infuraApiKey: process.env.INFURA_API_KEY!,
+        moralisApiKey: process.env.MORALIS_API_KEY!,
+        blobScanUrl: process.env.BLOB_SCAN_URL!,
+        alchemyApiKey: "",
+      },
+      {
         emitter,
-        clientId
+        clientId,
       }
     );
     return status;
