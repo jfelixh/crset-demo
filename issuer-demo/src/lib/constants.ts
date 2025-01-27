@@ -1,6 +1,6 @@
 export  const optionsLineChartFilterCascade = {
   scales: {
-    y: {
+    "y-axis-1": {
       beginAtZero: true,
       title: {
         display: true,
@@ -25,8 +25,7 @@ export  const optionsLineChartFilterCascade = {
 
 export const optionsLineChartEntries = {
   scales: {
-    y: {
-      beginAtZero: true,
+    "y-axis-1": {
       title: {
         display: true,
         text: "Number of Entries",
@@ -36,7 +35,6 @@ export const optionsLineChartEntries = {
     "y-axis-2": {
       type: "linear",
       position: "right",
-      beginAtZero: true,
 
       title: {
         display: true,
