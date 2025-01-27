@@ -1,5 +1,5 @@
 import { keyToDID, keyToVerificationMethod } from "@spruceid/didkit-wasm-node";
-import { Request, Response } from "express";
+import e, { Request, Response } from "express";
 import * as jose from "jose";
 import { getConfiguredLoginPolicy } from "src/config/loginPolicy";
 import { redisGet, redisSet } from "src/config/redis";
@@ -7,6 +7,40 @@ import { checkRevocationStatus } from "src/lib/checkRevocationStatus";
 import { generatePresentationDefinition } from "src/lib/generatePresentationDefinition";
 import { getMetadata } from "src/lib/getMetadata";
 import { verifyAuthenticationPresentation } from "src/lib/verifyPresentation";
+import { EventEmitter } from "events";
+import { WebSocketServer, WebSocket } from 'ws';
+
+const emitter = new EventEmitter();
+const wss = new WebSocketServer({ port: 8090 });
+// Use client id to send events to the correct client
+let clientId = "";
+wss.on('connection', (ws: WebSocket, req) => {
+  // Client identifier passed through the WebSocket protocol
+  const protocols = req.headers['sec-websocket-protocol'];
+  clientId = protocols ? protocols : "";
+  console.log('Client connected: ' + clientId);
+  (ws as any).clientId = clientId;
+
+  // Forward events from the EventEmitter to the correct WebSocket client
+  const handleEvent = (eventData: any) => {
+    wss.clients.forEach((client) => {
+      if ((client as any).clientId === eventData.clientId) {
+        ws.send(JSON.stringify(eventData));
+      }
+    });
+  };
+
+  // Attach listener to the EventEmitter
+  emitter.on('progress', handleEvent);
+  emitter.on('vcid', handleEvent);
+
+  // Handle client disconnection
+  ws.on('close', () => {
+      console.log('Client disconnected');
+      emitter.removeListener('progress', handleEvent);
+      emitter.removeListener('vcid', handleEvent);
+  });
+});
 
 export const generateWalletURL = async (req: Request, res: any) => {
   try {
@@ -147,7 +181,7 @@ export const presentCredentialPost = async (req: Request, res: Response) => {
     if (vc[0]["type"].includes("EmploymentCredential")) {
       console.log("Checking Employee credential revocation status…");
 
-      const isRevoked = await checkRevocationStatus(vc[0]);
+      const isRevoked = await checkRevocationStatus(vc[0], emitter, clientId);
       if (isRevoked) {
         console.log("Employee credential is revoked");
         redisSet(`challenge:${challenge}`, "false", 3600);

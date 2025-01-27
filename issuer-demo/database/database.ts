@@ -155,7 +155,6 @@ function populateDb(db: sqlite.Database, filePath: string) {
         .on("error", (err) => {
             console.error("Error reading CSV file:", err.message);
         });
-
 }
 
 
@@ -256,24 +255,14 @@ export default function updatePublishById(db: sqlite.Database,
 
 export async function initDB() {
     // export function initDB() {
-    console.log("creating Table")
+    console.log("creating Table");
     console.log("Initializing database...");
     connectToDb("./bfc.db");
-    //deleteCompanyTable(db)
-
-    //clearTableCompany(db);
-    //clearCredentialStatusTable(db)
-    // deleteUserByEmail(db, "natalia.m@gmail.com");
-    //createAdmin(db)
-     //clearTableCompany(db)
-     //createTableCompany(db);
-     //createTable(db)
-    //clearCredentialStatusTable(db)
-     populateDb(db, "/Users/ichan-yeong/Downloads/test_data.csv");
-    populateDbCompany(db, "/Users/ichan-yeong/Downloads/test_data.csv");
-    //createBfcLogsTable(db)
+    // clearCredentialStatusTable(db);
+    // clearTableCompany(db);
+    populateDb(db, "./test_data.csv");
+    populateDbCompany(db, "./test_data.csv");
     // }
 }
-//initDB();
 
-
+//initDB()

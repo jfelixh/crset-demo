@@ -77,7 +77,6 @@ const UsersPage = () => {
     };
     useEffect(() => {
         console.log("repeatedly going?")
-
         fetchUsers(); // Fetch users only once when the component mounts
     }, []);
 
@@ -396,7 +395,22 @@ const UsersPage = () => {
                 <Button className="bg-blue-900 hover:bg-blue-700" onClick={publishtoBFC}>Publish BFC</Button>
             </div>
         </div>
-    );
+      )}
+
+      <div className="sticky bottom-0 bg-white border-t border-gray-200 pt-4 flex justify-start gap-2">
+        <Button onClick={revokeSelectedUser} disabled={selectedUser === null}>
+          Revoke
+        </Button>
+        <Button
+          onClick={() => {
+            router.push("/bfc");
+          }}
+        >
+          Publish BFC
+        </Button>
+      </div>
+    </div>
+  );
 };
 
 export default UsersPage;

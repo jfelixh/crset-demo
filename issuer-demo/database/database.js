@@ -54,7 +54,7 @@ function connectToDb(databaseLocation) {
         if (!db) {
             var dbPath = path.resolve(process.cwd(), databaseLocation);
             console.log('Connecting to SQLite database with path:', dbPath);
-            db = new sqlite.Database(dbPath, function (err) {
+            db = new sqlite3_1.Database(dbPath, function (err) {
                 if (err) {
                     console.error('Error connecting to SQLite:', err.message);
                     reject(err);
@@ -151,8 +151,8 @@ function populateDbCompany(db, filePath) {
 }
 function populateDb(db, filePath) {
     var insertStmt = db.prepare('INSERT INTO credentialStatus (id,status) VALUES ( ?,?)');
-    fs.createReadStream(filePath)
-        .pipe(csv({
+    node_fs_1.default.createReadStream(filePath)
+        .pipe((0, csv_parser_1.default)({
     // separator: ";"
     }))
         .on("data", function (row) {
@@ -251,17 +251,14 @@ function initDB() {
             console.log("creating Table");
             console.log("Initializing database...");
             connectToDb("./bfc.db");
-            //deleteCompanyTable(db)
-            //clearTableCompany(db);
-            //clearCredentialStatusTable(db)
+            clearCredentialStatusTable(db);
             // deleteUserByEmail(db, "natalia.m@gmail.com");
             //createAdmin(db)
-            //clearTableCompany(db)
-            //createTableCompany(db);
-            //createTable(db)
+            // clearTableCompany(db)
+            // createTableCompany(db);
+            // createTable(db)
             //clearCredentialStatusTable(db)
-            populateDb(db, "/Users/ichan-yeong/Downloads/test_data.csv");
-            populateDbCompany(db, "/Users/ichan-yeong/Downloads/test_data.csv");
+            populateDb(db, "./test_data.csv");
             return [2 /*return*/];
         });
     });

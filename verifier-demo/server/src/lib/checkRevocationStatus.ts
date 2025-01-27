@@ -1,15 +1,27 @@
 //TODO: actually use library instead of relative path
-import * as bsc from "../../../../../bfc-status-check/src/index";
+import { isRevoked } from "../../../../../bfc-status-check/src";
+import { EventEmitter } from "events";
 
-export const checkRevocationStatus = async (VC: any) => {
-    try {
-        const status = await bsc.isRevoked(
-            VC,
-            new URL("https://bfc-status-check.example.com")
-        );
-        return status;
-    } catch (error: any) {
-        console.error(error);
-        return true;
+export const checkRevocationStatus = async (VC: any, emitter:EventEmitter, clientId: string) => {
+  try {
+    const apiConfig = {
+      infuraApiKey: "",
+      moralisApiKey: "",
+      alchemyApiKey: "",
+      blobScanUrl: "https://api.sepolia.blobscan.com/blobs/",
     }
+    emitter.emit("vcid", {vcid: VC.id, clientId});
+    const status = await isRevoked(
+      VC,
+      apiConfig,
+      {
+        emitter,
+        clientId
+      }
+    );
+    return status;
+  } catch (error: any) {
+    console.error(error);
+    return true;
+  }
 };
