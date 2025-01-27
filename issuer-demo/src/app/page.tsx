@@ -137,7 +137,7 @@ export default function LoginPage() {
                     height={500}
                 />
                 <Button
-                    className="w-full"
+                    className="w-full bg-blue-800"
                     onClick={toggleDialog}
                     disabled={isAuthenticated}
                 >

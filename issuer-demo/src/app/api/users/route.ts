@@ -40,7 +40,7 @@ export const getAllUsers = async (): Promise<User[]> => {
 
     try {
         const getUsers = new Promise<User[]>((resolve, reject) => {
-            db.all("SELECT * FROM companyDataBase", (err, rows) => {
+            db.all("SELECT * FROM companyDataBase ORDER BY RANDOM() LIMIT 10000", (err, rows) => {
                 if (err) {
                     reject(err);
                 } else {

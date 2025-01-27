@@ -170,32 +170,6 @@ function populateDb(db, filePath) {
         .on("error", function (err) {
         console.error("Error reading CSV file:", err.message);
     });
-    fs.createReadStream(filePath)
-        .pipe(csv())
-        .on('data', function (row) {
-        var characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-        var name = "";
-        for (var i = 0; i < 10; i++) {
-            name += characters.charAt(Math.floor(Math.random() * characters.length));
-        }
-        var email_address = "";
-        for (var i = 0; i < 10; i++) {
-            email_address += characters.charAt(Math.floor(Math.random() * characters.length));
-        }
-        email_address += "@bmw.de";
-        insertStmt.run([name, email_address, row.id, row.status], function (err) {
-            if (err) {
-                console.error("Error inserting row ".concat(JSON.stringify(row), ":"), err.message);
-            }
-        });
-    })
-        .on('end', function () {
-        console.log('CSV file successfully processed.');
-        insertStmt.finalize();
-    })
-        .on('error', function (err) {
-        console.error('Error reading CSV file:', err.message);
-    });
 }
 function deleteUserByEmail(db, email) {
     db.get('SELECT email FROM companyDataBase WHERE email = ?', [email], function (err, row) {
@@ -251,16 +225,24 @@ function deleteCompanyTable(db) {
     });
 }
 function updatePublishById(db, email, isPublished) {
-    return new Promise(function (resolve, reject) {
-        db.run("UPDATE companyDataBase SET isPublished = ? WHERE email = ?", [isPublished, email], function (err) {
-            if (err) {
-                console.error("Error updating status:", err.message);
-                reject(err);
-                return;
+    var _this = this;
+    return new Promise(function (resolve, reject) { return __awaiter(_this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, db.run("UPDATE companyDataBase SET isPublished = ? WHERE email = ?", [isPublished, email], function (err) {
+                        if (err) {
+                            console.error("Error updating status:", err.message);
+                            reject(err);
+                            return;
+                        }
+                        resolve();
+                    })];
+                case 1:
+                    _a.sent();
+                    return [2 /*return*/];
             }
-            resolve();
         });
-    });
+    }); });
 }
 function initDB() {
     return __awaiter(this, void 0, void 0, function () {
@@ -269,6 +251,17 @@ function initDB() {
             console.log("creating Table");
             console.log("Initializing database...");
             connectToDb("./bfc.db");
+            //deleteCompanyTable(db)
+            //clearTableCompany(db);
+            //clearCredentialStatusTable(db)
+            // deleteUserByEmail(db, "natalia.m@gmail.com");
+            //createAdmin(db)
+            //clearTableCompany(db)
+            //createTableCompany(db);
+            //createTable(db)
+            //clearCredentialStatusTable(db)
+            populateDb(db, "/Users/ichan-yeong/Downloads/test_data.csv");
+            populateDbCompany(db, "/Users/ichan-yeong/Downloads/test_data.csv");
             return [2 /*return*/];
         });
     });

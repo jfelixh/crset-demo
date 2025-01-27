@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 export function middleware(req: NextRequest) {
-    const publicPaths = ['/api/generateWalletUrl', '/api/callback','/images','/api/presentCredential','/api/clientMetadata','/api/authorizationCheck','/credentialIssuance'];
+    const publicPaths = ['/api/generateWalletUrl', '/api/callback','/images','/api/presentCredential','/api/clientMetadata','/api/authorizationCheck','/credentialIssuance','/vci'];
     //console.log("logging middleware")
 
     const pathname = req.nextUrl.pathname;
-    //console.log('Request pathname:', pathname); // Debug log
+    console.log('Request pathname:', pathname); // Debug log
     for (const path of publicPaths) {
         if (pathname.startsWith(path) || pathname ==="/") {
             return NextResponse.next();

@@ -8,6 +8,7 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form";
+import {Dialog, DialogContent, DialogTitle, DialogDescription, DialogFooter} from "@/components/ui/dialog";
 import {Input} from "@/components/ui/input";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {useForm} from "react-hook-form";
@@ -36,6 +37,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
+import {useState} from "react";
 
 const jobtypes = [
     {
@@ -75,8 +77,9 @@ const formSchema = z.object({
         .regex(/^[^\d]*$/, {message: "Manager name cannot contain numbers"}), // Custom error message
     employmentType: z.string().min(1),
 });
-
 export default function Home() {
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [dialogMessage, setDialogMessage] = useState("");
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -104,12 +107,9 @@ export default function Home() {
                 }),
             });
             const responseData = await response.json();
-            console.log("response",response)
-            if (responseData?.uuid) {
-                console.log("is it working?")
-                console.log("VCID:", responseData.uuid);
-                window.location.href = `/vci/${responseData.uuid}`;
-            /*if (responseData?.uuid && data.email) {
+            console.log("response", response)
+
+            if (responseData?.uuid && data.email) {
                 //window.location.href = `/vci/${responseData.uuid}`;
                 if (!data.email || !responseData.uuid) {
                     alert("Please enter an email and ensure VCID is loaded.");
@@ -132,16 +132,18 @@ export default function Home() {
                     const result = await response.json();
 
                     if (response.ok) {
-                        alert("Email sent successfully!");
+                        setDialogMessage("Email sent successfully!");
+                        setIsDialogOpen(true);
                     } else {
-                        alert(`Error: ${result.error}`);
+                        setDialogMessage(`Error: ${result.error}`);
+                        setIsDialogOpen(true);
                     }
                 } catch (error) {
                     console.log(error);
                     alert("Failed to send email.");
                 }
 
-                 */
+
             } else {
                 console.error("Missing UUID in the response");
             }
@@ -308,12 +310,25 @@ export default function Home() {
                                 />
                             </div>
                             <div className="flex justify-end">
-                                <Button className="bg-blue-800" type="submit">Generate Verifiable Credential</Button>
+                                <Button className="bg-blue-800 hover:bg-blue-700" type="submit">
+                                    Generate Verifiable Credential
+                                </Button>
                             </div>
                         </form>
                     </Form>
                 </CardContent>
             </Card>
+            <Dialog open={isDialogOpen} onOpenChange={(open) => setIsDialogOpen(open)}>
+                <DialogContent>
+                    <DialogTitle>Notification</DialogTitle>
+                    <DialogDescription>{dialogMessage}</DialogDescription>
+                    <DialogFooter>
+                        <Button onClick={() => setIsDialogOpen(false)}>Close</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
         </div>
-    );
+    )
+        ;
 }

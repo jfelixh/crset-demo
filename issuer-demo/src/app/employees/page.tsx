@@ -106,6 +106,8 @@ const UsersPage = () => {
         for (const user of topUsers) {
             // console.log("user:", user);
             const validity = await getCredentialStatus(user);
+            console.log("user:", user.email_address);
+            console.log("validity:", validity);
             if (validity) {
                 userStatuses[user.email_address] = "Valid";
             } else {
@@ -217,14 +219,12 @@ const UsersPage = () => {
     return (
         <div className="page-container">
             {thereIsUnpublished && (
-                <div className="sticky bottom-0 bg-white border-t border-gray-200 flex justify-start gap-2">
-                    <Alert className=" border-orange-500">
-                        <AlertCircle className="h-5 w-5 "/>
-                        <div className="flex flex-col gap-2 pt-1.5">
-                            <AlertTitle className="font-semibold bg-text-white" ><Badge className="bg-red-500 text-white">Reminder: Don't forget to publish!</Badge></AlertTitle>
+
+
+                        <div className="flex flex-col gap-2 pt-1">
+                            <AlertTitle className="font-semibold bg-text-white" ><Badge className="bg-orange-500 text-white text-xl gap-x-2 animate-pulse hover:bg-orange-400 transition-colors duration-4000 ease-in-out"><AlertCircle className="h-5 w-5 text-white"/>Reminder: Don't forget to publish!</Badge></AlertTitle>
                         </div>
-                    </Alert>
-                </div>
+
             )}
             <div className="flex items-center mb-4 space-x-4 pt-2">
                 <Input
@@ -315,8 +315,8 @@ const UsersPage = () => {
                                                     <Badge
                                                         className={
                                                             statuses[user.email_address] === "Valid"
-                                                                ? "bg-green-500 text-white"
-                                                                : "bg-red-500 text-white"
+                                                                ? "bg-green-500 text-white hover:bg-green-400"
+                                                                : "bg-red-500 text-white hover:bg-red-400"
                                                         }
                                                     >
                                                         {statuses[user.email_address] === "Valid" ? "Valid" : "Invalid"}
@@ -390,10 +390,10 @@ const UsersPage = () => {
             )}
 
             <div className="sticky bottom-0 bg-white border-t border-gray-200 pt-4 flex justify-end gap-2">
-                <Button className="bg-blue-900" onClick={revokeSelectedUser} disabled={selectedUser === null}>
+                <Button className="bg-blue-900 hover:bg-blue-700" onClick={revokeSelectedUser} disabled={selectedUser === null}>
                     Revoke
                 </Button>
-                <Button className="bg-blue-900" onClick={publishtoBFC}>Publish BFC</Button>
+                <Button className="bg-blue-900 hover:bg-blue-700" onClick={publishtoBFC}>Publish BFC</Button>
             </div>
         </div>
     );

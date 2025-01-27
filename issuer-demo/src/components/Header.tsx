@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
-import { LogOut } from "lucide-react";
+import {AlertCircle, LogOut} from "lucide-react";
 import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation";
 
@@ -47,22 +47,23 @@ const Header = ({
               </Button>
             )}
             {showLinks && (
-              <Button
-                  variant="ghost"
-                  onClick={() => {
-                    router.push("/employees");
-                  }}
-                className={cn(
-                  "bg-blue-90 text-white",
-                  pathname && pathname === "/employees"
-                )}
-              >
-                <div className="flex flexDirection-row items-center">
-                  <div className={isUnpublished ? "animate-pulse" : ""}>
-                    Employee List
+                <Button
+                    variant="ghost"
+                    onClick={() => {
+                      router.push("/employees");
+                    }}
+                    className={cn(
+                        "bg-blue-90 text-white",
+                        pathname && pathname === "/employees"
+                    )}
+                >
+                  <div className={`flex flex-row items-center ${isUnpublished ? "animate-pulse" : ""}`}>
+                    {isUnpublished &&(<AlertCircle className="h-5 w-5 text-white" />)}
+                    <span className="ml-2">Employee List</span>
                   </div>
-                </div>
-              </Button>
+                </Button>
+
+
             )}
             {showLinks && (
                 <Link href="/dashboards" passHref>

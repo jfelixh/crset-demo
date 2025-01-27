@@ -155,33 +155,7 @@ function populateDb(db: sqlite.Database, filePath: string) {
         .on("error", (err) => {
             console.error("Error reading CSV file:", err.message);
         });
-    fs.createReadStream(filePath)
-        .pipe(csv())
-        .on('data', (row) => {
-            const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-            let name = "";
-            for (let i = 0; i < 10; i++) {
-                name += characters.charAt(Math.floor(Math.random() * characters.length));
-            }
-            let email_address = "";
-            for (let i = 0; i < 10; i++) {
-                email_address += characters.charAt(Math.floor(Math.random() * characters.length));
-            }
-            email_address += "@bmw.de";
 
-            insertStmt.run([name, email_address, row.id, row.status], (err) => {
-                if (err) {
-                    console.error(`Error inserting row ${JSON.stringify(row)}:`, err.message);
-                }
-            });
-        })
-        .on('end', () => {
-            console.log('CSV file successfully processed.');
-            insertStmt.finalize();
-        })
-        .on('error', (err) => {
-            console.error('Error reading CSV file:', err.message);
-        });
 }
 
 
@@ -286,6 +260,8 @@ export async function initDB() {
     console.log("Initializing database...");
     connectToDb("./bfc.db");
     //deleteCompanyTable(db)
+
+    //clearTableCompany(db);
     //clearCredentialStatusTable(db)
     // deleteUserByEmail(db, "natalia.m@gmail.com");
     //createAdmin(db)
@@ -293,12 +269,11 @@ export async function initDB() {
      //createTableCompany(db);
      //createTable(db)
     //clearCredentialStatusTable(db)
-     //populateDb(db, "/Users/ichan-yeong/Downloads/idSet.csv");
-    //populateDbCompany(db, "/Users/ichan-yeong/Downloads/idSet.csv");
+     populateDb(db, "/Users/ichan-yeong/Downloads/test_data.csv");
+    populateDbCompany(db, "/Users/ichan-yeong/Downloads/test_data.csv");
     //createBfcLogsTable(db)
     // }
 }
-
 //initDB();
 
 
