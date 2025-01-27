@@ -1,17 +1,17 @@
 {
   "compilerOptions": {
-    "target": "es2022",
+    "target": "es2018",
     "moduleDetection": "auto",
-
     "module": "commonjs",
     "baseUrl": "./",
     "paths": {
-      // TODO: Add aliases for new directories
-      // "@services/*": ["src/services/*"],
-      // "@utils/*": ["src/utils/*"]
+      "@/models/*": ["src/models/*"],
+      "@/config/*": ["src/config/*"],
       "@/db/*": ["src/db/*"],
       "@/types/*": ["src/types/*"],
-      "@/controllers/*": ["src/controllers/*"]
+      "@/controllers/*": ["src/controllers/*"],
+      "@/lib/*": ["src/lib/*"],
+      "@/policies/*": ["src/policies/*"]
     },
     "outDir": "./dist",
     "esModuleInterop": true,

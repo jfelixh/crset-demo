@@ -1,38 +1,37 @@
-import * as sqlite from "sqlite3";
-import * as fs from "node:fs";
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-import csv = require("csv-parser");
-import * as path from 'path';
+import { Database } from "sqlite3";
+import fs from "node:fs";
+import csv from 'csv-parser';
+import * as path from "path";
 import { uniqueNamesGenerator, Config, names } from 'unique-names-generator';
 
 const config: Config = {
     dictionaries: [names]
 }
 
-let db: sqlite.Database;
+let db: Database;
 
 
-export function connectToDb(databaseLocation: string): Promise<sqlite.Database> {
-    return new Promise((resolve, reject) => {
-        if (!db) {
-            const dbPath = path.resolve(process.cwd(), databaseLocation);
-            console.log('Connecting to SQLite database with path:', dbPath);
-            db = new sqlite.Database(dbPath, (err) => {
-                if (err) {
-                    console.error('Error connecting to SQLite:', err.message);
-                    reject(err);
-                } else {
-                    console.log('Connected to SQLite database.');
-                    resolve(db);
-                }
-            });
+export function connectToDb(databaseLocation: string): Promise<Database> {
+  return new Promise((resolve, reject) => {
+    if (!db) {
+      const dbPath = path.resolve(process.cwd(), databaseLocation);
+      console.log("Connecting to SQLite database with path:", dbPath);
+      db = new Database(dbPath, (err) => {
+        if (err) {
+          console.error("Error connecting to SQLite:", err.message);
+          reject(err);
         } else {
-            resolve(db);
+          console.log("Connected to SQLite database.");
+          resolve(db);
         }
-    });
+      });
+    } else {
+      resolve(db);
+    }
+  });
 }
 
-function createTable(db: sqlite.Database) {
+function createTable(db: Database) {
     db.run(
         `CREATE TABLE IF NOT EXISTS credentialStatus
          (
@@ -49,7 +48,7 @@ function createTable(db: sqlite.Database) {
     );
 }
 
-function createTableCompany(db: sqlite.Database) {
+function createTableCompany(db: Database) {
     console.log("Creating companyDataBase table...");
     db.run(
         `CREATE TABLE IF NOT EXISTS companyDataBase
@@ -72,7 +71,7 @@ function createTableCompany(db: sqlite.Database) {
     );
 }
 
-function clearTableCompany(db: sqlite.Database) {
+function clearTableCompany(db: Database) {
     console.log("Clearing content of companyDataBase table...");
     db.run(`DELETE FROM companyDataBase`, (err) => {
         if (err) {
@@ -83,7 +82,7 @@ function clearTableCompany(db: sqlite.Database) {
     });
 }
 
-function clearCredentialStatusTable(db: sqlite.Database) {
+function clearCredentialStatusTable(db: Database) {
     console.log("Clearing content of credentialStatus table...");
     db.run(`DELETE FROM credentialStatus`, (err) => {
         if (err) {
@@ -94,7 +93,7 @@ function clearCredentialStatusTable(db: sqlite.Database) {
     });
 }
 
-function populateDbCompany(db: sqlite.Database, filePath: string) {
+function populateDbCompany(db: Database, filePath: string) {
     const insertStmt = db.prepare('INSERT INTO companyDataBase (name,email,jobTitle,VC,manager, employmentType, isPublished) VALUES ( ?,?,?,?,?,?,?)');
     fs.createReadStream(filePath)
         .pipe(
@@ -129,7 +128,7 @@ function populateDbCompany(db: sqlite.Database, filePath: string) {
         });
 }
 
-function populateDb(db: sqlite.Database, filePath: string) {
+function populateDb(db: Database, filePath: string) {
     const insertStmt = db.prepare('INSERT INTO credentialStatus (id,status) VALUES ( ?,?)');
     fs.createReadStream(filePath)
         .pipe(
@@ -159,7 +158,7 @@ function populateDb(db: sqlite.Database, filePath: string) {
 
 
 
-function deleteUserByEmail(db: sqlite.Database, email: string) {
+function deleteUserByEmail(db: Database, email: string) {
     db.get('SELECT email FROM companyDataBase WHERE email = ?', [email], (err, row) => {
         if (err) {
             console.error("Error checking email existence:", err.message);
@@ -183,7 +182,7 @@ function deleteUserByEmail(db: sqlite.Database, email: string) {
     });
 }
 
-function createBfcLogsTable(db) {
+function createBfcLogsTable(db: Database) {
     db.run(
         `CREATE TABLE IF NOT EXISTS bfcLogs (
             validIdsSize INTEGER NOT NULL,
@@ -210,7 +209,7 @@ function createBfcLogsTable(db) {
     );
 }
 
-function clearLogsTable(db: sqlite.Database) {
+function clearLogsTable(db: Database) {
     console.log("Clearing content of bfcLogs table...");
     db.run(`DELETE FROM bfcLogs`, (err) => {
         if (err) {
@@ -221,7 +220,7 @@ function clearLogsTable(db: sqlite.Database) {
     });
 }
 
-function deleteCompanyTable(db: sqlite.Database) {
+function deleteCompanyTable(db: Database) {
     console.log("Clearing content of companyDataBase table...");
     db.run(`DROP TABLE IF EXISTS companyDataBase`, (err) => {
         if (err) {
@@ -231,7 +230,7 @@ function deleteCompanyTable(db: sqlite.Database) {
         console.log("companyDataBase table is deleted.");
     });
 }
-export default function updatePublishById(db: sqlite.Database,
+export default function updatePublishById(db: Database,
                                   email: string,
                                   isPublished: number
 ): Promise<void> {

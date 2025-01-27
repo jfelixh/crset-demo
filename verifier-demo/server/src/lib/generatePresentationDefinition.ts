@@ -74,7 +74,9 @@ export const generatePresentationDefinition = (policy: LoginPolicy) => {
 
       let fields = pattern.claims
         .filter((claim) =>
-          Object.hasOwn(claim, "required") ? claim.required : true
+          Object.prototype.hasOwnProperty.call(claim, "required")
+            ? claim.required
+            : true
         )
         .map((claim) => {
           return {

@@ -11,13 +11,12 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import useGenerateWalletURL from "@/hooks/api/useGenerateWalletURL";
 import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/hooks/useAuth";
 import { useCallbackPolling } from "@/hooks/useCallbackPolling";
 import useIsMobileDevice from "@/hooks/useIsMobileDevice";
 import { EmployeeCredential } from "@/models/employee";
 import { CheckCircleIcon } from "lucide-react";
 import { QRCodeCanvas } from "qrcode.react";
-import { RefObject, useEffect, useRef, useState } from "react";
+import { RefObject, useState } from "react";
 import { useFormContext } from "react-hook-form";
 
 type EmployeeCredentialInfoStepProps = {
@@ -25,14 +24,25 @@ type EmployeeCredentialInfoStepProps = {
 };
 
 interface Step {
-  id: number
-  name: string
-  status: 'not_started' | 'started' | 'completed' | 'failed'
-  timeElapsed?: number
+  id: number;
+  name: string;
+  status: "not_started" | "started" | "completed" | "failed";
+  timeElapsed?: number;
   additionalMetrics?: {
-    [key: string]: string | number
-  }
+    [key: string]: string | number;
+  };
 }
+
+const ws = new WebSocket("ws://localhost:8090");
+// Handle connection errors
+ws.onerror = (error) => {
+  console.error("WebSocket Error:", error);
+};
+
+// Handle connection close
+ws.onclose = () => {
+  console.log("WebSocket connection closed");
+};
 
 const EmployeeCredentialInfoStep = ({
   nextButtonRef,

@@ -140,7 +140,8 @@ const isCredentialFittingPattern = (
 
   for (const claim of pattern.claims) {
     if (
-      (!Object.hasOwn(claim, "required") || claim.required) &&
+      (!Object.prototype.hasOwnProperty.call(claim, "required") ||
+        claim.required) &&
       jp.paths(cred, claim.claimPath).length === 0
     ) {
       return false;
