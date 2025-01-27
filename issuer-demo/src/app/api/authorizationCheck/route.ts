@@ -10,19 +10,18 @@ export async function POST(req: Request){
 
     try{
         const credentialSubjectIds = await getAllCredentialSubjectIds(db);
-      // console.log("Credential Subject IDs: ", credentialSubjectIds);
+       // console.log("Credential Subject IDs: ", credentialSubjectIds);
        // const result = searchCredentialSubjectId(credentialSubjectIds, "did:key:z6MkkdC46uhBGjMYS2ZDLUwCrTWdaqZdTD3596sN4397oRNd");
        const result = searchCredentialSubjectId(credentialSubjectIds, idToCheck);
-      //  console.log("Result from the search: ", result);
         if(result){
            // const credentialSubjectInfo = await getCredentialSubjectInfo(db, "did:key:z6MkkdC46uhBGjMYS2ZDLUwCrTWdaqZdTD3596sN4397oRNd");
            const credentialSubjectInfo = await getCredentialSubjectInfo(db, idToCheck);
           // console.log("Credential Subject Info: ", credentialSubjectInfo);
-           console.log("Success for admin:",(credentialSubjectInfo[0].jobTitle as string).toLowerCase() === "admin")
+            //console.log("Success for admin:",(credentialSubjectInfo[0].jobTitle as string).toLowerCase() === "admin")
           return new Response(JSON.stringify({ success: (credentialSubjectInfo[0].jobTitle as string).toLowerCase() === "admin" }), { status: 200 })
           // return new Response(JSON.stringify({ success: (credentialSubjectInfo.email as string) === 'felix.hoops@tum.de' }))
         }
-        console.log("Success for non-admin:", result)
+        //console.log("Success for non-admin:", result)
         return new Response(JSON.stringify({ success: result }), { status: 200 })
 
     }catch(err){
