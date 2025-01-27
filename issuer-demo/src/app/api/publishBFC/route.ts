@@ -1,9 +1,15 @@
+import * as sqlite from "sqlite3";
+import * as database from "../../../../database/database";
+
+let db: sqlite.Database;
 export const POST = async () => {
     try {
         console.log("Posting to publish BFC...");
-        const response = await fetch('http://localhost:5050/api/status/publishBFC', {
+        await fetch('http://localhost:5050/api/status/publishBFC', {
             method: 'POST',
         });
+        db = await database.connectToDb("database/bfc.db");
+        await setAllPublished(db);
         console.log("Published BFC successfully")
         return new Response("Published BFC successfully", {status: 200, headers: {'Content-Type': 'application/json'}});
 
@@ -16,3 +22,16 @@ export const POST = async () => {
         );
     }
 };
+
+function setAllPublished(db) {
+    db.run(
+        `UPDATE companyDataBase SET isPublished = 1`,
+        (err) => {
+            if (err) {
+                console.error("Error updating entries:", err.message);
+                return;
+            }
+            console.log("All entries have been set to published.");
+        }
+    );
+}

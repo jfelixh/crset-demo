@@ -1,6 +1,6 @@
 'use client'
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { Check, Clock, AlertCircle, X } from 'lucide-react'
 import { Separator } from "./ui/separator"
@@ -16,10 +16,11 @@ interface Step {
 }
 
 interface ProcessTimelineProps {
-  steps: Step[]
+  steps: Step[],
+  vcid: string | null
 }
 
-export function ProcessTimeline({ steps }: ProcessTimelineProps) {
+export function ProcessTimeline({ steps, vcid }: ProcessTimelineProps) {
   const getProgress = () => {
     const completedSteps = steps.filter(step => step.status === 'completed').length
     return (completedSteps / steps.length) * 100
@@ -65,10 +66,17 @@ export function ProcessTimeline({ steps }: ProcessTimelineProps) {
   }
 
   return (
-    <Card className="w-full max-w-md">
+    <Card className="w-full max-w-lg">
       <CardHeader>
         <CardTitle>Verification Progress</CardTitle>
         <Progress value={getProgress()} className="w-full mt-2" />
+        <CardDescription>
+          {vcid ? (<div>
+            VCID: {vcid}
+          </div>):(<div>
+            Scan the QR code to present your employment credential!
+          </div>)}
+        </CardDescription>
       </CardHeader>
       <CardContent className="max-h-[65vh] overflow-auto">
         <div className="space-y-6">
@@ -87,14 +95,14 @@ export function ProcessTimeline({ steps }: ProcessTimelineProps) {
                 <p className="text-xs text-gray-500">
                   <a className="font-bold">Status: </a>{step.status.replace('_', ' ')}
                 </p>
-                {step.timeElapsed !== undefined && (
+                {step.timeElapsed !== undefined && step.status !== "not_started" && (
                   <p className="text-xs text-gray-500">
                     <a className="font-bold">Time elapsed: </a>{step.timeElapsed > 0 ? step.timeElapsed : "< 1"} ms
                   </p>
                 )}
-                <Separator className="my-1"/>
                 {step.additionalMetrics && (
-                  <div className="mt-1">
+                  <div className="mt-1 truncate max-w-96">
+                    <Separator/>
                     <div className="space-y-1">
                       {Object.entries(step.additionalMetrics).map(([key, value]) => (
                         <p key={key} className="text-xs text-gray-500 truncate" title={`${key}: ${value}`}>

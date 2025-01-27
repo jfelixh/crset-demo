@@ -6,7 +6,6 @@ import {
   useState,
 } from "react";
 import { useRouter } from "next/navigation";
-
 interface AuthContextType {
   isAuthenticated: boolean;
   login: (token: string) => void;
@@ -27,6 +26,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const login = (token: string) => {
+    document.cookie = `authToken=${token}; Path=/; SameSite=Lax`;
+    console.log("document cookies:",document.cookie);
     localStorage.setItem("authToken", token);
     setIsAuthenticated(true);
     router.push("/credentialIssuance");
@@ -35,6 +36,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const logout = () => {
     localStorage.removeItem("authToken");
     setIsAuthenticated(false);
+    document.cookie = "authToken=; Path=/; SameSite=Lax; Max-Age=0;";
+    router.push("/");
   };
 
   return (

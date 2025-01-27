@@ -6,6 +6,5 @@ export async function POST() {
     token_type: "bearer",
     expires_in: 3600,
   };
-
   return Response.json(data);
 }

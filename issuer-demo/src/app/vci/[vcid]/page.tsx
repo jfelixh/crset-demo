@@ -14,6 +14,7 @@ export default function Issuance({
   useEffect(() => {
     async function fetchParams() {
       const resolvedParams = await params;
+      console.log("resolvedParams", resolvedParams);
       setVcid(resolvedParams.vcid);
     }
     fetchParams();

@@ -32,11 +32,13 @@ wss.on('connection', (ws: WebSocket, req) => {
 
   // Attach listener to the EventEmitter
   emitter.on('progress', handleEvent);
+  emitter.on('vcid', handleEvent);
 
   // Handle client disconnection
   ws.on('close', () => {
       console.log('Client disconnected');
       emitter.removeListener('progress', handleEvent);
+      emitter.removeListener('vcid', handleEvent);
   });
 });
 

@@ -8,6 +8,7 @@ type User = {
     email_address: string;
     jobTitle: string;
     VC: string;
+    published:boolean;
 };
 
 export const GET = async () => {
@@ -39,7 +40,7 @@ export const getAllUsers = async (): Promise<User[]> => {
 
     try {
         const getUsers = new Promise<User[]>((resolve, reject) => {
-            db.all("SELECT * FROM companyDataBase", (err, rows) => {
+            db.all("SELECT * FROM companyDataBase ORDER BY RANDOM() LIMIT 10000", (err, rows) => {
                 if (err) {
                     reject(err);
                 } else {
@@ -50,6 +51,7 @@ export const getAllUsers = async (): Promise<User[]> => {
                             email_address: row.email,
                             jobTitle: row.jobTitle,
                             VC: row.VC,
+                            published: row.isPublished === 1,
                         });
                     });
                     resolve(users); // Resolve with the populated users array

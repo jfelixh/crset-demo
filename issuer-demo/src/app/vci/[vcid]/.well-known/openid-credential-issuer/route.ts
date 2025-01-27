@@ -12,7 +12,7 @@ export async function GET(
   { params }:  { params: Promise<{ vcid: string } > }
 ) {
   const resolvedParams = await params;
-  //console.log("Resolved params:", resolvedParams);
+  console.log("Resolved params for openid-credential:", resolvedParams);
   const vc = await redis.get("vc-" + resolvedParams.vcid);
 
   if (!vc || vc === undefined) {
