@@ -17,13 +17,14 @@ import LastTransactionsCard from "@/components/LastTransactionsCard";
 import BarChart from "@/components/BarChart";
 import LineChart from "@/components/LineChart";
 import ChartCard from "@/components/ChartCard";
-import { LogData, useLogs } from "../contexts/BfcLogsContext";
+import { LogData } from "../contexts/BfcLogsContext";
 import SmallCard from "@/components/SmallCard";
 import {
   optionsLineChartFilterCascade,
   optionsLineChartEntries,
 } from "@/lib/constants";
 import { timeAgo } from "@/lib/constants";
+import LoadingComponent from "@/components/LoadingComponent";
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -51,12 +52,13 @@ interface ChartData {
 }
 
 const Dashboards = () => {
-  const { logs } = useLogs();
+  const [logs, setLogs] = useState<LogData[]>([]);
   const [latestLog, setLatestLog] = useState<LogData>({});
   const [last5Logs, setLast5Logs] = useState<LogData[]>([]);
   const [exchangeRate, setExchangeRate] = useState<number>(0);
   const [numberOfUnpublishedEntries, setNumberOfUnpublishedEntries] =
     useState<number>(0);
+  const isLoading = !logs || logs.length === 0;
 
   const [formattedData, setFormattedData] = useState<{
     entriesData: ChartData;
@@ -69,6 +71,24 @@ const Dashboards = () => {
     stackedBarChartData: { labels: [], datasets: [] },
     transactionCostData: { labels: [], datasets: [] },
   });
+
+  const fetchLogs = async () => {
+    try {
+      const response = await fetch("http://localhost:5050/api/bfcLogs/logs");
+      console.log("Response:", response);
+      if (!response.ok) {
+        throw new Error("Failed to fetch logs in the frontend");
+      }
+      const data = await response.json();
+      setLogs(data);
+    } catch (err) {
+      console.error("Error fetching logs in the frontend:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchLogs();
+  }, []);
 
   useEffect(() => {
     const fetchExchangeRate = async () => {
@@ -106,7 +126,7 @@ const Dashboards = () => {
       );
       const validEntriesData = logs.map((log) => log.validIdsSize);
       const invalidEntriesData = logs.map((log) => log.invalidIdsSize);
-      const transactionCost = logs.map((log) => log.transactionCost / 10 ** 9);
+      const transactionCost = logs.map((log) => log.transactionCost);
       setLatestLog(logs[logs.length - 1]);
       setLast5Logs(logs.slice(logs.length - 5, logs.length).reverse()); // Reverse to show the newest logs first
 
@@ -203,34 +223,44 @@ const Dashboards = () => {
       {/* First Row */}
       <div className="grid grid-cols-2 gap-6">
         <ChartCard title="Valid and Invalid Entries Over Time">
-          <LineChart
-            data={formattedData.entriesData}
-            options={optionsLineChartEntries}
-          />
+          {isLoading ? (
+            <LoadingComponent />
+          ) : (
+            <LineChart
+              data={formattedData.entriesData}
+              options={optionsLineChartEntries}
+            />
+          )}
         </ChartCard>
 
-        <LastTransactionsCard logs={last5Logs} />
+        <LastTransactionsCard logs={last5Logs} isLoading={isLoading} />
       </div>
 
       {/* Second Row */}
       <div className="grid grid-cols-4 gap-6">
         <SmallCard
           title="Entries Changed and not Published"
+          isLoading={isLoading}
           content={numberOfUnpublishedEntries.toString()}
         />
 
         <SmallCard
           title="Time Since Last Publish"
+          isLoading={isLoading}
           content={timeAgo(latestLog.publicationTimeStemp)}
         />
 
         <SmallCard
-          title="Costs of Last Transaction in Dollars"
-          content={`${latestLog.transactionCost * exchangeRate} USD`}
+          title="Costs of Last Transaction"
+          isLoading={isLoading}
+          content={`$ ${(latestLog.transactionCost * exchangeRate).toFixed(
+            2
+          )} / ${(latestLog.transactionCost || 0).toFixed(6)} ether`}
         />
 
         <SmallCard
           title="Savings made from Last Transaction"
+          isLoading={isLoading}
           content={`${(
             100 -
             (latestLog.transactionCost / latestLog.calldataTotalCost) * 100
@@ -241,33 +271,45 @@ const Dashboards = () => {
       {/* Third Row */}
       <div className="grid grid-cols-2 gap-6">
         <ChartCard title="Construction and Publishing Times in Seconds">
-          <BarChart
-            data={formattedData.stackedBarChartData}
-            options={{
-              responsive: true,
-              scales: { x: { stacked: true }, y: { stacked: true } },
-            }}
-          />
+          {isLoading ? (
+            <LoadingComponent />
+          ) : (
+            <BarChart
+              data={formattedData.stackedBarChartData}
+              options={{
+                responsive: true,
+                scales: { x: { stacked: true }, y: { stacked: true } },
+              }}
+            />
+          )}
         </ChartCard>
 
         <ChartCard title="Transaction Costs Over Time">
-          <LineChart
-            data={formattedData.transactionCostData}
-            options={{
-              responsive: true,
-              scales: { y: { beginAtZero: true } },
-            }}
-          />
+          {isLoading ? (
+            <LoadingComponent />
+          ) : (
+            <LineChart
+              data={formattedData.transactionCostData}
+              options={{
+                responsive: true,
+                scales: { y: { beginAtZero: true } },
+              }}
+            />
+          )}
         </ChartCard>
       </div>
 
       {/* 4rth Row */}
       <div className="grid grid-cols-2 gap-6">
         <ChartCard title="Bloom Filter Cascade Size">
-          <LineChart
-            data={formattedData.filterCascadeData}
-            options={optionsLineChartFilterCascade}
-          />
+          {isLoading ? (
+            <LoadingComponent />
+          ) : (
+            <LineChart
+              data={formattedData.filterCascadeData}
+              options={optionsLineChartFilterCascade}
+            />
+          )}
         </ChartCard>
       </div>
     </div>

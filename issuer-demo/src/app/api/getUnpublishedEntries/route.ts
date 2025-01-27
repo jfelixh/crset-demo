@@ -1,4 +1,3 @@
-import { get } from "axios";
 import * as sqlite from "sqlite3";
 import * as database from "../../../../database/database";
 import { UnpublishedEntries } from "@/app/types/UnpublishedEntries";
