@@ -38,9 +38,9 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.connectToDb = connectToDb;
 exports.initDB = initDB;
-var sqlite = require("sqlite3");
-var fs = require("node:fs");
-var csv = require("csv-parser");
+var sqlite3_1 = require("sqlite3");
+var node_fs_1 = require("node:fs");
+var csv_parser_1 = require("csv-parser");
 var path = require("path");
 var unique_names_generator_1 = require("unique-names-generator");
 var config = {
@@ -52,7 +52,7 @@ function connectToDb(databaseLocation) {
         if (!db) {
             var dbPath = path.resolve(process.cwd(), databaseLocation);
             console.log('Connecting to SQLite database with path:', dbPath);
-            db = new sqlite.Database(dbPath, function (err) {
+            db = new sqlite3_1.Database(dbPath, function (err) {
                 if (err) {
                     console.error('Error connecting to SQLite:', err.message);
                     reject(err);
@@ -110,8 +110,8 @@ function clearCredentialStatusTable(db) {
 function populateDbCompany(db, filePath) {
     var _this = this;
     var insertStmt = db.prepare('INSERT INTO companyDataBase (name,email,jobTitle,VC) VALUES ( ?,?,?,?)');
-    fs.createReadStream(filePath)
-        .pipe(csv({
+    node_fs_1.default.createReadStream(filePath)
+        .pipe((0, csv_parser_1.default)({
     // separator: ";"
     }))
         .on("data", function (row) { return __awaiter(_this, void 0, void 0, function () {
@@ -147,8 +147,8 @@ function populateDbCompany(db, filePath) {
 }
 function populateDb(db, filePath) {
     var insertStmt = db.prepare('INSERT INTO credentialStatus (id,status) VALUES ( ?,?)');
-    fs.createReadStream(filePath)
-        .pipe(csv({
+    node_fs_1.default.createReadStream(filePath)
+        .pipe((0, csv_parser_1.default)({
     // separator: ";"
     }))
         .on("data", function (row) {
@@ -166,8 +166,8 @@ function populateDb(db, filePath) {
         .on("error", function (err) {
         console.error("Error reading CSV file:", err.message);
     });
-    fs.createReadStream(filePath)
-        .pipe(csv())
+    node_fs_1.default.createReadStream(filePath)
+        .pipe((0, csv_parser_1.default)())
         .on('data', function (row) {
         var characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
         var name = "";
@@ -255,6 +255,14 @@ function initDB() {
             console.log("creating Table");
             console.log("Initializing database...");
             connectToDb("./bfc.db");
+            clearCredentialStatusTable(db);
+            // deleteUserByEmail(db, "natalia.m@gmail.com");
+            //createAdmin(db)
+            // clearTableCompany(db)
+            // createTableCompany(db);
+            // createTable(db)
+            //clearCredentialStatusTable(db)
+            populateDb(db, "./test_data.csv");
             return [2 /*return*/];
         });
     });

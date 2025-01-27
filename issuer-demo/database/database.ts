@@ -149,33 +149,33 @@ function populateDb(db: sqlite.Database, filePath: string) {
         .on("error", (err) => {
             console.error("Error reading CSV file:", err.message);
         });
-    fs.createReadStream(filePath)
-        .pipe(csv())
-        .on('data', (row) => {
-            const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-            let name = "";
-            for (let i = 0; i < 10; i++) {
-                name += characters.charAt(Math.floor(Math.random() * characters.length));
-            }
-            let email_address = "";
-            for (let i = 0; i < 10; i++) {
-                email_address += characters.charAt(Math.floor(Math.random() * characters.length));
-            }
-            email_address += "@bmw.de";
-
-            insertStmt.run([name, email_address, row.id, row.status], (err) => {
-                if (err) {
-                    console.error(`Error inserting row ${JSON.stringify(row)}:`, err.message);
-                }
-            });
-        })
-        .on('end', () => {
-            console.log('CSV file successfully processed.');
-            insertStmt.finalize();
-        })
-        .on('error', (err) => {
-            console.error('Error reading CSV file:', err.message);
-        });
+    // fs.createReadStream(filePath)
+    //     .pipe(csv())
+    //     .on('data', (row) => {
+    //         const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    //         let name = "";
+    //         for (let i = 0; i < 10; i++) {
+    //             name += characters.charAt(Math.floor(Math.random() * characters.length));
+    //         }
+    //         let email_address = "";
+    //         for (let i = 0; i < 10; i++) {
+    //             email_address += characters.charAt(Math.floor(Math.random() * characters.length));
+    //         }
+    //         email_address += "@bmw.de";
+    //
+    //         insertStmt.run([name, email_address, row.id, row.status], (err) => {
+    //             if (err) {
+    //                 console.error(`Error inserting row ${JSON.stringify(row)}:`, err.message);
+    //             }
+    //         });
+    //     })
+    //     .on('end', () => {
+    //         console.log('CSV file successfully processed.');
+    //         insertStmt.finalize();
+    //     })
+    //     .on('error', (err) => {
+    //         console.error('Error reading CSV file:', err.message);
+    //     });
 }
 
 //create VC using the /credential Issuance
@@ -238,21 +238,16 @@ function deleteUserByEmail(db: sqlite.Database, email: string) {
 
 export async function initDB() {
     // export function initDB() {
-    console.log("creating Table")
+    console.log("creating Table");
     console.log("Initializing database...");
     connectToDb("./bfc.db");
-    //clearCredentialStatusTable(db)
-    // deleteUserByEmail(db, "natalia.m@gmail.com");
-    //createAdmin(db)
-    // clearTableCompany(db)
-    // createTableCompany(db);
-    // createTable(db)
-    //clearCredentialStatusTable(db)
-    // populateDb(db, "/Users/Natalia M/Desktop/Project/idSet.csv");
-    // populateDbCompany(db, "/Users/Natalia M/Desktop/Project/idSet.csv");
+    // clearCredentialStatusTable(db);
+    // clearTableCompany(db);
+    populateDb(db, "./test_data.csv");
+    populateDbCompany(db, "./test_data.csv");
     // }
 }
 
-//initDB();
+initDB()
 
 

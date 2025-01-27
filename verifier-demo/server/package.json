@@ -15,6 +15,7 @@
   "dependencies": {
     "@spruceid/didkit-wasm-node": "^0.2.1",
     "@types/express-session": "^1.18.1",
+    "bfc-status-check": "github:jfelixh/bfc-status-check",
     "connect-redis": "^8.0.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
