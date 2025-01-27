@@ -1,5 +1,5 @@
 {
-  "name": "server",
+  "name": "bfc-verifier-demo-server",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {

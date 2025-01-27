@@ -1,8 +1,14 @@
-//TODO: actually use library instead of relative path
-import { isRevoked } from "../../../../../bfc-status-check/src";
 import { EventEmitter } from "events";
+import { isRevoked } from "bfc-status-check";
+import dotenv from "dotenv";
 
-export const checkRevocationStatus = async (VC: any, emitter:EventEmitter, clientId: string) => {
+dotenv.config();
+
+export const checkRevocationStatus = async (
+  VC: any,
+  emitter: EventEmitter,
+  clientId: string
+) => {
   try {
     const apiConfig = {
       infuraApiKey: "",
@@ -16,7 +22,7 @@ export const checkRevocationStatus = async (VC: any, emitter:EventEmitter, clien
       apiConfig,
       {
         emitter,
-        clientId
+        clientId,
       }
     );
     return status;

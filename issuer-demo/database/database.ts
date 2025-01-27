@@ -1,34 +1,26 @@
-import sqlite from "sqlite3";
-import fs from "node:fs";
-import csv from 'csv-parser';
-import * as path from 'path';
-import { uniqueNamesGenerator, Config, names } from 'unique-names-generator';
+import * as path from "path";
+import { Database } from "sqlite3";
 
-const config: Config = {
-    dictionaries: [names]
-}
+let db: Database;
 
-let db: sqlite.Database;
-
-
-export function connectToDb(databaseLocation: string): Promise<sqlite.Database> {
-    return new Promise((resolve, reject) => {
-        if (!db) {
-            const dbPath = path.resolve(process.cwd(), databaseLocation);
-            console.log('Connecting to SQLite database with path:', dbPath);
-            db = new sqlite.Database(dbPath, (err) => {
-                if (err) {
-                    console.error('Error connecting to SQLite:', err.message);
-                    reject(err);
-                } else {
-                    console.log('Connected to SQLite database.');
-                    resolve(db);
-                }
-            });
+export function connectToDb(databaseLocation: string): Promise<Database> {
+  return new Promise((resolve, reject) => {
+    if (!db) {
+      const dbPath = path.resolve(process.cwd(), databaseLocation);
+      console.log("Connecting to SQLite database with path:", dbPath);
+      db = new Database(dbPath, (err) => {
+        if (err) {
+          console.error("Error connecting to SQLite:", err.message);
+          reject(err);
         } else {
-            resolve(db);
+          console.log("Connected to SQLite database.");
+          resolve(db);
         }
-    });
+      });
+    } else {
+      resolve(db);
+    }
+  });
 }
 
 function createTable(db: sqlite.Database) {
