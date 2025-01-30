@@ -5,13 +5,7 @@
     "module": "commonjs",
     "baseUrl": "./",
     "paths": {
-      "@/models/*": ["src/models/*"],
-      "@/config/*": ["src/config/*"],
-      "@/db/*": ["src/db/*"],
-      "@/types/*": ["src/types/*"],
-      "@/controllers/*": ["src/controllers/*"],
-      "@/lib/*": ["src/lib/*"],
-      "@/policies/*": ["src/policies/*"]
+      "@/*": ["src/*"]
     },
     "outDir": "./dist",
     "esModuleInterop": true,
