@@ -53,7 +53,7 @@ const getUnpublishedEntries = (db: sqlite.Database): Promise<any[]> => {
           });
         });
       }
-
+      console.log("Entries:", entries);
       resolve(entries); 
     });
   });

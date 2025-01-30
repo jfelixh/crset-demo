@@ -19,4 +19,4 @@ COPY . .
 EXPOSE 8080 8090
 
 # Initialize sqliteDB and start the Express server
-CMD ["sh", "-c", "npm run db:init && exec npm run dev"]
+CMD ["sh", "-c", "npm run db:init && npm run dev"]

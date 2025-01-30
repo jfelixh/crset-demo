@@ -111,7 +111,7 @@ const EmployeeCredentialInfoStep = ({
   useEffect(() => {
     if (!wsRef.current) {
       // Use websocket protocol to pass client identifier
-      wsRef.current = new WebSocket("ws://0.0.0.0:8090", protocol);
+      wsRef.current = new WebSocket("ws://localhost:8090", protocol);
 
       wsRef.current.onerror = (error) => {
         console.error("WebSocket Error:", error);

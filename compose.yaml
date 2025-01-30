@@ -14,8 +14,6 @@ services:
     ports:
       - "6380:6380"
     command: ["redis-server", "--port", "6380"]
-    networks:
-      - app_network
 
   ngrok-verifier: # port 8080 (verifier-backend)
     image: ngrok/ngrok:latest
@@ -45,8 +43,6 @@ services:
       - verifier-redis
     env_file:
       - .env
-    networks:
-      - app_network
 
   verifier-frontend:
     build: ./verifier-demo/client
@@ -58,8 +54,6 @@ services:
       - verifier-backend
     env_file:
       - .env
-    networks:
-      - app_network
 
   issuer-app:
     build:
@@ -77,6 +71,3 @@ services:
 volumes:
   bfc-status-demo:
 
-networks:
-  app_network:
-    driver: bridge

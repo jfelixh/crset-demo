@@ -9,17 +9,19 @@ export async function POST(req: Request) {
     }
 
     async function updatePublishStatusById(user,number) {
-        console.log("Updating publish status for VC with ID:", user.email_address);
+        console.log("Updating publish status for VC with ID:", user.email);
         const db = connectToDb("./database/bfc.db");
-        await updatePublishById(await db, user.email_address, number)
+        await updatePublishById(await db, user.email, number)
     }
 
 
     try {
         const rawPayload = await req.json()
+        console.log("singleUpdate rawPayload",rawPayload)
         if(rawPayload.action==="singleUpdate"){
         await updatePublishStatusById(rawPayload.user,0)}
         else if(rawPayload.action==="bulkUpdate"){
+            console.log("bulk update",rawPayload.users)
             rawPayload.users.forEach(user=> {
                 updatePublishStatusById(user, 1)
             })
@@ -32,7 +34,7 @@ export async function POST(req: Request) {
             { status: 500 }
         );
     }
-    return new Response("VC has been revoked", {
+    return new Response("VC has been updated", {
         status: 200,
         headers: {
             'Content-Type': 'application/json',

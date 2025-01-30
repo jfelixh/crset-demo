@@ -11,7 +11,7 @@ import * as jose from "jose";
 import { WebSocket, WebSocketServer } from "ws";
 
 const emitter = new EventEmitter();
-const wss = new WebSocketServer({host:"0.0.0.0", port: 8090});
+const wss = new WebSocketServer({port: 8090});
 wss.on('listening', () => {
   console.log("WebSocket server started:", wss.address());
 });

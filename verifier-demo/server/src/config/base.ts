@@ -9,4 +9,9 @@ export const config = {
   DB_PATH: "./src/db/loans.db",
   REDIS_PORT: process.env.REDIS_PORT || 6380,
   REDIS_HOST: process.env.REDIS_HOST || "localhost",
+  INFURA_API_KEY: process.env.INFURA_API_KEY || "",
+  MORALIS_API_KEY: process.env.MORALIS_API_KEY || "",
+  ALCHEMY_API_KEY: process.env.ALCHEMY_API_KEY || "",
+  BLOBSCAN_URL:
+    process.env.BLOBSCAN_URL || "https://api.sepolia.blobscan.com/blobs/",
 };
