@@ -50,7 +50,7 @@ const UsersPage = () => {
   } = useUnpublishedEntriesContext();
   const [openDialogue, setOpenDialogue] = useState(false);
   const [isFilterNone, setFilterNone] = useState(false);
-
+  const [loading, setLoading] = useState(true);
   const [selectedOption, setSelectedOption] = useState("all");
   const [isMounted, setIsMounted] = useState(false);
   useEffect(() => {
@@ -66,23 +66,26 @@ const UsersPage = () => {
   };
   const fetchUsers = async () => {
     try {
-      const response = await fetch("/api/users"); // Replace with your API endpoint
+      const response = await fetch("/api/users");
       const data = await response.json();
-      setUsers(data); // Assuming `setUsers` updates your `users` state
+      console.log("data for users", data);
+      setUsers(data);
     } catch (error) {
       console.error("Error fetching users:", error);
+    } finally {
+      setLoading(false);  // Set loading to false once data is fetched
     }
   };
   useEffect(() => {
     console.log("repeatedly going?");
-    fetchUsers(); // Fetch users only once when the component mounts
+    fetchUsers();
   }, []);
 
   useEffect(() => {
     console.log("users:", users);
 
     const filteredUsers = users
-      .filter((user) => user.email_address.includes(searchTerm))
+      .filter((user) => user.email.includes(searchTerm))
       .filter((user) => {
         console.log("published?", user.published);
         if (selectedOption === "all") return true;
@@ -103,12 +106,11 @@ const UsersPage = () => {
     for (const user of topUsers) {
       // console.log("user:", user);
       const validity = await getCredentialStatus(user);
-      console.log("user:", user.email_address);
       console.log("validity:", validity);
       if (validity) {
-        userStatuses[user.email_address] = "Valid";
+        userStatuses[user.email] = "Valid";
       } else {
-        userStatuses[user.email_address] = "Invalid";
+        userStatuses[user.email] = "Invalid";
       }
       //  console.log("userStatuses:", userStatuses[user.email_address]);
     }
@@ -142,7 +144,6 @@ const UsersPage = () => {
       } else {
         throw new Error("Failed to revoke users");
       }
-      setSelectedUser(null);
       const response2 = await fetch("/api/updatePublishById", {
         method: "POST",
         headers: {
@@ -157,6 +158,9 @@ const UsersPage = () => {
       }
       fetchStatusForTopUsers(topUsers);
       setThereIsUnpublished(true);
+      setUnpublishedEntries([...unpublishedEntries, selectedUser]);
+      setSelectedUser(null);
+      console.log("unpublishedEntries after revoke:", unpublishedEntries);
     } catch (error) {
       console.error("Error revoking users:", error);
     }
@@ -169,19 +173,20 @@ const UsersPage = () => {
               title: "Publishing the list to Sepolia...",
               description: "This may take a moment, depending on network congestion.",
             })       */
-
-      const responseForRevoke = await fetch("/api/publishBFC", {
+      /*
+      const responseForPublish = await fetch("/api/publishBFC", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
       });
 
-      if (!responseForRevoke.ok) {
+      if (!responseForPublish.ok) {
         throw new Error(
-          `Response is not ok! status: ${responseForRevoke.status}`
+          `Response is not ok! status: ${responseForPublish.status}`
         );
-      }
+      }*/
+      console.log("unpublishedEntries:", unpublishedEntries);
       const responseForUpdatePublish = await fetch("/api/updatePublishById", {
         method: "POST",
         headers: {
@@ -193,12 +198,13 @@ const UsersPage = () => {
         }),
       });
       if (responseForUpdatePublish.ok) {
-        console.log("Users successfully revoked");
+        console.log("Users successfully published");
       } else {
         throw new Error("Failed to revoke users");
       }
       setThereIsUnpublished(false);
       setUnpublishedEntries([]);
+      fetchStatusForTopUsers(topUsers);
     } catch (error) {
       console.error("Error publishing to BFC:", error);
     }
@@ -214,7 +220,6 @@ const UsersPage = () => {
       body: JSON.stringify({ user: user }),
     });
     const result = await response.json(); // Wait for the Promise to resolve
-    //  console.log("getCredentialStatus result:", result); // Ensure result is what you expect
     return result.data.status;
   };
 
@@ -306,7 +311,7 @@ const UsersPage = () => {
                 {topUsers.map((user) => {
                   const vcData = JSON.parse(user.VC);
                   return (
-                    <TableRow key={user.email_address}>
+                    <TableRow key={user.email}>
                       <TableCell>
                         <Checkbox
                           checked={selectedUser === user}
@@ -314,18 +319,18 @@ const UsersPage = () => {
                         />
                       </TableCell>
                       <TableCell>{user.name}</TableCell>
-                      <TableCell>{user.email_address}</TableCell>
+                      <TableCell>{user.email}</TableCell>
                       <TableCell>{user.jobTitle}</TableCell>
                       <TableCell>
-                        {statuses[user.email_address] ? (
+                        {statuses[user.email] ? (
                           <Badge
                             className={
-                              statuses[user.email_address] === "Valid"
+                              statuses[user.email] === "Valid"
                                 ? "bg-green-500 text-white hover:bg-green-400"
                                 : "bg-red-500 text-white hover:bg-red-400"
                             }
                           >
-                            {statuses[user.email_address] === "Valid"
+                            {statuses[user.email] === "Valid"
                               ? "Valid"
                               : "Invalid"}
                           </Badge>
@@ -384,6 +389,10 @@ const UsersPage = () => {
             </Table>
           </div>
         </div>
+      ) : loading ? (
+          <div className="flex justify-center items-center h-96">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-grey-500"></div>
+          </div>
       ) : isFilterNone ? (
         <div className="flex justify-center items-center h-96">
           <p>No users found. Filter again</p>

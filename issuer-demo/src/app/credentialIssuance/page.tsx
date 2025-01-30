@@ -138,6 +138,7 @@ export default function Home() {
           const result = await response.json();
 
           if (response.ok) {
+            window.location.reload();
             setDialogMessage("Email sent successfully!");
             setIsDialogOpen(true);
           } else {
@@ -342,7 +343,7 @@ export default function Home() {
           <DialogTitle>Notification</DialogTitle>
           <DialogDescription>{dialogMessage}</DialogDescription>
           <DialogFooter>
-            <Button onClick={() => setIsDialogOpen(false)}>Close</Button>
+            <Button className="bg-blue-900 hover:bg-blue-800" onClick={() => setIsDialogOpen(false)}>Close</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

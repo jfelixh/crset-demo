@@ -1,6 +1,6 @@
 import { Database } from "sqlite3";
-import fs from "node:fs";
-import csv from 'csv-parser';
+import * as fs from "node:fs";
+import * as csv from 'csv-parser';
 import * as path from "path";
 import { uniqueNamesGenerator, Config, names } from 'unique-names-generator';
 
@@ -15,7 +15,6 @@ export function connectToDb(databaseLocation: string): Promise<Database> {
   return new Promise((resolve, reject) => {
     if (!db) {
       const dbPath = path.resolve(process.cwd(), databaseLocation);
-      console.log("Connecting to SQLite database with path:", dbPath);
       db = new Database(dbPath, (err) => {
         if (err) {
           console.error("Error connecting to SQLite:", err.message);
@@ -234,6 +233,7 @@ export default function updatePublishById(db: Database,
                                   email: string,
                                   isPublished: number
 ): Promise<void> {
+    console.log("Updating publish status for VC with email:", email);
     return new Promise(async (resolve, reject) => {
         await db.run(
             "UPDATE companyDataBase SET isPublished = ? WHERE email = ?",
@@ -257,10 +257,10 @@ export async function initDB() {
     console.log("creating Table");
     console.log("Initializing database...");
     connectToDb("./bfc.db");
-    // clearCredentialStatusTable(db);
-    // clearTableCompany(db);
-    populateDb(db, "./test_data.csv");
-    populateDbCompany(db, "./test_data.csv");
+    //createTable(db);
+    //createTableCompany(db);
+    populateDb(db, "./test_data_540000.csv");
+    populateDbCompany(db, "./test_data_540000.csv");
     // }
 }
 

@@ -8,6 +8,7 @@ export async function POST(req: Request) {
 
     async function revokeVC(user) {
         const credentialStatusID=getStatusIDFromVC(user)
+        console.log("Revoking VC with ID:", credentialStatusID);
         fetch(`http://localhost:5050/api/status/revokeCredential?id=${credentialStatusID}`, {
             method: "POST",
         })
@@ -17,6 +18,7 @@ export async function POST(req: Request) {
     }
     function getStatusIDFromVC(user) {
         const vc = JSON.parse(user.VC);
+        console.log("vc:", vc)
         // TODO: remove array check after reinitializing database with vcs that have single credentialStatus
         if (Array.isArray(vc.credentialStatus)) {
             return vc.credentialStatus[0].id;

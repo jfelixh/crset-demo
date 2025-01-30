@@ -56,7 +56,7 @@ const AuthWrapper = ({ children }: { children: React.ReactNode }) => {
   return (
     <>
       <Header
-        showLinks={isAuthenticated}
+        showLinks={true}
         pathname={pathname}
         logout={logout}
         isUnpublished={thereIsUnpublished}

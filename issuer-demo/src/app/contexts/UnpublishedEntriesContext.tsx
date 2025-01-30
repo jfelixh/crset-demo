@@ -19,7 +19,7 @@ interface UnpublishedContextType {
   thereIsUnpublished: boolean;
   unpublishedEntries: UnpublishedEntries[];
   setThereIsUnpublished: (value: boolean) => void;
-  setUnpublishedEntries: (value: UnpublishedEntries[]) => void;
+  setUnpublishedEntries: (value: any[]) => void;
 }
 
 const UnpublishedContext = createContext<UnpublishedContextType | undefined>(
@@ -41,8 +41,10 @@ export const UnpublishedEntriesProvider = ({
       try {
         const response = await fetch("/api/getUnpublishedEntries");
         const data = await response.json();
+        console.log("unpublished context data", data);
         if (data.length > 0) {
           setThereIsUnpublished(true);
+          setUnpublishedEntries(data);
         }
       } catch (error) {
         console.error("Error fetching number of unpublished entries:", error);

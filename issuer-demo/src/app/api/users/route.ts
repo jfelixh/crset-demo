@@ -5,7 +5,7 @@ let db: sqlite.Database;
 
 type User = {
     name: string;
-    email_address: string;
+    email: string;
     jobTitle: string;
     VC: string;
     published:boolean;
@@ -40,15 +40,14 @@ export const getAllUsers = async (): Promise<User[]> => {
 
     try {
         const getUsers = new Promise<User[]>((resolve, reject) => {
-            db.all("SELECT * FROM companyDataBase ORDER BY RANDOM() LIMIT 10000", (err, rows) => {
-                if (err) {
+            db.all("SELECT * FROM companyDataBase ORDER BY name ASC LIMIT 10000", (err, rows) => {                if (err) {
                     reject(err);
                 } else {
                     const users: User[] = [];
                     rows.forEach((row) => {
                         users.push({
                             name: row.name,
-                            email_address: row.email,
+                            email: row.email,
                             jobTitle: row.jobTitle,
                             VC: row.VC,
                             published: row.isPublished === 1,
@@ -60,7 +59,6 @@ export const getAllUsers = async (): Promise<User[]> => {
         });
         // Usage:
         const userData = await getUsers;
-       // console.log("Users:", userData[0]);
         return userData;
     } catch (error) {
         console.error("Error getting users:", error);
