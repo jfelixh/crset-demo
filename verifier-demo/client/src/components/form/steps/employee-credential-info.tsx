@@ -34,16 +34,6 @@ interface Step {
   };
 }
 
-const ws = new WebSocket("ws://localhost:8090");
-// Handle connection errors
-ws.onerror = (error) => {
-  console.error("WebSocket Error:", error);
-};
-
-// Handle connection close
-ws.onclose = () => {
-  console.log("WebSocket connection closed");
-};
 
 const EmployeeCredentialInfoStep = ({
   nextButtonRef,
@@ -121,7 +111,7 @@ const EmployeeCredentialInfoStep = ({
   useEffect(() => {
     if (!wsRef.current) {
       // Use websocket protocol to pass client identifier
-      wsRef.current = new WebSocket("ws://localhost:8090", protocol);
+      wsRef.current = new WebSocket("ws://0.0.0.0:8090", protocol);
 
       wsRef.current.onerror = (error) => {
         console.error("WebSocket Error:", error);

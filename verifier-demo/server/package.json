@@ -21,6 +21,7 @@
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
     "express-session": "^1.18.1",
+    "http": "^0.0.1-security",
     "ioredis": "^5.4.1",
     "jose": "^5.9.6",
     "jsonpath": "^1.1.1",

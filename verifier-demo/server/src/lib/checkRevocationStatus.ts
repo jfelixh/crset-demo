@@ -11,10 +11,10 @@ export const checkRevocationStatus = async (
 ) => {
   try {
     const apiConfig = {
-      infuraApiKey: "",
-      moralisApiKey: "",
-      alchemyApiKey: "",
-      blobScanUrl: "https://api.sepolia.blobscan.com/blobs/",
+      infuraApiKey: process.env.INFURA_API_KEY!,
+      moralisApiKey: process.env.MORALIS_API_KEY!,
+      alchemyApiKey: process.env.ALCHEMY_API_KEY!,
+      blobScanUrl: process.env.BLOBSCAN_URL!,
     };
     emitter.emit("vcid", { vcid: VC.id, clientId });
     const status = await isRevoked(VC, apiConfig, {

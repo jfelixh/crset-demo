@@ -16,7 +16,7 @@ RUN npm ci
 COPY . .
 
 # Expose the port that the server will listen on
-EXPOSE 8080
+EXPOSE 8080 8090
 
 # Initialize sqliteDB and start the Express server
-CMD ["sh", "-c", "npm run db:init && npm run dev"]
+CMD ["sh", "-c", "npm run db:init && exec npm run dev"]

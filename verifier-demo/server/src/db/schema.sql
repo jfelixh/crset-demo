@@ -1,4 +1,4 @@
-CREATE TABLE loans (
+CREATE TABLE IF NOT EXISTS loans (
     id INTEGER PRIMARY KEY AUTOINCREMENT, -- UUID for unique identification
     amount REAL NOT NULL, -- Loan amount as a floating-point number
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP, -- Timestamp with a default value
