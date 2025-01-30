@@ -11,12 +11,13 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import useGenerateWalletURL from "@/hooks/api/useGenerateWalletURL";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 import { useCallbackPolling } from "@/hooks/useCallbackPolling";
 import useIsMobileDevice from "@/hooks/useIsMobileDevice";
 import { EmployeeCredential } from "@/models/employee";
 import { CheckCircleIcon } from "lucide-react";
 import { QRCodeCanvas } from "qrcode.react";
-import { RefObject, useState } from "react";
+import { RefObject, useEffect, useRef, useState } from "react";
 import { useFormContext } from "react-hook-form";
 
 type EmployeeCredentialInfoStepProps = {
@@ -66,55 +67,56 @@ const EmployeeCredentialInfoStep = ({
   // Use Ref to store the WebSocket connection: prevents reconnection on re-render
   const wsRef = useRef<WebSocket | null>(null);
   const [vcId, setVcId] = useState<string | null>(null);
-  const [steps, setSteps] = useState<Step[]>([{
-    id: 0,
-    name: 'Extract Publisher Address',
-    status: 'not_started',
-    timeElapsed: 0,
-    additionalMetrics: {}
-  },
-  {
-    id: 1,
-    name: 'Retrieve Transactions',
-    status: 'not_started',
-    timeElapsed: 0,
-    additionalMetrics: {}
-  },
-  {
-    id: 2,
-    name: 'Identify blob transaction & get blob hash',
-    status: 'not_started',
-    timeElapsed: 0,
-    additionalMetrics: {}
-  },
-  {
-    id: 3,
-    name: 'Retrieve & concatenate blob data',
-    status: 'not_started',
-    timeElapsed: 0,
-    additionalMetrics: {}
-  },
-  {
-    id: 4,
-    name: 'Reconstruct blob data',
-    status: 'not_started',
-    timeElapsed: 0,
-    additionalMetrics: {}
-  },
-  {
-    id: 5,
-    name: 'Reconstruct bloom filter cascade',
-    status: 'not_started',
-    timeElapsed: 0,
-    additionalMetrics: {}
-  },
-  {
-    id: 6,
-    name: 'Check revocation status',
-    status: 'not_started',
-    timeElapsed: 0,
-    additionalMetrics: {}
-  }
+  const [steps, setSteps] = useState<Step[]>([
+    {
+      id: 0,
+      name: "Extract Publisher Address",
+      status: "not_started",
+      timeElapsed: 0,
+      additionalMetrics: {},
+    },
+    {
+      id: 1,
+      name: "Retrieve Transactions",
+      status: "not_started",
+      timeElapsed: 0,
+      additionalMetrics: {},
+    },
+    {
+      id: 2,
+      name: "Identify blob transaction & get blob hash",
+      status: "not_started",
+      timeElapsed: 0,
+      additionalMetrics: {},
+    },
+    {
+      id: 3,
+      name: "Retrieve & concatenate blob data",
+      status: "not_started",
+      timeElapsed: 0,
+      additionalMetrics: {},
+    },
+    {
+      id: 4,
+      name: "Reconstruct blob data",
+      status: "not_started",
+      timeElapsed: 0,
+      additionalMetrics: {},
+    },
+    {
+      id: 5,
+      name: "Reconstruct bloom filter cascade",
+      status: "not_started",
+      timeElapsed: 0,
+      additionalMetrics: {},
+    },
+    {
+      id: 6,
+      name: "Check revocation status",
+      status: "not_started",
+      timeElapsed: 0,
+      additionalMetrics: {},
+    },
   ]);
   useEffect(() => {
     if (!wsRef.current) {
@@ -122,18 +124,18 @@ const EmployeeCredentialInfoStep = ({
       wsRef.current = new WebSocket("ws://localhost:8090", protocol);
 
       wsRef.current.onerror = (error) => {
-        console.error('WebSocket Error:', error);
+        console.error("WebSocket Error:", error);
       };
 
       wsRef.current.onclose = () => {
-        console.log('WebSocket connection closed');
+        console.log("WebSocket connection closed");
       };
 
       let lastTime = new Date().getTime();
       wsRef.current.onmessage = (event) => {
         const eventData = JSON.parse(event.data);
 
-        if (eventData.step) {        
+        if (eventData.step) {
           const currentTime = new Date().getTime();
           const timePassed = currentTime - lastTime;
           console.log("------------" + event.data + " " + timePassed);
@@ -168,7 +170,10 @@ const EmployeeCredentialInfoStep = ({
           });
           // update time elapsed for completed steps
           if (eventData.status === "completed") {
-            if (eventData.step === "checkRevocation" && eventData.additionalMetrics.isRevoked) {
+            if (
+              eventData.step === "checkRevocation" &&
+              eventData.additionalMetrics.isRevoked
+            ) {
               setSteps((prev) => {
                 prev[stepId].status = "failed";
                 return [...prev];
@@ -191,11 +196,10 @@ const EmployeeCredentialInfoStep = ({
         } else if (eventData.vcid) {
           // update VC-ID
           setVcId(eventData.vcid);
-        }      
+        }
       };
     }
-  }, []);
-
+  }, [id, protocol]);
 
   const { isPending } = useCallbackPolling({
     walletUrl,
@@ -237,7 +241,8 @@ const EmployeeCredentialInfoStep = ({
               <div className="flex items-center text-center">
                 <div className="flex flex-col text-primary font-medium items-center">
                   <CheckCircleIcon size={60} className="mr-2 mb-4" />
-                  You have successfully presented your employee credential and confirmed your employment status.
+                  You have successfully presented your employee credential and
+                  confirmed your employment status.
                 </div>
               </div>
             )}
@@ -273,7 +278,7 @@ const EmployeeCredentialInfoStep = ({
                   </Button>
                 </div>
               ))}
-            <ProcessTimeline steps={steps} vcid={vcId}/>
+            <ProcessTimeline steps={steps} vcid={vcId} />
           </div>
         </CardContent>
       </Card>
