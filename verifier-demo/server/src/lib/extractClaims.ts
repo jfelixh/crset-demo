@@ -7,10 +7,10 @@ import {
   LoginPolicy,
   CredentialPattern,
   VcConstraint,
-} from "../types/LoginPolicy";
+} from "@/types/LoginPolicy";
 import * as jp from "jsonpath";
-import { getConfiguredLoginPolicy } from "../config/loginPolicy";
-import { isLoginPolicy } from "../lib/isLoginPolicy";
+import { getConfiguredLoginPolicy } from "@/config/loginPolicy";
+import { isLoginPolicy } from "@/lib/isLoginPolicy";
 // import { logger } from "@/config/logger";
 
 export const isTrustedPresentation = (VP: any, policy?: LoginPolicy) => {

@@ -1,12 +1,11 @@
 import { RedisStore } from "connect-redis";
 import cors from "cors";
-import dotenv from "dotenv";
 import express, { Express, Request, Response } from "express";
 import session from "express-session";
-import { redisClient } from "./config/redis";
-import { connectDB } from "./db/database";
-import LoanRoute from "./routes/LoanRoute";
-import LoginRoute from "./routes/PresentCredentialRoute";
+import { redisClient } from "@/config/redis";
+import { connectDB } from "@/db/database";
+import LoanRoute from "@/routes/LoanRoute";
+import LoginRoute from "@/routes/PresentCredentialRoute";
 import { config } from "@/config/base";
 
 const app: Express = express();
