@@ -2,6 +2,7 @@ services:
   issuer-redis:
     image: redis:7.2.2
     container_name: issuer-redis
+    restart: always
     ports:
       - "6379:6379"
     command: ["redis-server", "--port", "6379"]
@@ -9,6 +10,7 @@ services:
   verifier-redis:
     image: redis:7.2.2
     container_name: verifier-redis
+    restart: always
     ports:
       - "6380:6380"
     command: ["redis-server", "--port", "6380"]

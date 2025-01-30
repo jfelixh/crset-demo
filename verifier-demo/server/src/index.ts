@@ -7,11 +7,10 @@ import { redisClient } from "./config/redis";
 import { connectDB } from "./db/database";
 import LoanRoute from "./routes/LoanRoute";
 import LoginRoute from "./routes/PresentCredentialRoute";
-
-dotenv.config();
+import { config } from "@/config/base";
 
 const app: Express = express();
-const port = process.env.PORT || 3000;
+const { PORT, SECRET } = config;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -36,7 +35,7 @@ app.use(
     store: redisStore,
     resave: false,
     saveUninitialized: false,
-    secret: process.env.SECRET!,
+    secret: SECRET,
     cookie: {
       secure: false,
       httpOnly: true,
@@ -64,6 +63,6 @@ app.get("/", (req: Request, res: Response) => {
   res.send("Express + TypeScript Server");
 });
 
-app.listen(port, () => {
-  console.log(`[server]: Server is running at http://localhost:${port}`);
+app.listen(PORT, () => {
+  console.log(`[server]: Server is running at http://localhost:${PORT}`);
 });
