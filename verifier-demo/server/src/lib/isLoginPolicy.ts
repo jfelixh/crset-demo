@@ -7,7 +7,7 @@ import {
   ExpectedCredential,
   LoginPolicy,
   VcConstraint,
-} from "@/types/LoginPolicy";
+} from "../types/LoginPolicy";
 
 // only a somewhat loose type check
 const isConstraint = (value: any): value is VcConstraint => {

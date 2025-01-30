@@ -1,9 +1,9 @@
 import { Redis, RedisKey, RedisOptions, RedisValue } from "ioredis";
-import { config } from "./base";
-
-const { REDIS_PORT, REDIS_HOST } = config;
 
 const redisConfig: RedisOptions = {
+  port: parseInt(process.env.REDIS_PORT ? process.env.REDIS_PORT : "6380", 10),
+  host: process.env.REDIS_HOST,
+  lazyConnect: true,
   maxRetriesPerRequest: 3,
   showFriendlyErrorStack: true,
 };
@@ -11,11 +11,7 @@ const redisConfig: RedisOptions = {
 let redis: Redis;
 
 try {
-  redis = new Redis("redis://" + REDIS_HOST + ":" + REDIS_PORT, redisConfig);
-
-  redis.on("connect", () => {
-    console.debug("Redis connected");
-  });
+  redis = new Redis(redisConfig);
 
   redis.on("error", (error) => {
     if ((error as any).code !== "ECONNREFUSED") {
@@ -24,7 +20,6 @@ try {
         "Redis produced an error"
       );
     }
-    console.log("Redis error: ", error);
   });
 } catch (error) {
   console.error(error, "Critically failed initializing Redis");

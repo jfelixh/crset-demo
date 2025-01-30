@@ -3,9 +3,9 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { InputDescriptor } from "@/types/InputDescriptor";
-import { PresentationDefinition } from "@/types/PresentationDefinition";
-import { LoginPolicy } from "@/types/LoginPolicy";
+import { InputDescriptor } from "../types/InputDescriptor";
+import { PresentationDefinition } from "../types/PresentationDefinition";
+import { LoginPolicy } from "../types/LoginPolicy";
 import { promises as fs } from "fs";
 // import { logger } from "@/config/logger";
 

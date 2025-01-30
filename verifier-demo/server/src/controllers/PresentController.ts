@@ -1,24 +1,24 @@
-import { getConfiguredLoginPolicy } from "@/config/loginPolicy";
-import { redisGet, redisSet } from "@/config/redis";
-import { checkRevocationStatus } from "@/lib/checkRevocationStatus";
-import { generatePresentationDefinition } from "@/lib/generatePresentationDefinition";
-import { getMetadata } from "@/lib/getMetadata";
-import { verifyAuthenticationPresentation } from "@/lib/verifyPresentation";
 import { keyToDID, keyToVerificationMethod } from "@spruceid/didkit-wasm-node";
-import { EventEmitter } from "events";
-import { Request, Response } from "express";
+import e, { Request, Response } from "express";
 import * as jose from "jose";
-import { WebSocket, WebSocketServer } from "ws";
+import { getConfiguredLoginPolicy } from "src/config/loginPolicy";
+import { redisGet, redisSet } from "src/config/redis";
+import { checkRevocationStatus } from "src/lib/checkRevocationStatus";
+import { generatePresentationDefinition } from "src/lib/generatePresentationDefinition";
+import { getMetadata } from "src/lib/getMetadata";
+import { verifyAuthenticationPresentation } from "src/lib/verifyPresentation";
+import { EventEmitter } from "events";
+import { WebSocketServer, WebSocket } from 'ws';
 
 const emitter = new EventEmitter();
 const wss = new WebSocketServer({ port: 8090 });
 // Use client id to send events to the correct client
 let clientId = "";
-wss.on("connection", (ws: WebSocket, req) => {
+wss.on('connection', (ws: WebSocket, req) => {
   // Client identifier passed through the WebSocket protocol
-  const protocols = req.headers["sec-websocket-protocol"];
+  const protocols = req.headers['sec-websocket-protocol'];
   clientId = protocols ? protocols : "";
-  console.log("Client connected: " + clientId);
+  console.log('Client connected: ' + clientId);
   (ws as any).clientId = clientId;
 
   // Forward events from the EventEmitter to the correct WebSocket client
@@ -31,14 +31,14 @@ wss.on("connection", (ws: WebSocket, req) => {
   };
 
   // Attach listener to the EventEmitter
-  emitter.on("progress", handleEvent);
-  emitter.on("vcid", handleEvent);
+  emitter.on('progress', handleEvent);
+  emitter.on('vcid', handleEvent);
 
   // Handle client disconnection
-  ws.on("close", () => {
-    console.log("Client disconnected");
-    emitter.removeListener("progress", handleEvent);
-    emitter.removeListener("vcid", handleEvent);
+  ws.on('close', () => {
+      console.log('Client disconnected');
+      emitter.removeListener('progress', handleEvent);
+      emitter.removeListener('vcid', handleEvent);
   });
 });
 

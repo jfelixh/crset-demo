@@ -1,6 +1,6 @@
-import { getAllLoans, postLoanToDB } from "@/services/LoanService";
 import { Loan } from "@/types/model";
 import express from "express";
+import { getAllLoans, postLoanToDB } from "src/services/LoanService";
 
 const router = express.Router();
 
