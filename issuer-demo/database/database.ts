@@ -192,7 +192,7 @@ function createBfcLogsTable(db: Database) {
             numberOfBlobs INTEGER NOT NULL,
             transactionHash TEXT PRIMARY KEY NOT NULL,
             blobVersionedHash TEXT NOT NULL,
-            publicationTimeStemp TEXT NOT NULL,
+            publicationTimestamp TEXT NOT NULL,
             transactionCost REAL NOT NULL,
             calldataTotalCost REAL NOT NULL,
             numberOfBfcLayers INTEGER NOT NULL,
@@ -216,6 +216,17 @@ function clearLogsTable(db: Database) {
             return;
         }
         console.log("bfcLogs table is now empty.");
+    });
+}
+
+function deleteBFCLogsTable(db: Database) {
+    console.log("Clearing content of bfcLogs table...");
+    db.run(`DROP TABLE IF EXISTS bfcLogs`, (err) => {
+        if (err) {
+            console.error("Error deleting table content:", err.message);
+            return;
+        }
+        console.log("bfcLogs table is deleted.");
     });
 }
 
@@ -257,10 +268,12 @@ export async function initDB() {
     console.log("creating Table");
     console.log("Initializing database...");
     connectToDb("./bfc.db");
+    //createBfcLogsTable(db)
+   // deleteBFCLogsTable(db)
     //createTable(db);
     //createTableCompany(db);
-    populateDb(db, "./test_data_540000.csv");
-    populateDbCompany(db, "./test_data_540000.csv");
+    //populateDb(db, "./test_data_540000.csv");
+    //populateDbCompany(db, "./test_data_540000.csv");
     // }
 }
 

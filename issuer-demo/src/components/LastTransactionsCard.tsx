@@ -49,7 +49,7 @@ const LastTransactionsCard = ({
                 {logs.map((log) => (
                   <li
                     key={log.transactionHash}
-                    className="flex items-center space-x-3 px-auto mb-4"
+                    className="flex items-center space-x-1 mb-4"
                   >
                     <FileText className="w-5 h-5 text-blue-500" />
                     <div className="flex flex-col">
@@ -88,7 +88,7 @@ const LastTransactionsCard = ({
                       </span>
 
                       <span className="text-sm text-gray-500">
-                        {timeAgo(log.publicationTimeStemp)}
+                        {timeAgo(log.publicationTimestamp)}
                       </span>
                     </div>
                   </li>

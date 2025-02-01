@@ -73,7 +73,7 @@ const UsersPage = () => {
     } catch (error) {
       console.error("Error fetching users:", error);
     } finally {
-      setLoading(false);  // Set loading to false once data is fetched
+      setLoading(false); // Set loading to false once data is fetched
     }
   };
   useEffect(() => {
@@ -123,11 +123,6 @@ const UsersPage = () => {
 
   const handleCheckboxChange = (user) => {
     setSelectedUser((prevSelected) => (prevSelected === user ? null : user));
-  };
-
-  const handleApplyFilter = () => {
-    console.log("Filter applied:", selectedOption);
-    setOpenDialogue(false);
   };
 
   const revokeSelectedUser = async () => {
@@ -257,8 +252,7 @@ const UsersPage = () => {
             <DialogHeader>
               <DialogTitle>Set Filters</DialogTitle>
               <DialogDescription>
-                Select the filter options below and click "Apply" to filter the
-                data.
+                Select the filter options below to filter the data.
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
@@ -266,7 +260,10 @@ const UsersPage = () => {
                 <Label>Filter:</Label>
                 <RadioGroup
                   value={selectedOption}
-                  onValueChange={(value) => setSelectedOption(value)}
+                  onValueChange={(value) => {
+                    setSelectedOption(value);
+                    setOpenDialogue(false);
+                  }}
                   className="flex flex-row gap-6" // Makes the items align horizontally with spacing
                 >
                   <div className="flex items-center space-x-2">
@@ -284,11 +281,6 @@ const UsersPage = () => {
                 </RadioGroup>
               </div>
             </div>
-            <DialogFooter>
-              <Button type="button" onClick={handleApplyFilter}>
-                Apply
-              </Button>
-            </DialogFooter>
           </DialogContent>
         </Dialog>
       </div>
@@ -390,9 +382,9 @@ const UsersPage = () => {
           </div>
         </div>
       ) : loading ? (
-          <div className="flex justify-center items-center h-96">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-grey-500"></div>
-          </div>
+        <div className="flex justify-center items-center h-96">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-grey-500"></div>
+        </div>
       ) : isFilterNone ? (
         <div className="flex justify-center items-center h-96">
           <p>No users found. Filter again</p>

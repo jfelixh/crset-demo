@@ -117,7 +117,7 @@ const Dashboards = () => {
 
     if (logs && logs.length > 0) {
       const dates = logs.map((log) =>
-        new Date(log.publicationTimeStemp).toLocaleDateString("en-US", {
+        new Date(log.publicationTimestamp).toLocaleDateString("en-US", {
           year: "numeric",
           month: "short",
           day: "numeric",
@@ -247,7 +247,7 @@ const Dashboards = () => {
         <SmallCard
           title="Time Since Last Publish"
           isLoading={isLoading}
-          content={timeAgo(latestLog.publicationTimeStemp)}
+          content={timeAgo(latestLog.publicationTimestamp)}
         />
 
         <SmallCard
@@ -293,6 +293,15 @@ const Dashboards = () => {
               options={{
                 responsive: true,
                 scales: { y: { beginAtZero: true } },
+                plugins: {
+                  tooltip: {
+                    callbacks: {
+                      label: (tooltipItem: { raw: number }) => {
+                        return tooltipItem.raw.toFixed(6);
+                      },
+                    },
+                  },
+                },
               }}
             />
           )}
