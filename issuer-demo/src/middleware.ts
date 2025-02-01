@@ -21,10 +21,10 @@ export function middleware(req: NextRequest) {
     }
     console.log("authToken: ", authToken)
 
-    /*if (!authToken) {
+    if (!authToken) {
         console.log("redirected to homepage")
         return NextResponse.redirect(new URL('/', req.url));
-    }*/
+    }
 
 }
 export const config = {
