@@ -1,6 +1,6 @@
 FROM node:20.13.1
 
-WORKDIR /bfc-status-demo/issuer-demo/app
+WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
@@ -15,4 +15,4 @@ COPY . .
 EXPOSE 3000
 
 # Start development server
-CMD ["npm", "run", "dev", "--", "-p", "3000"]
+CMD ["sh", "-c", "npm run db:init && npm run dev"]

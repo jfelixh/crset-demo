@@ -37,7 +37,7 @@ services:
       - "8080:8080"
       - "8090:8090"
     volumes:
-      - bfc-status-demo:/verifier-demo/server
+      - ./verifier-demo/server/data:/app/data
     depends_on:
       - ngrok-verifier
       - verifier-redis
@@ -48,8 +48,6 @@ services:
     build: ./verifier-demo/client
     ports:
       - "5173:5173"
-    volumes:
-      - bfc-status-demo:/verifier-demo/client
     depends_on:
       - verifier-backend
     env_file:
@@ -60,14 +58,11 @@ services:
       context: ./issuer-demo
     ports:
       - "3000:3000"
+      - "8091:8091"
     volumes:
-      - bfc-status-demo:/issuer-demo/app
+      - ./issuer-demo/data:/app/data
     depends_on:
       - ngrok-issuer
       - issuer-redis
     env_file:
       - .env
-
-volumes:
-  bfc-status-demo:
-

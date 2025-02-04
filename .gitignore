@@ -137,3 +137,4 @@ dump.rdb
 
 # IntelliJ
 .idea/
+.DS_Store

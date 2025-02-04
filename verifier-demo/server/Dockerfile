@@ -1,10 +1,10 @@
 FROM node:20.13.1
 
 # Set the working directory inside the container
-WORKDIR /bfc-status-demo/verifier-demo/server
+WORKDIR /app
 
 # Install sqlite3
-RUN apt-get update && apt-get install -y sqlite3 && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends sqlite3 && rm -rf /var/lib/apt/lists/*
 
 # Copy package.json and package-lock.json to the working directory
 COPY package*.json ./

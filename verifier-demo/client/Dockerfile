@@ -2,7 +2,7 @@
 FROM node:20-alpine
 
 # Set the working directory
-WORKDIR /bfc-status-demo/verifier-demo/client
+WORKDIR /app
 
 # Copy package.json and package-lock.json
 COPY package*.json ./

@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "db:init": "test -f sqlite_data/bfc.db || sqlite3 sqlite_data/bfc.db < database/schema.sql"
   },
   "dependencies": {
     "@digitalcredentials/ed25519-signature-2020": "^6.0.0",

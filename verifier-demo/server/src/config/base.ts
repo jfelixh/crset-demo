@@ -6,7 +6,7 @@ dotenv.config({ path: path.resolve(__dirname + "./../../../../.env") });
 export const config = {
   PORT: process.env.PORT || 8080,
   SECRET: process.env.SECRET || "secret",
-  DB_PATH: "./src/db/loans.db",
+  DB_PATH: "./data/loans.db",
   REDIS_PORT: process.env.REDIS_PORT || 6380,
   REDIS_HOST: process.env.REDIS_HOST || "localhost",
   INFURA_API_KEY: process.env.INFURA_API_KEY || "",
