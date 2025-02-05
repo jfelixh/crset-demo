@@ -3,11 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 3000",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p 3000",
     "lint": "next lint",
-    "db:init": "test -f sqlite_data/bfc.db || sqlite3 sqlite_data/bfc.db < database/schema.sql"
+    "db:init": "test -f data/bfc.db || sqlite3 data/bfc.db < database/schema.sql"
   },
   "dependencies": {
     "@digitalcredentials/ed25519-signature-2020": "^6.0.0",

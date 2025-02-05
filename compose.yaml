@@ -58,7 +58,6 @@ services:
       context: ./issuer-demo
     ports:
       - "3000:3000"
-      - "8091:8091"
     volumes:
       - ./issuer-demo/data:/app/data
     depends_on:
@@ -66,3 +65,9 @@ services:
       - issuer-redis
     env_file:
       - .env
+    networks:
+      - test-network
+
+networks:
+  test-network:
+    external: true

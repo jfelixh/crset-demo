@@ -10,7 +10,7 @@ export async function POST(req: Request) {
 
     async function updatePublishStatusById(user,number) {
         console.log("Updating publish status for VC with ID:", user.email);
-        const db = connectToDb("./database/bfc.db");
+        const db = connectToDb("./data/bfc.db");
         await updatePublishById(await db, user.email, number)
     }
 

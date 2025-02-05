@@ -3,3 +3,4 @@ node_modules
 Dockerfile
 sqlite_data
 databse/bfc.db
+*.csv

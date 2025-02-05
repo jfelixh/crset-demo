@@ -69,7 +69,7 @@ function connectToDb(databaseLocation) {
     });
 }
 function createTable(db) {
-    db.run("CREATE TABLE IF NOT EXISTS credentialStatus\n         (\n             id     TEXT PRIMARY KEY,\n             status TEXT NOT NULL\n         ) STRICT", function (err) {
+    db.run("CREATE TABLE IF NOT EXISTS credentialStatus\n         (\n             id     TEXT PRIMARY KEY,\n             status INTEGER NOT NULL\n         ) STRICT", function (err) {
         if (err) {
             console.error("Error creating table:", err.message);
             return;
@@ -260,6 +260,7 @@ function initDB() {
             console.log("creating Table");
             console.log("Initializing database...");
             connectToDb("./bfc.db");
+            createBfcLogsTable(db);
             return [2 /*return*/];
         });
     });

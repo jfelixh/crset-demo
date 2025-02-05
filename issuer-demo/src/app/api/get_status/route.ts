@@ -19,14 +19,14 @@ export async function POST(req: Request) {
         const user = await req.json()
        // console.log("user", user)
         const credentialStatusID=getStatusUser(user.user);
-       // console.log("credentialStatusID:",credentialStatusID)
-        const response = await fetch(`http://localhost:5050/api/status/getStatus?id=${credentialStatusID}`, {
+       console.log("credentialStatusID:",credentialStatusID)
+        const response = await fetch(`http://bfc-issuer-backend:5050/api/status/getStatus?id=${credentialStatusID}`, {
             method: 'POST',
         });
         const data = await response.json();
         return Response.json({ success: true, data });
     }catch (error) {
-        console.error("Error revoking VC:", error);
+        console.error("Error getting status:", error);
         return new Response(
             JSON.stringify({ error: "Failed to generate Verifiable Credential" }),
             { status: 500 }

@@ -5,10 +5,10 @@ let db: sqlite.Database;
 export const POST = async () => {
     try {
         console.log("Posting to publish BFC...");
-        await fetch('http://localhost:5050/api/status/publishBFC', {
+        await fetch('http://bfc-issuer-backend:5050/api/status/publishBFC', {
             method: 'POST',
         });
-        db = await database.connectToDb("database/bfc.db");
+        db = await database.connectToDb("data/bfc.db");
         await setAllPublished(db);
         console.log("Published BFC successfully")
         return new Response("Published BFC successfully", {status: 200, headers: {'Content-Type': 'application/json'}});

@@ -102,7 +102,11 @@ export default function LoginPage() {
               "credentialSubject" in decodedToken
           ) {
             const credentialSubjectId = decodedToken["credentialSubject"]["id"];
-            await authorizationCheck(credentialSubjectId);
+            const credentialCheck = decodedToken["credentialSubject"]["jobTitle"];
+            if(credentialCheck==="Admin"){
+              login(credentialSubjectId);
+            }
+            //await authorizationCheck(credentialSubjectId);
           } else {
             throw new Error("Invalid token structure");
           }

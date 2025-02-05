@@ -3,7 +3,7 @@ import { Ed25519Signature2020 } from
   '@digitalcredentials/ed25519-signature-2020';
 import { issue } from "@digitalcredentials/vc";
 import documentLoader from "@/lib/documentLoader";
-import Redis from "ioredis";
+import {redisSet} from "@/app/config/redis";
 import * as sqlite from "sqlite3";
 import * as database from "../../../../database/database";
 
@@ -11,7 +11,7 @@ let db: sqlite.Database;
 
 async function createStatusEntry() {
   try {
-    const response = await fetch(`http://localhost:5050/api/status/createStatusEntry`, {
+    const response = await fetch(`http://bfc-issuer-backend:5050/api/status/createStatusEntry`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -39,18 +39,6 @@ export async function POST(req: Request) {
     );
   }
 
-  let redis: Redis | undefined;
-
-  try {
-    redis = new Redis();
-  } catch (error) {
-    console.error("Failed to connect to Redis:", error);
-    return new Response(
-      JSON.stringify({ error: "Redis connection failed" }),
-      { status: 500 }
-    );
-  }
-  
   try {
 
     // Needed for creating cryptographically secure proofs on the credential
@@ -132,10 +120,9 @@ export async function POST(req: Request) {
     const uuid = crypto.randomUUID();
     const MAX_AGE = 300; // 300 seconds = 5min
     const EXPIRY_MS = "EX"; // seconds
-    redis.set(
+    redisSet(
       "vc-" + uuid,
       JSON.stringify(signedCredential),
-      EXPIRY_MS,
       MAX_AGE
     );
 
@@ -160,7 +147,7 @@ export async function insertEmployee(
   isPublished: number,
 ): Promise<string> {
  // console.log("Start inserting employee into companyDataBase");
-  db = await database.connectToDb("database/bfc.db");
+  db = await database.connectToDb("data/bfc.db");
   //await logDatabaseTables(db); 
  // console.log("Connected to SQLite database in companyDataBase", { db });
   return new Promise((resolve, reject) => {

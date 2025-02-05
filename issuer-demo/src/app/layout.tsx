@@ -1,16 +1,16 @@
 "use client";
-import localFont from "next/font/local";
-import "./globals.css";
+
 import Header from "@/components/Header";
+import { Toaster } from "@/components/ui/toaster";
+import localFont from "next/font/local";
 import { usePathname } from "next/navigation";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
-import { ToastProvider } from "@radix-ui/react-toast";
-import { Toaster } from "@/components/ui/toaster";
 import { LogProvider } from "./contexts/BfcLogsContext";
 import {
   UnpublishedEntriesProvider,
   useUnpublishedEntriesContext,
 } from "./contexts/UnpublishedEntriesContext";
+import "./globals.css";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -29,22 +29,22 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <AuthProvider>
-      <UnpublishedEntriesProvider>
-        <LogProvider>
-          <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <AuthProvider>
+        <UnpublishedEntriesProvider>
+          <LogProvider>
             <body
               className={`${geistSans.variable} ${geistMono.variable} antialiased`}
             >
               <AuthWrapper>
                 {children}
-                <Toaster />
               </AuthWrapper>
+              <Toaster />
             </body>
-          </html>
-        </LogProvider>
-      </UnpublishedEntriesProvider>
-    </AuthProvider>
+          </LogProvider>
+        </UnpublishedEntriesProvider>
+      </AuthProvider>
+    </html>
   );
 }
 
@@ -52,7 +52,6 @@ const AuthWrapper = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated, logout } = useAuth();
   const { thereIsUnpublished } = useUnpublishedEntriesContext();
   const pathname = usePathname();
-  // const isHomePage = pathname === "/";
   return (
     <>
       <Header

@@ -14,18 +14,14 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useToast } from "@/lib/use-toast";
 import { useUnpublishedEntriesContext } from "../contexts/UnpublishedEntriesContext";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Info, Bell, File, Filter, AlertCircle } from "lucide-react";
-import { set } from "react-hook-form";
 import { Badge } from "@/components/ui/badge";
-
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -85,7 +81,7 @@ const UsersPage = () => {
     console.log("users:", users);
 
     const filteredUsers = users
-      .filter((user) => user.email.includes(searchTerm))
+      .filter((user) => user.email.toLowerCase().includes(searchTerm.toLowerCase()))
       .filter((user) => {
         console.log("published?", user.published);
         if (selectedOption === "all") return true;
@@ -108,9 +104,9 @@ const UsersPage = () => {
       const validity = await getCredentialStatus(user);
       console.log("validity:", validity);
       if (validity) {
-        userStatuses[user.email] = "Valid";
+        userStatuses[user.email] = "1";
       } else {
-        userStatuses[user.email] = "Invalid";
+        userStatuses[user.email] = "0";
       }
       //  console.log("userStatuses:", userStatuses[user.email_address]);
     }
@@ -317,12 +313,12 @@ const UsersPage = () => {
                         {statuses[user.email] ? (
                           <Badge
                             className={
-                              statuses[user.email] === "Valid"
+                              statuses[user.email] === "0"
                                 ? "bg-green-500 text-white hover:bg-green-400"
                                 : "bg-red-500 text-white hover:bg-red-400"
                             }
                           >
-                            {statuses[user.email] === "Valid"
+                            {statuses[user.email] === "1"
                               ? "Valid"
                               : "Invalid"}
                           </Badge>

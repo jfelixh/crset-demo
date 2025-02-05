@@ -1,11 +1,4 @@
-import { Redis } from "ioredis";
-
-var redis: Redis;
-try {
-  redis = new Redis();
-} catch (error) {
-  console.error("Failed to connect to Redis:", error);
-}
+import {redisGet} from "@/app/config/redis";
 
 export async function GET(
   _request: Request,
@@ -13,8 +6,8 @@ export async function GET(
 ) {
   const resolvedParams = await params;
   console.log("Resolved params for openid-credential:", resolvedParams);
-  const vc = await redis.get("vc-" + resolvedParams.vcid);
-
+  const vc = await redisGet("vc-" + resolvedParams.vcid);
+  console.log("redisGet")
   if (!vc || vc === undefined) {
     return Response.json({ error: "No prepared VC found" }, { status: 404 });
   }

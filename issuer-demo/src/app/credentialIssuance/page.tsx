@@ -22,6 +22,7 @@ import { z } from "zod";
 import * as React from "react";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useUnpublishedEntriesContext } from "../contexts/UnpublishedEntriesContext";
 import {
   Card,
   CardContent,
@@ -59,6 +60,7 @@ const jobtypes = [
     label: "Intern",
   },
 ];
+
 
 const formSchema = z.object({
   name: z
@@ -98,6 +100,14 @@ export default function Home() {
     },
   });
 
+
+  const {
+    thereIsUnpublished,
+    unpublishedEntries,
+    setThereIsUnpublished,
+  } = useUnpublishedEntriesContext();
+
+  
   const handleSubmit = async (data: z.infer<typeof formSchema>) => {
     try {
       const response = await fetch("/api/generateVC", {
@@ -138,9 +148,9 @@ export default function Home() {
           const result = await response.json();
 
           if (response.ok) {
-            window.location.reload();
             setDialogMessage("Email sent successfully!");
             setIsDialogOpen(true);
+            setThereIsUnpublished(true);
           } else {
             setDialogMessage(`Error: ${result.error}`);
             setIsDialogOpen(true);

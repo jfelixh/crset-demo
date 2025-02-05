@@ -23,7 +23,7 @@ export function middleware(req: NextRequest) {
 
     if (!authToken) {
         console.log("redirected to homepage")
-        return NextResponse.redirect(new URL('/', req.url));
+       // return NextResponse.redirect(new URL('/', req.url));
     }
 
 }

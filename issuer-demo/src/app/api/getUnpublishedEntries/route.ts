@@ -7,7 +7,7 @@ let db: sqlite.Database;
 export const GET = async () => {
   console.log("Fetching unpublished entries...");
   try {
-    db = await database.connectToDb("database/bfc.db");
+    db = await database.connectToDb("data/bfc.db");
     
     const response = await getUnpublishedEntries(db);
     return new Response(JSON.stringify(response), {
@@ -40,9 +40,9 @@ const getUnpublishedEntries = (db: sqlite.Database): Promise<any[]> => {
 
       const entries: UnpublishedEntries[] = [];
       if (rows.length === 0) {
-        console.log("No unpublished companies found.");
+        console.log("No unpublished entries found.");
       } else {
-        console.log("Unpublished companies:");
+        console.log("Unpublished entries:");
         rows.forEach((row) => {
           entries.push({
             name: row.name,
@@ -53,7 +53,7 @@ const getUnpublishedEntries = (db: sqlite.Database): Promise<any[]> => {
           });
         });
       }
-      console.log("Entries:", entries);
+      //console.log("Entries:", entries);
       resolve(entries); 
     });
   });

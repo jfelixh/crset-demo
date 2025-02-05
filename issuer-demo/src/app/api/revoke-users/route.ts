@@ -9,7 +9,7 @@ export async function POST(req: Request) {
     async function revokeVC(user) {
         const credentialStatusID=getStatusIDFromVC(user)
         console.log("Revoking VC with ID:", credentialStatusID);
-        fetch(`http://localhost:5050/api/status/revokeCredential?id=${credentialStatusID}`, {
+        fetch(`http://bfc-issuer-backend:5050/api/status/revokeCredential?id=${credentialStatusID}`, {
             method: "POST",
         })
             .then((res) => res.json())

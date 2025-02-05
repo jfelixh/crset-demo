@@ -1,5 +1,3 @@
-//TODO Delete this
-
 import * as csv from "csv-parser";
 import * as fs from "node:fs";
 import * as path from "path";
