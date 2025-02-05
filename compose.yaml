@@ -66,8 +66,8 @@ services:
     env_file:
       - .env
     networks:
-      - test-network
+      - bfc-network
 
 networks:
-  test-network:
+  bfc-network:
     external: true

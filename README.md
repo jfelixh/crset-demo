@@ -6,8 +6,14 @@ A monorepo containing everything required to demo the BFC-Status for VCs.
 ### Altme Wallet
 The bfc-status-demo requires the Altme Wallet to be installed in order to interact with the Ethereum blockchain. To install the Altme Wallet, follow the instructions on the [Altme Wallet website](https://altme.io/). Once installed, create a new wallet and save the private key.
 
+### Docker Network
+To make sure that the issuer-demo can communicate with [bfc-status-issuer-backend](https://github.com/jfelixh/bfc-status-issuer-backend), a Docker network is required. To create this network, run the following command:
+```sh
+$ docker network create bfc-network
+```
+
 ### Ngrok
-To make the demo pages publicly accessible to the wallet, [ngrok](https://ngrok.com) is used. 
+Additionally, to make the demo pages publicly accessible to the wallet, [ngrok](https://ngrok.com) is required. 
 Since both issuer and verifier demo are running on different ports and need to communicate with the wallet, two ngrok tunnels are required. 
 With that in mind, the URL of both the issuer and verifier demo need to be specified in the `.env` file. To get these public URLs, run the following command:
 
