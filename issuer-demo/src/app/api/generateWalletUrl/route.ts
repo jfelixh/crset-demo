@@ -31,6 +31,7 @@ export async function GET(req: Request) {
     }
     //console.log("externalUrl: " + DIDKit.keyToDID("key", process.env.DID_KEY_JWK!));
     const externalUrl = process.env.NEXT_PUBLIC_URL!;
+    //console.log(process.env.NEXT_PUBLIC_URL)
     const walletUrl =
       "openid-vc://?client_id=" +
       DIDKit.keyToDID("key", process.env.DID_KEY_JWK!) +

@@ -9,7 +9,7 @@ The bfc-status-demo requires the Altme Wallet to be installed in order to intera
 ### Docker Network
 To make sure that the issuer-demo can communicate with [bfc-status-issuer-backend](https://github.com/jfelixh/bfc-status-issuer-backend), a Docker network is required. To create this network, run the following command:
 ```sh
-$ docker network create bfc-network
+docker network create bfc-network
 ```
 
 ### Ngrok

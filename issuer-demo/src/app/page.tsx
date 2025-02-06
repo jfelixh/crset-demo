@@ -103,6 +103,7 @@ export default function LoginPage() {
           ) {
             const credentialSubjectId = decodedToken["credentialSubject"]["id"];
             const credentialCheck = decodedToken["credentialSubject"]["jobTitle"];
+            //console.log("credentialCheck",credentialCheck)
             if(credentialCheck==="Admin"){
               login(credentialSubjectId);
             }

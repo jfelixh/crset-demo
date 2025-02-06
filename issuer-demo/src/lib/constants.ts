@@ -43,7 +43,6 @@ export const optionsLineChartEntries = {
       },
     },
   },
-  responsive: true,
 };
 
 export const timeAgo = (date: string) => {

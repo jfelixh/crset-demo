@@ -112,7 +112,7 @@ export async function POST(req: Request) {
       documentLoader,
     });
 
-   // console.log("Start inserting into database")
+    //console.log("Start inserting into database")
   //  db = await database.connectToDb("database/bfc.db");
     await insertEmployee(name, rawPayload.email, rawPayload.jobTitle, JSON.stringify(signedCredential), rawPayload.manager, rawPayload.employmentType, 0);
   //  console.log("Finished inserting into database")
@@ -146,10 +146,10 @@ export async function insertEmployee(
   employmentType: string,
   isPublished: number,
 ): Promise<string> {
- // console.log("Start inserting employee into companyDataBase");
+  console.log("Start inserting employee into companyDataBase");
   db = await database.connectToDb("data/bfc.db");
   //await logDatabaseTables(db); 
- // console.log("Connected to SQLite database in companyDataBase", { db });
+  console.log("Connected to SQLite database in companyDataBase", { db });
   return new Promise((resolve, reject) => {
     db.run(
       "INSERT INTO companyDataBase (name,email,jobTitle,VC, manager, employmentType, isPublished) VALUES (?,?,?,?,?,?,?)",
@@ -160,7 +160,7 @@ export async function insertEmployee(
           reject(err);
           return "";
         }
-       // console.log("Employee inserted successfully with email_address:", email);
+        console.log("Employee inserted successfully with email_address:", email);
         db.all("SELECT * FROM companyDataBase", [], (err, rows) => {
           if (err) {
             console.error("Error fetching data:", err.message);

@@ -30,7 +30,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     console.log("document cookies:",document.cookie);
     localStorage.setItem("authToken", token);
     setIsAuthenticated(true);
-    router.push("/credentialIssuance");
+    router.push("/dashboards");
   };
 
   const logout = () => {

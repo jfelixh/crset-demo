@@ -3,7 +3,7 @@ import { Redis, RedisKey, RedisOptions, RedisValue } from "ioredis";
 const redisConfig: RedisOptions = {
   port: parseInt("6379", 10),
   //host:"issuer-redis",
-  host: "localhost", // switch to "localhost" if running locally
+  host: "issuer-redis", // switch to "localhost" if running locally
   maxRetriesPerRequest: 3,
   showFriendlyErrorStack: true,
 };

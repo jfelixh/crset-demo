@@ -6,6 +6,8 @@ services:
     ports:
       - "6379:6379"
     command: ["redis-server", "--port", "6379"]
+    networks:
+      - bfc-network
 
   verifier-redis:
     image: redis:7.2.2

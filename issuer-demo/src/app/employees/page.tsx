@@ -313,7 +313,7 @@ const UsersPage = () => {
                         {statuses[user.email] ? (
                           <Badge
                             className={
-                              statuses[user.email] === "0"
+                              statuses[user.email] === "1"
                                 ? "bg-green-500 text-white hover:bg-green-400"
                                 : "bg-red-500 text-white hover:bg-red-400"
                             }

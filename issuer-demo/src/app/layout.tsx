@@ -29,21 +29,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <AuthProvider>
-        <UnpublishedEntriesProvider>
-          <LogProvider>
-            <body
-              className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-            >
+    <html lang="en" suppressHydrationWarning >
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
+        <AuthProvider>
+          <UnpublishedEntriesProvider>
+            <LogProvider>
               <AuthWrapper>
                 {children}
               </AuthWrapper>
               <Toaster />
-            </body>
-          </LogProvider>
-        </UnpublishedEntriesProvider>
-      </AuthProvider>
+            </LogProvider>
+          </UnpublishedEntriesProvider>
+        </AuthProvider>
+      </body>
     </html>
   );
 }

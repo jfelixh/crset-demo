@@ -357,12 +357,12 @@ export async function initDB() {
   // export function initDB() {
   console.log("creating Table");
   console.log("Initializing database...");
-  connectToDb("./bfc.db");
-  createBfcLogsTable(db)
+  connectToDb("../data/bfc.db");
+  //createBfcLogsTable(db)
   // deleteBFCLogsTable(db)
   //createTable(db);
   //createTableCompany(db);
-  //populateDb(db, "./test_data_540000.csv");
+  populateDb(db, "./test_data_540000.csv");
   //populateDbCompany(db, "./test_data_540000.csv");
   // }
 }
