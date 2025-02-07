@@ -12,7 +12,15 @@ const ChartCard: React.FC<ChartCardProps> = ({ title, children }) => {
       <CardHeader>
         <h3>{title}</h3>
       </CardHeader>
-      <CardContent>{children}</CardContent>
+      <CardContent
+        className={
+          title === "Valid and Invalid Entries Over Time"
+            ? "flex justify-center items-center h-96"
+            : "inherit"
+        }
+      >
+        {children}
+      </CardContent>
     </Card>
   );
 };

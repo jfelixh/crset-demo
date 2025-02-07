@@ -241,7 +241,7 @@ const Dashboards = () => {
         <SmallCard
           title="Entries Changed and not Published"
           isLoading={isLoading}
-          content={numberOfUnpublishedEntries.toString()}
+          content={numberOfUnpublishedEntries?.toString() ?? "0"}
         />
 
         <SmallCard
