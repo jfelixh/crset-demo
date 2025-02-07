@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "bfc-status-check": "github:jfelixh/bfc-status-check",
-    "nodemailer": "^6.9.16"
-  }
-}

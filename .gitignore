@@ -133,7 +133,7 @@ dist
 dump.rdb
 
 # sqlite DB files
-*/*.db
+**/*.db
 
 # IntelliJ
 .idea/
