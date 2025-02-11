@@ -1,0 +1,75 @@
+services:
+  issuer-redis:
+    image: redis:7.2.2
+    container_name: issuer-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--port", "6379"]
+    networks:
+      - bfc-network
+
+  verifier-redis:
+    image: redis:7.2.2
+    container_name: verifier-redis
+    restart: always
+    ports:
+      - "6380:6380"
+    command: ["redis-server", "--port", "6380"]
+
+  ngrok-verifier: # port 8080 (verifier-backend)
+    image: ngrok/ngrok:latest
+    command: http http://host.docker.internal:8080
+    environment:
+      NGROK_AUTHTOKEN: ${NGROK_AUTH_TOKEN}
+    ports:
+      - "4040:4040" # ngrok dashboard
+
+  ngrok-issuer: # port 3000 (issuer-app)
+    image: ngrok/ngrok:latest
+    command: http http://host.docker.internal:3000
+    environment:
+      NGROK_AUTHTOKEN: ${NGROK_AUTH_TOKEN}
+    ports:
+      - "4041:4040" # ngrok dashboard
+
+  verifier-backend:
+    build: ./verifier-demo/server
+    ports:
+      - "8080:8080"
+      - "8090:8090"
+    volumes:
+      - ./verifier-demo/server/data:/app/data
+    depends_on:
+      - ngrok-verifier
+      - verifier-redis
+    env_file:
+      - .env
+
+  verifier-frontend:
+    build: ./verifier-demo/client
+    ports:
+      - "5173:5173"
+    depends_on:
+      - verifier-backend
+    env_file:
+      - .env
+
+  issuer-app:
+    build:
+      context: ./issuer-demo
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./issuer-demo/data:/app/data
+    depends_on:
+      - ngrok-issuer
+      - issuer-redis
+    env_file:
+      - .env
+    networks:
+      - bfc-network
+
+networks:
+  bfc-network:
+    external: true

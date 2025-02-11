@@ -1,0 +1,46 @@
+{
+  "name": "bfc-verifier-demo-server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
+    "start": "node dist/index.js",
+    "dev": "nodemon --watch src --ext ts,tsx --exec tsx src/index.ts",
+    "db:init": "test -f data/loans.db || (sqlite3 data/loans.db < src/db/schema.sql)"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@spruceid/didkit-wasm-node": "^0.2.1",
+    "@types/express-session": "^1.18.1",
+    "bfc-status-check": "github:jfelixh/bfc-status-check",
+    "connect-redis": "^8.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "express-session": "^1.18.1",
+    "http": "^0.0.1-security",
+    "ioredis": "^5.4.1",
+    "jose": "^5.9.6",
+    "jsonpath": "^1.1.1",
+    "sqlite": "^5.1.1",
+    "sqlite3": "^5.1.7",
+    "tsconfig-paths": "^4.2.0",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/ioredis": "^4.28.10",
+    "@types/jsonpath": "^0.2.4",
+    "@types/node": "^22.10.1",
+    "@types/ws": "^8.5.13",
+    "nodemon": "^3.1.7",
+    "ts-node": "^10.9.2",
+    "tsc-alias": "^1.8.10",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}

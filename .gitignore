@@ -128,3 +128,15 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# Redis dump
+dump.rdb
+
+# sqlite DB files
+**/*.db
+
+# IntelliJ
+.idea/
+.DS_Store
+
+*.csv
