@@ -12,16 +12,9 @@ export const GET = async () => {
     });
   } catch (error) {
     console.error("Error fetching exchange rate:", error);
-     // Revert after the demo (Use hardcoded value because if something fails)
-    // return new Response(
-    //   JSON.stringify({ error: "Failed to fetch exchange rate" }),
-    //   { status: 500, headers: { 'Content-Type': 'application/json' } }
-    // );
-    return new Response(JSON.stringify({ price: 3265.74 }), {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    return new Response(
+      JSON.stringify({ error: "Failed to fetch exchange rate" }),
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
+    );
   }
 };
