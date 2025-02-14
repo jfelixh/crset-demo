@@ -30,7 +30,7 @@
     "@tanstack/react-query": "^5.62.3",
     "@web5/credentials": "^1.1.3",
     "axios": "^1.7.7",
-    "bfc-status-check": "github:jfelixh/bfc-status-check",
+    "crset-check": "github:jfelixh/crset-check#housekeeping",
     "chart.js": "^4.4.7",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",

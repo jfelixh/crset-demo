@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import Image from "next/image";
+import Image from "next/legacy/image";
 import {AlertCircle, LogOut} from "lucide-react";
 import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation";

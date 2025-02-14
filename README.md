@@ -98,7 +98,5 @@ The issuer demo can be accessed at `http://localhost:3000` and the verifier demo
 - ![GitHub](https://img.shields.io/badge/GitHub-padded--bloom--filter--cascade-blue?logo=github)
     **[padded-bloom-filter-cascade](https://github.com/jfelixh/padded-bloom-filter-cascade/)**
 
-- [![IEEE Xplore](https://img.shields.io/badge/IEEE%20Xplore-7958597-blue)](https://ieeexplore.ieee.org/document/7958597) **[CRLite: A Scalable System for Pushing All TLS Revocations to All Browsers](https://ieeexplore.ieee.org/document/7958597)**
-*Larisch et al., 2025.*
 - **[EIP-4844: Shard Blob Transactions](https://eips.ethereum.org/EIPS/eip-4844)**
 - **[W3C Verifiable Credentials Data Model 2.0](https://www.w3.org/TR/vc-data-model-2.0/)**

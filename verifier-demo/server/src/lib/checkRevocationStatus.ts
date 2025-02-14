@@ -1,8 +1,8 @@
 import { EventEmitter } from "events";
-import { isRevoked } from "bfc-status-check";
+import { isRevoked } from "crset-check";
 import { config } from "@/config/base";
 
-const { INFURA_API_KEY, MORALIS_API_KEY, ALCHEMY_API_KEY, BLOBSCAN_URL } =
+const { INFURA_API_KEY, MORALIS_API_KEY, BLOBSCAN_URL } =
   config;
 
 export const checkRevocationStatus = async (
@@ -14,7 +14,6 @@ export const checkRevocationStatus = async (
     const apiConfig = {
       infuraApiKey: process.env.INFURA_API_KEY!,
       moralisApiKey: process.env.MORALIS_API_KEY!,
-      alchemyApiKey: process.env.ALCHEMY_API_KEY!,
       blobScanUrl: process.env.BLOBSCAN_API_URL!,
     };
     emitter.emit("vcid", { vcid: VC.id, clientId });

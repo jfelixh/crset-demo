@@ -215,7 +215,7 @@ const UsersPage = () => {
   };
 
   return (
-    <div className="page-container">
+    (<div className="page-container">
       {thereIsUnpublished && (
         <div className="flex flex-col gap-2 pt-1">
           <AlertTitle className="font-semibold bg-text-white">
@@ -280,7 +280,6 @@ const UsersPage = () => {
           </DialogContent>
         </Dialog>
       </div>
-
       {topUsers && topUsers.length > 0 ? (
         <div className="overflow-x-auto max-w-full">
           <div className="overflow-y-auto max-h-screen">
@@ -299,7 +298,7 @@ const UsersPage = () => {
                 {topUsers.map((user) => {
                   const vcData = JSON.parse(user.VC);
                   return (
-                    <TableRow key={user.email}>
+                    (<TableRow key={user.email}>
                       <TableCell>
                         <Checkbox
                           checked={selectedUser === user}
@@ -370,7 +369,7 @@ const UsersPage = () => {
                           )}
                         </>
                       </TableCell>
-                    </TableRow>
+                    </TableRow>)
                   );
                 })}
               </TableBody>
@@ -390,7 +389,6 @@ const UsersPage = () => {
           <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-grey-500"></div>
         </div>
       )}
-
       <div className="sticky bottom-0 bg-white border-t border-gray-200 pt-4 flex justify-end gap-2">
         <Button
           className="bg-blue-900 hover:bg-blue-700"
@@ -406,7 +404,7 @@ const UsersPage = () => {
           Publish BFC
         </Button>
       </div>
-    </div>
+    </div>)
   );
 };
 

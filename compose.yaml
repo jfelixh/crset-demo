@@ -1,59 +1,82 @@
 services:
+  traefik:
+    image: traefik:v3.3
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80"
+      - "8080:8080"  # Traefik dashboard
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - crset-network
+
   issuer-redis:
     image: redis:7.2.2
     container_name: issuer-redis
     restart: always
-    ports:
-      - "6379:6379"
+    expose:
+      - 6379
     command: ["redis-server", "--port", "6379"]
     networks:
-      - bfc-network
+      - crset-network
 
   verifier-redis:
     image: redis:7.2.2
     container_name: verifier-redis
     restart: always
-    ports:
-      - "6380:6380"
+    expose:
+      - 6380
     command: ["redis-server", "--port", "6380"]
-
-  ngrok-verifier: # port 8080 (verifier-backend)
-    image: ngrok/ngrok:latest
-    command: http http://host.docker.internal:8080
-    environment:
-      NGROK_AUTHTOKEN: ${NGROK_AUTH_TOKEN}
-    ports:
-      - "4040:4040" # ngrok dashboard
-
-  ngrok-issuer: # port 3000 (issuer-app)
-    image: ngrok/ngrok:latest
-    command: http http://host.docker.internal:3000
-    environment:
-      NGROK_AUTHTOKEN: ${NGROK_AUTH_TOKEN}
-    ports:
-      - "4041:4040" # ngrok dashboard
+    networks:
+      - crset-network
 
   verifier-backend:
     build: ./verifier-demo/server
-    ports:
-      - "8080:8080"
-      - "8090:8090"
+    expose:
+      - 8080
+      - 8090
     volumes:
       - ./verifier-demo/server/data:/app/data
+    environment:
+      - REDIS_HOST=verifier-redis
+      - REDIS_PORT=6380
     depends_on:
-      - ngrok-verifier
       - verifier-redis
     env_file:
       - .env
+    networks:
+      - crset-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.verifier-api.rule=PathPrefix(`/verifierapi`)"
+      - "traefik.http.routers.verifier-api.entrypoints=web"
+      - "traefik.http.services.verifier-api.loadbalancer.server.port=8080"
+      - "traefik.http.middlewares.strip-verifier-api.stripprefix.prefixes=/verifierapi"
+      - "traefik.http.routers.verifier-api.middlewares=strip-verifier-api@docker"
 
   verifier-frontend:
     build: ./verifier-demo/client
-    ports:
-      - "5173:5173"
+    expose:
+      - 5173
     depends_on:
       - verifier-backend
     env_file:
       - .env
+    environment:
+      - VITE_SERVER_URL=/verifierapi
+    networks:
+      - crset-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.verifier-frontend.rule=PathPrefix(`/verifier`)"
+      - "traefik.http.routers.verifier-frontend.entrypoints=web"
+      - "traefik.http.services.verifier-frontend.loadbalancer.server.port=5173"
+      - "traefik.http.middlewares.strip-verifier.stripprefix.prefixes=/verifier"
+      - "traefik.http.routers.verifier-frontend.middlewares=strip-verifier@docker"
 
   issuer-app:
     build:
@@ -62,14 +85,23 @@ services:
       - "3000:3000"
     volumes:
       - ./issuer-demo/data:/app/data
+    environment:
+      - REDIS_HOST=issuer-redis
+      - REDIS_PORT=6379
     depends_on:
-      - ngrok-issuer
       - issuer-redis
     env_file:
       - .env
     networks:
-      - bfc-network
+      - crset-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.issuer.rule=PathPrefix(`/issuer`)"
+      - "traefik.http.routers.issuer.entrypoints=web"
+      - "traefik.http.services.issuer.loadbalancer.server.port=3000"
+      - "traefik.http.middlewares.strip-issuer.stripprefix.prefixes=/issuer"
+      - "traefik.http.routers.issuer.middlewares=strip-issuer@docker"
 
 networks:
-  bfc-network:
-    external: true
+  crset-network:
+    name: crset-network

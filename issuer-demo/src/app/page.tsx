@@ -1,5 +1,5 @@
 "use client";
-import Image from "next/image";
+import Image from "next/legacy/image";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -20,7 +20,7 @@ export default function LoginPage() {
   const { login, isAuthenticated } = useAuth();
   const router = useRouter();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  let interval;
+  let interval: NodeJS.Timeout;
 
   // Function to generate Wallet URL
   const generateWalletURL = async () => {
@@ -104,9 +104,11 @@ export default function LoginPage() {
             const credentialSubjectId = decodedToken["credentialSubject"]["id"];
             const credentialCheck = decodedToken["credentialSubject"]["jobTitle"];
             //console.log("credentialCheck",credentialCheck)
-            if(credentialCheck==="Admin"){
-              login(credentialSubjectId);
-            }
+            //TODO: This check is dumb bc it requires a super specific token to log in. maybe remove session management entirely
+            // if(credentialCheck==="Admin"){
+            //   login(credentialSubjectId);
+            // }
+            login(credentialSubjectId)
             //await authorizationCheck(credentialSubjectId);
           } else {
             throw new Error("Invalid token structure");
