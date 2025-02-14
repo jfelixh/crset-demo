@@ -1,10 +1,21 @@
 import * as database from "../../../../database/database";
 import * as sqlite from "sqlite3";
 
-let db: sqlite.Database;
+interface DBRow {
+  VC: string;
+}
+
+interface CredentialSubjectInfo {
+  name: string;
+  familyName: string;
+  email: string;
+  companyName: string;
+  jobTitle: string;
+}
 
 export async function POST(req: Request) {
   const { idToCheck } = await req.json();
+  const db = await database.connectToDb("./data/bfc.db");
 
   //console.log("Authorization check for id: ", idToCheck);
 
@@ -24,7 +35,7 @@ export async function POST(req: Request) {
       return new Response(
         JSON.stringify({
           success:
-            (credentialSubjectInfo[0].jobTitle as string).toLowerCase() ===
+            (credentialSubjectInfo![0].jobTitle as string).toLowerCase() ===
             "admin",
         }),
         { status: 200 },
@@ -44,9 +55,8 @@ export async function POST(req: Request) {
 async function getAllCredentialSubjectIds(
   db: sqlite.Database,
 ): Promise<Set<string>> {
-  db = await database.connectToDb("./data/bfc.db");
   return new Promise((resolve, reject) => {
-    db.all("SELECT VC FROM companyDataBase", [], (err, rows) => {
+    db.all("SELECT VC FROM companyDataBase", [], (err, rows: DBRow[]) => {
       if (err) {
         console.error("Error querying VCs:", err.message);
         reject(err);
@@ -61,7 +71,7 @@ async function getAllCredentialSubjectIds(
               if (credentialSubjectId) {
                 credentialSubjectIds.add(credentialSubjectId);
               }
-            } catch (e) {
+            } catch (e: any) {
               console.error("Error parsing VC JSON:", e.message);
             }
           }
@@ -83,18 +93,14 @@ function searchCredentialSubjectId(
 async function getCredentialSubjectInfo(
   db: sqlite.Database,
   credentialSubjectId: string,
-): Promise<any> {
-  db = await database.connectToDb("./data/bfc.db");
+): Promise<CredentialSubjectInfo[] | null> {
   return new Promise((resolve, reject) => {
-    // Query for all rows in the companyDataBase table
-    db.all("SELECT VC FROM companyDataBase", [], (err, rows) => {
+    db.all("SELECT VC FROM companyDataBase", [], (err, rows: DBRow[]) => {
       if (err) {
-        console.error("Error querying VC:", err.message);
         reject(err);
       } else {
-        const results = [];
+        const results: CredentialSubjectInfo[] = [];
 
-        // Loop through all rows and process each VC
         rows.forEach((row) => {
           if (row && row.VC) {
             try {
@@ -114,7 +120,7 @@ async function getCredentialSubjectInfo(
                   jobTitle: credentialSubject.jobTitle,
                 });
               }
-            } catch (e) {
+            } catch (e: any) {
               console.error("Error parsing VC JSON:", e.message);
             }
           }

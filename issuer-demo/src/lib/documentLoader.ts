@@ -1,5 +1,5 @@
 import axios from "axios";
-import vc from "@digitalcredentials/vc";
+import * as vc from "@digitalcredentials/vc";
 
 import testContext from "../resources/contexts/index";
 

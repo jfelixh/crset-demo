@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
-const {
-  Chart: ChartJS,
+import {
+  Chart as ChartJS,
   CategoryScale,
   LinearScale,
   BarElement,
@@ -10,8 +10,7 @@ const {
   Legend,
   PointElement,
   LineElement,
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-} = require("chart.js");
+} from "chart.js";
 
 import LastTransactionsCard from "@/components/LastTransactionsCard";
 import BarChart from "@/components/BarChart";
@@ -53,7 +52,7 @@ interface ChartData {
 
 const Dashboards = () => {
   const [logs, setLogs] = useState<LogData[]>([]);
-  const [latestLog, setLatestLog] = useState<LogData>({});
+  const [latestLog, setLatestLog] = useState<LogData>({} as LogData);
   const [last5Logs, setLast5Logs] = useState<LogData[]>([]);
   const [exchangeRate, setExchangeRate] = useState<number>(0);
   const [numberOfUnpublishedEntries, setNumberOfUnpublishedEntries] =

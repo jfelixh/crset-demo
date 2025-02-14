@@ -6,7 +6,7 @@ export async function POST(req: Request) {
     });
   }
 
-  async function revokeVC(user) {
+  async function revokeVC(user: any) {
     const credentialStatusID = getStatusIDFromVC(user);
     console.log("Revoking VC with ID:", credentialStatusID);
     fetch(
@@ -19,10 +19,9 @@ export async function POST(req: Request) {
       .then((data) => console.log("Revocation results:", data))
       .catch((error) => console.error("Error:", error));
   }
-  function getStatusIDFromVC(user) {
+  function getStatusIDFromVC(user: any) {
     const vc = JSON.parse(user.VC);
     console.log("vc:", vc);
-    // TODO: remove array check after reinitializing database with vcs that have single credentialStatus
     if (Array.isArray(vc.credentialStatus)) {
       return vc.credentialStatus[0].id;
     } else {

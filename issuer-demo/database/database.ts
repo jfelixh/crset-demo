@@ -1,6 +1,6 @@
 //TODO Delete this
 
-import * as csv from "csv-parser";
+import csv from "csv-parser";
 import * as fs from "node:fs";
 import * as path from "path";
 import { Database } from "sqlite3";
@@ -93,134 +93,12 @@ function clearCredentialStatusTable(db: Database) {
   });
 }
 
-function populateDbCompany(db: Database, filePath: string) {
-  const insertStmt = db.prepare(
-    "INSERT INTO companyDataBase (name,email,jobTitle,VC,manager, employmentType, isPublished) VALUES ( ?,?,?,?,?,?,?)",
-  );
-  fs.createReadStream(filePath)
-    .pipe(
-      csv({
-        // separator: ";"
-      }),
-    )
-    .on("data", async (row) => {
-      const firstName = await uniqueNamesGenerator(config);
-      const lastName = await uniqueNamesGenerator(config);
-      const name = firstName + " " + lastName;
-      const email_address =
-        firstName.toLowerCase() + "." + lastName.toLowerCase() + "@cmw.de";
-      const jobTitle = [
-        "Software Engineer",
-        "Accountant",
-        "HR",
-        "Manager",
-        "Director",
-        "Intern",
-      ];
-      const manager = "Sarah Smith";
-      const employmentType = ["Full Time", "Part Time", "Intern"];
-      const vc = JSON.stringify({
-        "@context": [
-          "https://www.w3.org/2018/credentials/v1",
-          {
-            BFCStatusEntry: {
-              "@context": {
-                "@protected": true,
-                id: "@id",
-                type: "@type",
-                statusPurpose: "schema:Text",
-                schema: "https://schema.org/",
-              },
-              "@id": "urn:bfcstatusentry",
-            },
-            EmploymentCredential: {
-              "@context": {
-                "@protected": true,
-                "@version": 1.1,
-                email: "schema:email",
-                name: "schema:name",
-                familyName: "schema:givenName",
-                jobTitle: "schema:jobTitle",
-                companyName: "schema:legalName",
-                comment: "schema:Text",
-                id: "@id",
-                schema: "https://schema.org/",
-                type: "@type",
-              },
-              "@id": "urn:employmentcredential",
-            },
-          },
-          "https://w3id.org/security/suites/ed25519-2020/v1",
-        ],
-        id: "urn:uuid:0579c3ec-143a-44f8-9d15-b2d396fe4e07",
-        type: ["VerifiableCredential", "EmploymentCredential"],
-        issuer: "did:key:z6Mkii9oRJhUyQNBS3LXbCHSCv2vXkzD8NUbmL1KrSQ8t6YM",
-        credentialSubject: {
-          id: row.id,
-          email: `${email_address}`,
-          name: `${firstName}`,
-          familyName: `${lastName}`,
-          jobTitle: `${jobTitle}`,
-          companyName: "CMW Group",
-          comment: "I am just a test employment credential.",
-          type: "EmploymentCredential",
-        },
-        credentialStatus: {
-          id:
-            "urn:eip155:1:0x32328bfaea51ce120db44f7755a1170e9cc43653:" + row.id,
-          type: "BFCStatusEntry",
-          statusPurpose: "revocation",
-        },
-        issuanceDate: "2024-12-12T16:27:32Z",
-        proof: {
-          type: "Ed25519Signature2020",
-          created: "2024-12-12T16:27:32Z",
-          verificationMethod:
-            "did:key:z6Mkii9oRJhUyQNBS3LXbCHSCv2vXkzD8NUbmL1KrSQ8t6YM#z6Mkii9oRJhUyQNBS3LXbCHSCv2vXkzD8NUbmL1KrSQ8t6YM",
-          proofPurpose: "assertionMethod",
-          proofValue:
-            "z2U2LHtQYhY7s6T9UHvpQs2aPdQsxk2UcPdWm1AF3pFfEUmhFDEvBkiqBnGcKiiPzBoof2j5acVpqSy3eoy9opSBD",
-        },
-      });
-      insertStmt.run(
-        [
-          name,
-          email_address,
-          jobTitle[Math.floor(Math.random() * 6)],
-          vc,
-          manager,
-          employmentType[Math.floor(Math.random() * 3)],
-          0,
-        ],
-        (err) => {
-          if (err) {
-            console.error(
-              `Error inserting rowsss ${JSON.stringify(row)}:`,
-              err.message,
-            );
-          }
-        },
-      );
-    })
-    .on("end", () => {
-      console.log("CSV file successfully processed.");
-      insertStmt.finalize();
-    })
-    .on("error", (err: any) => {
-      console.error("Error reading CSV file:", err.message);
-    });
-}
-
 function populateDb(db: Database, filePath: string) {
   const insertStmt = db.prepare(
     "INSERT INTO credentialStatus (id,status) VALUES ( ?,?)",
   );
   fs.createReadStream(filePath)
-    .pipe(
-      csv({
-        // separator: ";"
-      }),
-    )
+    .pipe(csv())
     .on("data", (row) => {
       const credentialStatusId =
         "urn:eip155:1:0x32328bfaea51ce120db44f7755a1170e9cc43653:" + row.id;

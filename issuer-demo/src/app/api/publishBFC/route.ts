@@ -9,7 +9,7 @@ export const POST = async () => {
       method: "POST",
     });
     db = await database.connectToDb("data/bfc.db");
-    await setAllPublished(db);
+    setAllPublished(db);
     console.log("Published BFC successfully");
     return new Response("Published BFC successfully", {
       status: 200,
@@ -25,8 +25,8 @@ export const POST = async () => {
   }
 };
 
-function setAllPublished(db) {
-  db.run(`UPDATE companyDataBase SET isPublished = 1`, (err) => {
+function setAllPublished(db: sqlite.Database) {
+  db.run(`UPDATE companyDataBase SET isPublished = 1`, (err: any) => {
     if (err) {
       console.error("Error updating entries:", err.message);
       return;

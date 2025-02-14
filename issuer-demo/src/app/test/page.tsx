@@ -27,7 +27,7 @@ export default function LoginPage() {
         // Generate the DID using the stringified JWK
         const result = DIDKit.keyToDID("key", jwkString);
         setDID(result); // Store the DID in state
-      } catch (err) {
+      } catch (err: any) {
         setError(err.message || "An unexpected error occurred.");
         console.error("Error initializing DIDKit or generating DID:", err);
       }

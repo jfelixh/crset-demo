@@ -32,7 +32,7 @@ export const GET = async () => {
   }
 };
 
-export const getAllUsers = async (): Promise<User[]> => {
+const getAllUsers = async (): Promise<User[]> => {
   //console.log("Connecting to SQLite database...");
   db = await database.connectToDb("data/bfc.db");
   // console.log("Connected to SQLite database1.");
@@ -47,7 +47,7 @@ export const getAllUsers = async (): Promise<User[]> => {
             reject(err);
           } else {
             const users: User[] = [];
-            rows.forEach((row) => {
+            rows.forEach((row: any) => {
               users.push({
                 name: row.name,
                 email: row.email,

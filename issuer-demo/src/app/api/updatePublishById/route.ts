@@ -8,7 +8,7 @@ export async function POST(req: Request) {
     });
   }
 
-  async function updatePublishStatusById(user, number) {
+  async function updatePublishStatusById(user: any, number: number) {
     console.log("Updating publish status for VC with ID:", user.email);
     const db = connectToDb("./data/bfc.db");
     await updatePublishById(await db, user.email, number);
@@ -21,7 +21,7 @@ export async function POST(req: Request) {
       await updatePublishStatusById(rawPayload.user, 0);
     } else if (rawPayload.action === "bulkUpdate") {
       console.log("bulk update", rawPayload.users);
-      rawPayload.users.forEach((user) => {
+      rawPayload.users.forEach((user: any) => {
         updatePublishStatusById(user, 1);
       });
     }

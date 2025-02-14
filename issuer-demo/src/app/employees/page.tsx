@@ -11,12 +11,11 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useUnpublishedEntriesContext } from "../contexts/UnpublishedEntriesContext";
-import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
-import { Info, Bell, File, Filter, AlertCircle } from "lucide-react";
+import { AlertTitle } from "@/components/ui/alert";
+import { File, Filter, AlertCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
@@ -81,10 +80,10 @@ const UsersPage = () => {
     console.log("users:", users);
 
     const filteredUsers = users
-      .filter((user) =>
+      .filter((user: any) =>
         user.email.toLowerCase().includes(searchTerm.toLowerCase()),
       )
-      .filter((user) => {
+      .filter((user: any) => {
         console.log("published?", user.published);
         if (selectedOption === "all") return true;
         if (selectedOption === "Published") return user.published === true;
@@ -99,7 +98,7 @@ const UsersPage = () => {
     setTopUsers(filteredUsers.slice(0, 20));
   }, [users, searchTerm, selectedOption]);
 
-  const fetchStatusForTopUsers = async (topUsers) => {
+  const fetchStatusForTopUsers = async (topUsers: any) => {
     const userStatuses: { [key: string]: string } = {};
     for (const user of topUsers) {
       // console.log("user:", user);
@@ -119,7 +118,7 @@ const UsersPage = () => {
     fetchStatusForTopUsers(topUsers);
   }, [topUsers]);
 
-  const handleCheckboxChange = (user) => {
+  const handleCheckboxChange = (user: any) => {
     setSelectedUser((prevSelected) => (prevSelected === user ? null : user));
   };
 
@@ -204,7 +203,7 @@ const UsersPage = () => {
     router.push("/bfc");
   };
 
-  const getCredentialStatus = async (user) => {
+  const getCredentialStatus = async (user: any) => {
     const response = await fetch("/api/get_status", {
       method: "POST",
       headers: {
@@ -223,7 +222,7 @@ const UsersPage = () => {
           <AlertTitle className="font-semibold bg-text-white">
             <Badge className="bg-orange-500 text-white text-xl gap-x-2 animate-pulse hover:bg-orange-400 transition-colors duration-4000 ease-in-out">
               <AlertCircle className="h-5 w-5 text-white" />
-              Reminder: Don't forget to publish!
+              Reminder: Don&apos;t forget to publish!
             </Badge>
           </AlertTitle>
         </div>
@@ -241,7 +240,6 @@ const UsersPage = () => {
           {/* Control dialog visibility */}
           <DialogTrigger asChild>
             <Filter
-              variant="outline"
               className="cursor-pointer"
               onClick={() => setOpenDialogue(true)} // Open the dialog when clicked
             />
@@ -297,8 +295,7 @@ const UsersPage = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {topUsers.map((user) => {
-                  const vcData = JSON.parse(user.VC);
+                {topUsers.map((user: any) => {
                   return (
                     <TableRow key={user.email}>
                       <TableCell>

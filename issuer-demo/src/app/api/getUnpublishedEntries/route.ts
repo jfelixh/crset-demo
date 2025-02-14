@@ -43,7 +43,7 @@ const getUnpublishedEntries = (db: sqlite.Database): Promise<any[]> => {
         console.log("No unpublished entries found.");
       } else {
         console.log("Unpublished entries:");
-        rows.forEach((row) => {
+        rows.forEach((row: any) => {
           entries.push({
             name: row.name,
             email: row.email,

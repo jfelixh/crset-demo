@@ -83,7 +83,7 @@ export const GET = async (req: Request) => {
   }
 };
 
-export const POST = async (req: Request, res: Response) => {
+export const POST = async (req: Request) => {
   console.log(
     "Post the VP with a corresponding proof and let the verifier do the actual verification",
   );
@@ -148,7 +148,7 @@ export const POST = async (req: Request, res: Response) => {
           .setAudience("https://example.com")
           .setExpirationTime("1h")
           .sign(privateKey);
-      } catch (err) {
+      } catch (err: any) {
         console.error(err, "Failed signing session token");
         return new Response(
           JSON.stringify({ error: err.message || "Internal Server Error" }),

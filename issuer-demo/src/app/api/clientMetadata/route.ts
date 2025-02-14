@@ -1,5 +1,5 @@
 import { getMetadata } from "@/lib/getMetadata";
-export async function GET(req: Request, res: Response) {
+export async function GET(req: Request) {
   //console.log("getClientMetadata");
   console.log(
     "Get metadata to know the supported credential types and endpoint for presenting the VC",
@@ -27,7 +27,7 @@ export async function GET(req: Request, res: Response) {
         status: 500,
       });
     }
-  } catch (e: Error) {
+  } catch (e: any) {
     //res.status(500).end();
     return new Response(JSON.stringify({ error: e.message }), { status: 500 });
   }

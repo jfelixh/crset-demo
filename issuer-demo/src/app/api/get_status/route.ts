@@ -5,10 +5,8 @@ export async function POST(req: Request) {
       headers: { Allow: "POST" },
     });
   }
-  function getStatusUser(user) {
+  function getStatusUser(user: any) {
     const vc = JSON.parse(user.VC);
-    // TODO: remove array check after reinitializing database with vcs that have single credentialStatus
-    // It is not needed to remove the array check
     if (Array.isArray(vc.credentialStatus)) {
       return vc.credentialStatus[0].id;
     } else {

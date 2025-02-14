@@ -147,7 +147,7 @@ export async function POST(req: Request) {
   }
 }
 
-export async function insertEmployee(
+async function insertEmployee(
   name: string,
   email: string,
   jobTitle: string,
@@ -185,28 +185,4 @@ export async function insertEmployee(
       },
     );
   });
-}
-
-export async function logDatabaseTables(db: sqlite.Database): Promise<void> {
-  try {
-    // console.log("Fetching tables from the database...");
-    db.all(
-      "SELECT name FROM sqlite_master WHERE type='table'",
-      [],
-      (err, rows) => {
-        if (err) {
-          console.error("Error fetching tables:", err.message);
-          return;
-        }
-        if (rows.length === 0) {
-          console.log("No tables found in the database.");
-        } else {
-          console.log("Tables in the database:");
-          rows.forEach((row) => console.log(row.name));
-        }
-      },
-    );
-  } catch (error) {
-    console.error("Error logging database tables:", error.message);
-  }
 }
