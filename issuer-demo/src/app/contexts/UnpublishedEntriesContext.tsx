@@ -22,7 +22,7 @@ interface UnpublishedContextType {
 }
 
 const UnpublishedContext = createContext<UnpublishedContextType | undefined>(
-  undefined
+  undefined,
 );
 
 export const UnpublishedEntriesProvider = ({
@@ -70,7 +70,7 @@ export const useUnpublishedEntriesContext = (): UnpublishedContextType => {
   const context = useContext(UnpublishedContext);
   if (!context) {
     throw new Error(
-      "useUnpublishedEntriesContext must be used within an UnpublishedEntriesProvider"
+      "useUnpublishedEntriesContext must be used within an UnpublishedEntriesProvider",
     );
   }
   return context;

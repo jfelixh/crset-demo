@@ -19,7 +19,7 @@ const LastTransactionsCard = ({
     const getAddress = async () => {
       try {
         const response = await fetch(
-          "http://localhost:5050/api/bfcLogs/address"
+          "http://localhost:5050/api/bfcLogs/address",
         );
         const responseData = await response.json();
         setAddress(responseData);

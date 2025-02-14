@@ -14,17 +14,17 @@ if (process.env.PEX_DESCRIPTOR_OVERRIDE) {
   fs.readFile(process.env.PEX_DESCRIPTOR_OVERRIDE as string, "utf8").then(
     (file) => {
       inputDescriptorOverride = JSON.parse(file);
-    }
+    },
   );
 }
 
 export const generatePresentationDefinition = (
   policy: LoginPolicy,
-  incrAuthInputDescriptor?: InputDescriptor[]
+  incrAuthInputDescriptor?: InputDescriptor[],
 ) => {
   if (policy === undefined)
     throw Error(
-      "A policy must be specified to generate a presentation definition"
+      "A policy must be specified to generate a presentation definition",
     );
 
   const pd: PresentationDefinition = {
@@ -89,7 +89,7 @@ export const generatePresentationDefinition = (
 
       const fields = pattern.claims
         .filter((claim) =>
-          Object.hasOwn(claim, "required") ? claim.required : true
+          Object.hasOwn(claim, "required") ? claim.required : true,
         )
         .map((claim) => {
           return {

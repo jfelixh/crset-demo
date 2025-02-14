@@ -8,20 +8,20 @@ export const GET = async () => {
   console.log("Fetching unpublished entries...");
   try {
     db = await database.connectToDb("data/bfc.db");
-    
+
     const response = await getUnpublishedEntries(db);
     return new Response(JSON.stringify(response), {
       status: 200,
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     });
   } catch (error) {
-    console.error('Error fetching unpublished entries:', error);
-    
+    console.error("Error fetching unpublished entries:", error);
+
     return new Response(
-      JSON.stringify({ error: 'Failed to fetch unpublished entries' }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
+      JSON.stringify({ error: "Failed to fetch unpublished entries" }),
+      { status: 500, headers: { "Content-Type": "application/json" } },
     );
   }
 };
@@ -54,7 +54,7 @@ const getUnpublishedEntries = (db: sqlite.Database): Promise<any[]> => {
         });
       }
       //console.log("Entries:", entries);
-      resolve(entries); 
+      resolve(entries);
     });
   });
 };

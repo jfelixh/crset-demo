@@ -81,7 +81,9 @@ const UsersPage = () => {
     console.log("users:", users);
 
     const filteredUsers = users
-      .filter((user) => user.email.toLowerCase().includes(searchTerm.toLowerCase()))
+      .filter((user) =>
+        user.email.toLowerCase().includes(searchTerm.toLowerCase()),
+      )
       .filter((user) => {
         console.log("published?", user.published);
         if (selectedOption === "all") return true;
@@ -215,7 +217,7 @@ const UsersPage = () => {
   };
 
   return (
-    (<div className="page-container">
+    <div className="page-container">
       {thereIsUnpublished && (
         <div className="flex flex-col gap-2 pt-1">
           <AlertTitle className="font-semibold bg-text-white">
@@ -298,7 +300,7 @@ const UsersPage = () => {
                 {topUsers.map((user) => {
                   const vcData = JSON.parse(user.VC);
                   return (
-                    (<TableRow key={user.email}>
+                    <TableRow key={user.email}>
                       <TableCell>
                         <Checkbox
                           checked={selectedUser === user}
@@ -317,9 +319,7 @@ const UsersPage = () => {
                                 : "bg-red-500 text-white hover:bg-red-400"
                             }
                           >
-                            {statuses[user.email] === "1"
-                              ? "Valid"
-                              : "Invalid"}
+                            {statuses[user.email] === "1" ? "Valid" : "Invalid"}
                           </Badge>
                         ) : (
                           <Skeleton className={skeletonStyle} />
@@ -357,7 +357,7 @@ const UsersPage = () => {
                                   <pre className="whitespace-pre-wrap break-words">
                                     {JSON.stringify(user.VC, null, 2).replace(
                                       /\\"/g,
-                                      '"'
+                                      '"',
                                     )}
                                   </pre>
                                 </div>
@@ -369,7 +369,7 @@ const UsersPage = () => {
                           )}
                         </>
                       </TableCell>
-                    </TableRow>)
+                    </TableRow>
                   );
                 })}
               </TableBody>
@@ -404,7 +404,7 @@ const UsersPage = () => {
           Publish BFC
         </Button>
       </div>
-    </div>)
+    </div>
   );
 };
 

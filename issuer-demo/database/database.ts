@@ -44,7 +44,7 @@ function createTable(db: Database) {
         return;
       }
       console.log("Credential Status table is ready.");
-    }
+    },
   );
 }
 
@@ -67,7 +67,7 @@ function createTableCompany(db: Database) {
         return;
       }
       console.log("companyDataBase table is ready.");
-    }
+    },
   );
 }
 
@@ -95,13 +95,13 @@ function clearCredentialStatusTable(db: Database) {
 
 function populateDbCompany(db: Database, filePath: string) {
   const insertStmt = db.prepare(
-    "INSERT INTO companyDataBase (name,email,jobTitle,VC,manager, employmentType, isPublished) VALUES ( ?,?,?,?,?,?,?)"
+    "INSERT INTO companyDataBase (name,email,jobTitle,VC,manager, employmentType, isPublished) VALUES ( ?,?,?,?,?,?,?)",
   );
   fs.createReadStream(filePath)
     .pipe(
       csv({
         // separator: ";"
-      })
+      }),
     )
     .on("data", async (row) => {
       const firstName = await uniqueNamesGenerator(config);
@@ -196,10 +196,10 @@ function populateDbCompany(db: Database, filePath: string) {
           if (err) {
             console.error(
               `Error inserting rowsss ${JSON.stringify(row)}:`,
-              err.message
+              err.message,
             );
           }
-        }
+        },
       );
     })
     .on("end", () => {
@@ -213,13 +213,13 @@ function populateDbCompany(db: Database, filePath: string) {
 
 function populateDb(db: Database, filePath: string) {
   const insertStmt = db.prepare(
-    "INSERT INTO credentialStatus (id,status) VALUES ( ?,?)"
+    "INSERT INTO credentialStatus (id,status) VALUES ( ?,?)",
   );
   fs.createReadStream(filePath)
     .pipe(
       csv({
         // separator: ";"
-      })
+      }),
     )
     .on("data", (row) => {
       const credentialStatusId =
@@ -228,7 +228,7 @@ function populateDb(db: Database, filePath: string) {
         if (err) {
           console.error(
             `Error inserting row ${JSON.stringify(row)}:`,
-            err.message
+            err.message,
           );
         }
       });
@@ -257,7 +257,7 @@ function deleteUserByEmail(db: Database, email: string) {
       } else {
         // Delete the user if the email exists
         const deleteStmt = db.prepare(
-          "DELETE FROM companyDataBase WHERE email = ?"
+          "DELETE FROM companyDataBase WHERE email = ?",
         );
         deleteStmt.run([email], (err) => {
           if (err) {
@@ -268,7 +268,7 @@ function deleteUserByEmail(db: Database, email: string) {
         });
         deleteStmt.finalize();
       }
-    }
+    },
   );
 }
 
@@ -295,7 +295,7 @@ function createBfcLogsTable(db: Database) {
         return;
       }
       console.log("bfcLogs table is ready.");
-    }
+    },
   );
 }
 
@@ -334,7 +334,7 @@ function deleteCompanyTable(db: Database) {
 export default function updatePublishById(
   db: Database,
   email: string,
-  isPublished: number
+  isPublished: number,
 ): Promise<void> {
   console.log("Updating publish status for VC with email:", email);
   return new Promise(async (resolve, reject) => {
@@ -348,7 +348,7 @@ export default function updatePublishById(
           return;
         }
         resolve();
-      }
+      },
     );
   });
 }

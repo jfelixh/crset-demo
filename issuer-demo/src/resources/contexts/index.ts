@@ -4,12 +4,12 @@ const credentialsContext = require("credentials-context");
 const testContext = new Map([
   ...credentialsContext.contexts,
   [
-      // This is the context for the Verifiable Credential Examples Data Model
+    // This is the context for the Verifiable Credential Examples Data Model
     "https://www.w3.org/2018/credentials/examples/v1",
     require("./vc_examples.json"),
   ],
   ["http://schema.org", require("./schema")],
-    // This is the context for the Verifiable Credential Data Model
+  // This is the context for the Verifiable Credential Data Model
   ["https://www.w3.org/2018/credentials/v1", require("./vc.json")],
   // This is the context for the Ed25519 signature suite
   ["https://w3id.org/security/suites/ed25519-2020/v1", require("./ed.json")],

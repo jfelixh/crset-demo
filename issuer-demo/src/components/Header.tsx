@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import Image from "next/legacy/image";
-import {AlertCircle, LogOut} from "lucide-react";
-import { Button } from "@/components/ui/button"
+import { AlertCircle, LogOut } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 
 const Header = ({
@@ -16,7 +16,7 @@ const Header = ({
   logout: () => void;
   isUnpublished: boolean;
 }) => {
-  const router=useRouter();
+  const router = useRouter();
   return (
     <>
       <header className="bg-blue-900 text-white py-2 px-16">
@@ -33,50 +33,51 @@ const Header = ({
 
             {showLinks && (
               <Button
-                  onClick={() => {
-                    router.push("/credentialIssuance");
-                  }}
-                  variant="ghost"
-
+                onClick={() => {
+                  router.push("/credentialIssuance");
+                }}
+                variant="ghost"
                 className={cn(
                   "bg-blue-90 text-white",
-                  pathname && pathname === "/credentialIssuance"
+                  pathname && pathname === "/credentialIssuance",
                 )}
               >
                 Verifiable Credential Issuance
               </Button>
             )}
             {showLinks && (
-                <Button
-                    variant="ghost"
-                    onClick={() => {
-                      router.push("/employees");
-                    }}
-                    className={cn(
-                        "bg-blue-90 text-white",
-                        pathname && pathname === "/employees"
-                    )}
+              <Button
+                variant="ghost"
+                onClick={() => {
+                  router.push("/employees");
+                }}
+                className={cn(
+                  "bg-blue-90 text-white",
+                  pathname && pathname === "/employees",
+                )}
+              >
+                <div
+                  className={`flex flex-row items-center ${isUnpublished ? "animate-pulse" : ""}`}
                 >
-                  <div className={`flex flex-row items-center ${isUnpublished ? "animate-pulse" : ""}`}>
-                    {isUnpublished &&(<AlertCircle className="h-5 w-5 text-white" />)}
-                    <span className="ml-2">Employee List</span>
-                  </div>
-                </Button>
-
-
+                  {isUnpublished && (
+                    <AlertCircle className="h-5 w-5 text-white" />
+                  )}
+                  <span className="ml-2">Employee List</span>
+                </div>
+              </Button>
             )}
             {showLinks && (
-                <Link href="/dashboards" passHref>
-                  <Button
-                      variant="ghost"
-                      className={cn(
-                          "text-white",
-                          pathname === "/dashboards" && "underline"
-                      )}
-                  >
-                    Dashboards
-                  </Button>
-                </Link>
+              <Link href="/dashboards" passHref>
+                <Button
+                  variant="ghost"
+                  className={cn(
+                    "text-white",
+                    pathname === "/dashboards" && "underline",
+                  )}
+                >
+                  Dashboards
+                </Button>
+              </Link>
             )}
           </div>
           {showLinks && (

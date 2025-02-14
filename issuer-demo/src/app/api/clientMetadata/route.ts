@@ -1,7 +1,9 @@
 import { getMetadata } from "@/lib/getMetadata";
-export async function GET (req: Request, res: Response) {
+export async function GET(req: Request, res: Response) {
   //console.log("getClientMetadata");
-  console.log("Get metadata to know the supported credential types and endpoint for presenting the VC")
+  console.log(
+    "Get metadata to know the supported credential types and endpoint for presenting the VC",
+  );
   try {
     const { method } = req;
     // step 12
@@ -11,7 +13,7 @@ export async function GET (req: Request, res: Response) {
         process.env.PUBLIC_INTERNET_URL + "/api/dynamic/presentCredential",
       ]);
       // step 13
-    //  console.log(JSON.stringify(metadata));
+      //  console.log(JSON.stringify(metadata));
       //res.status(200).json(metadata);
       return new Response(JSON.stringify(metadata), {
         status: 200,
@@ -21,7 +23,9 @@ export async function GET (req: Request, res: Response) {
       });
     } else {
       //res.status(500).end();
-      return new Response(JSON.stringify({ error: "Method not allowed" }), { status: 500 });
+      return new Response(JSON.stringify({ error: "Method not allowed" }), {
+        status: 500,
+      });
     }
   } catch (e: Error) {
     //res.status(500).end();

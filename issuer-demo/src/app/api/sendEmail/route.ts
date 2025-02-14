@@ -4,13 +4,13 @@ import { toDataURL } from "qrcode";
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json(); 
+    const body = await req.json();
     const { vcid, email } = body;
     console.log("trying to send email");
     if (!vcid || !email) {
       return NextResponse.json(
         { error: "Missing required parameters" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -25,10 +25,9 @@ export async function POST(req: NextRequest) {
     };
 
     const qrData = `openid-credential-offer://?credential_offer=${encodeURIComponent(
-      JSON.stringify(credentialOffer)
+      JSON.stringify(credentialOffer),
     )}`;
 
-   
     const qrCode = await toDataURL(qrData);
 
     // Configure nodemailer
@@ -57,7 +56,10 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
-    console.error("Send email error",error);
-    return NextResponse.json({ error: "Failed to send email" }, { status: 500 });
+    console.error("Send email error", error);
+    return NextResponse.json(
+      { error: "Failed to send email" },
+      { status: 500 },
+    );
   }
 }

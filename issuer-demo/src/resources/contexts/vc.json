@@ -70,7 +70,6 @@
       }
     },
 
-
     "VerifiablePresentation": {
       "@id": "https://www.w3.org/2018/credentials#VerifiablePresentation",
       "@context": {

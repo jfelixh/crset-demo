@@ -17,7 +17,7 @@ export async function POST(req: Request) {
       // const credentialSubjectInfo = await getCredentialSubjectInfo(db, "did:key:z6MkkdC46uhBGjMYS2ZDLUwCrTWdaqZdTD3596sN4397oRNd");
       const credentialSubjectInfo = await getCredentialSubjectInfo(
         db,
-        idToCheck
+        idToCheck,
       );
       // console.log("Credential Subject Info: ", credentialSubjectInfo);
       //console.log("Success for admin:",(credentialSubjectInfo[0].jobTitle as string).toLowerCase() === "admin")
@@ -27,7 +27,7 @@ export async function POST(req: Request) {
             (credentialSubjectInfo[0].jobTitle as string).toLowerCase() ===
             "admin",
         }),
-        { status: 200 }
+        { status: 200 },
       );
       // return new Response(JSON.stringify({ success: (credentialSubjectInfo.email as string) === 'felix.hoops@tum.de' }))
     }
@@ -36,13 +36,13 @@ export async function POST(req: Request) {
   } catch (err) {
     return new Response(
       JSON.stringify({ error: "Error fetching credential subject ids" }),
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 async function getAllCredentialSubjectIds(
-  db: sqlite.Database
+  db: sqlite.Database,
 ): Promise<Set<string>> {
   db = await database.connectToDb("./data/bfc.db");
   return new Promise((resolve, reject) => {
@@ -75,14 +75,14 @@ async function getAllCredentialSubjectIds(
 
 function searchCredentialSubjectId(
   credentialSubjectIds: Set<string>,
-  id: string
+  id: string,
 ): boolean {
   return credentialSubjectIds.has(id);
 }
 
 async function getCredentialSubjectInfo(
   db: sqlite.Database,
-  credentialSubjectId: string
+  credentialSubjectId: string,
 ): Promise<any> {
   db = await database.connectToDb("./data/bfc.db");
   return new Promise((resolve, reject) => {

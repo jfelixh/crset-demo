@@ -312,12 +312,12 @@ export default function Home() {
                                             "mr-2 h-4 w-4",
                                             field.value === type
                                               ? "opacity-100"
-                                              : "opacity-0"
+                                              : "opacity-0",
                                           )}
                                         />
                                         {type}
                                       </CommandItem>
-                                    )
+                                    ),
                                   )}
                                 </CommandGroup>
                               </CommandList>

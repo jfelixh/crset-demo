@@ -27,7 +27,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const login = (token: string) => {
     document.cookie = `authToken=${token}; Path=/; SameSite=Lax`;
-    console.log("document cookies:",document.cookie);
+    console.log("document cookies:", document.cookie);
     localStorage.setItem("authToken", token);
     setIsAuthenticated(true);
     router.push("/dashboards");

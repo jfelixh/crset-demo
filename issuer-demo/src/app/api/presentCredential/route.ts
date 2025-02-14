@@ -10,7 +10,7 @@ export const GET = async (req: Request) => {
   try {
     //  console.log("presentCredentialGet");
     console.log(
-      "Get the presentation definition to know the format of the VC that the wallet can present and the endpoint where the VP can be submitted"
+      "Get the presentation definition to know the format of the VC that the wallet can present and the endpoint where the VP can be submitted",
     );
     const url = new URL(req.url);
     const login_id = url.searchParams.get("login_id");
@@ -19,13 +19,13 @@ export const GET = async (req: Request) => {
 
     const presentation_definition = generatePresentationDefinition(
       /* getConfiguredLoginPolicy()!, */
-      configuredPolicy!
+      configuredPolicy!,
     );
     // console.log("Presentation Definition: " + JSON.stringify(presentation_definition, null, 2));
     const did = keyToDID("key", process.env.DID_KEY_JWK!);
     const verificationMethod = await keyToVerificationMethod(
       "key",
-      process.env.DID_KEY_JWK!
+      process.env.DID_KEY_JWK!,
     );
 
     //   const { login_id } = req.query;
@@ -44,7 +44,7 @@ export const GET = async (req: Request) => {
     };
     const privateKey = await jose.importJWK(
       JSON.parse(process.env.DID_KEY_JWK!),
-      "EdDSA"
+      "EdDSA",
     );
     // console.log("Payload: " + JSON.stringify(payload, null, 2));
     const token = await new jose.SignJWT(payload)
@@ -65,7 +65,7 @@ export const GET = async (req: Request) => {
           JSON.stringify({
             error: "Failed signing presentation definition token",
           }),
-          { status: 500 }
+          { status: 500 },
         );
       });
     // res.status(200).json({
@@ -85,7 +85,7 @@ export const GET = async (req: Request) => {
 
 export const POST = async (req: Request, res: Response) => {
   console.log(
-    "Post the VP with a corresponding proof and let the verifier do the actual verification"
+    "Post the VP with a corresponding proof and let the verifier do the actual verification",
   );
   //  console.log("presentCredentialPost");
   //  console.log(req.body);
@@ -131,7 +131,7 @@ export const POST = async (req: Request, res: Response) => {
       // create a session by signing the user claims in to an ID token
       const privateKey = await jose.importJWK(
         JSON.parse(process.env.DID_KEY_JWK!),
-        "EdDSA"
+        "EdDSA",
       );
 
       let idToken: string | void;
@@ -155,7 +155,7 @@ export const POST = async (req: Request, res: Response) => {
           {
             status: 500,
             headers: { "Content-Type": "application/json" },
-          }
+          },
         );
       }
       //  console.log("ID token: ", idToken);
@@ -173,7 +173,7 @@ export const POST = async (req: Request, res: Response) => {
       {
         status: 500,
         headers: { "Content-Type": "application/json" },
-      }
+      },
     );
   }
 };

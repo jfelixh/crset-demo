@@ -4,6 +4,7 @@ services:
     command:
       - "--api.insecure=true"
       - "--providers.docker=true"
+      - "--providers.docker.network=crset-network"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
     ports:
@@ -88,6 +89,7 @@ services:
     environment:
       - REDIS_HOST=issuer-redis
       - REDIS_PORT=6379
+      - NEXT_PUBLIC_URL=$NEXT_PUBLIC_URL
     depends_on:
       - issuer-redis
     env_file:

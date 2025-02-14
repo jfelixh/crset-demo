@@ -1,13 +1,13 @@
-import {redisGet} from "@/app/config/redis";
+import { redisGet } from "@/app/config/redis";
 
 export async function GET(
   _request: Request,
-  { params }:  { params: Promise<{ vcid: string } > }
+  { params }: { params: Promise<{ vcid: string }> },
 ) {
   const resolvedParams = await params;
   console.log("Resolved params for openid-credential:", resolvedParams);
   const vc = await redisGet("vc-" + resolvedParams.vcid);
-  console.log("redisGet")
+  console.log("redisGet");
   if (!vc || vc === undefined) {
     return Response.json({ error: "No prepared VC found" }, { status: 404 });
   }
@@ -15,9 +15,13 @@ export async function GET(
   const jsonVc = JSON.parse(vc);
 
   const data = {
-    credential_issuer: process.env.NEXT_PUBLIC_URL + "/vci/" + resolvedParams.vcid,
+    credential_issuer:
+      process.env.NEXT_PUBLIC_URL + "/vci/" + resolvedParams.vcid,
     credential_endpoint:
-      process.env.NEXT_PUBLIC_URL + "/vci/" + resolvedParams.vcid + "/credential",
+      process.env.NEXT_PUBLIC_URL +
+      "/vci/" +
+      resolvedParams.vcid +
+      "/credential",
     credential_configurations_supported: {
       ProofOfEmploymentCredential: {
         format: "ldp_vc",
@@ -32,7 +36,9 @@ export async function GET(
     },
   };
 
-  console.log("Send metadata to the wallet to know what kind of credential to request")
+  console.log(
+    "Send metadata to the wallet to know what kind of credential to request",
+  );
 
   return Response.json(data);
 }

@@ -17,7 +17,7 @@ try {
     if ((error as any).code !== "ECONNREFUSED") {
       console.debug(
         { type: (error as any).type, message: error.message },
-        "Redis produced an error"
+        "Redis produced an error",
       );
     }
   });
@@ -32,7 +32,7 @@ export const redisGet = async (key: RedisKey): Promise<string | null> => {
     if (error) {
       console.error(
         { type: (error as any).type, message: error.message },
-        "Redis GET error"
+        "Redis GET error",
       );
     }
   });
@@ -42,14 +42,14 @@ export const redisGet = async (key: RedisKey): Promise<string | null> => {
 export const redisSet = (
   key: RedisKey,
   value: RedisValue,
-  seconds: string | number
+  seconds: string | number,
 ) => {
   console.debug("redisSet");
   redis.set(key, value, "EX", seconds, (error) => {
     if (error) {
       console.error(
         { type: (error as any).type, message: error.message },
-        "Redis SET error"
+        "Redis SET error",
       );
     }
   });

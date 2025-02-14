@@ -82,8 +82,8 @@ export default function LoginPage() {
     interval = setInterval(async () => {
       try {
         const response = await fetch(
-            encodeURI(`http://localhost:3000/api/callback?login_id=${login_id}`),
-            { credentials: "include" }
+          encodeURI(`http://localhost:3000/api/callback?login_id=${login_id}`),
+          { credentials: "include" },
         );
         console.log("Response from api/callback: ", response);
 
@@ -97,18 +97,19 @@ export default function LoginPage() {
           // Decode the JWT token
           const decodedToken = jwt.decode(result["token"]);
           if (
-              decodedToken &&
-              typeof decodedToken !== "string" &&
-              "credentialSubject" in decodedToken
+            decodedToken &&
+            typeof decodedToken !== "string" &&
+            "credentialSubject" in decodedToken
           ) {
             const credentialSubjectId = decodedToken["credentialSubject"]["id"];
-            const credentialCheck = decodedToken["credentialSubject"]["jobTitle"];
+            const credentialCheck =
+              decodedToken["credentialSubject"]["jobTitle"];
             //console.log("credentialCheck",credentialCheck)
             //TODO: This check is dumb bc it requires a super specific token to log in. maybe remove session management entirely
             // if(credentialCheck==="Admin"){
             //   login(credentialSubjectId);
             // }
-            login(credentialSubjectId)
+            login(credentialSubjectId);
             //await authorizationCheck(credentialSubjectId);
           } else {
             throw new Error("Invalid token structure");
@@ -132,90 +133,90 @@ export default function LoginPage() {
   }, [walletUrl, login_id]); // Only trigger effect if walletUrl or login_id changes
 
   return (
-      <div className="min-h-screen flex">
-        <div className="w-1/2 bg-white-100 flex flex-col justify-center items-center px-36">
-          <div className="container flex justify-center">
-            <div>
-              <div className="flex flex-col items-center">
-                <Image
-                    src="/images/teamwork-vector-illustration-style_717774-90944-removebg-preview.png"
-                    alt="Teamwork Vector Illustration Style"
-                    width={500}
-                    height={500}
-                />
-                <Button
-                    className="w-full bg-blue-800"
-                    onClick={toggleDialog}
-                    disabled={isAuthenticated}
+    <div className="min-h-screen flex">
+      <div className="w-1/2 bg-white-100 flex flex-col justify-center items-center px-36">
+        <div className="container flex justify-center">
+          <div>
+            <div className="flex flex-col items-center">
+              <Image
+                src="/images/teamwork-vector-illustration-style_717774-90944-removebg-preview.png"
+                alt="Teamwork Vector Illustration Style"
+                width={500}
+                height={500}
+              />
+              <Button
+                className="w-full bg-blue-800"
+                onClick={toggleDialog}
+                disabled={isAuthenticated}
+              >
+                Authenticate
+              </Button>
+
+              {isDialogOpen && (
+                <div
+                  className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+                  role="dialog"
+                  aria-modal="true"
+                  aria-labelledby="dialog-title"
                 >
-                  Authenticate
-                </Button>
-
-                {isDialogOpen && (
-                    <div
-                        className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
-                        role="dialog"
-                        aria-modal="true"
-                        aria-labelledby="dialog-title"
-                    >
-                      <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
-                        <div className="flex justify-between items-center">
-                          <h2 id="dialog-title" className="text-xl font-semibold">
-                            Login using your wallet
-                          </h2>
-                          <button
-                              className="text-gray-500 hover:text-gray-800 text-3xl"
-                              onClick={toggleDialog}
-                          >
-                            &times;
-                          </button>
-                        </div>
-                        <p className="text-gray-700 mt-2">
-                          Scan the QR code with your wallet to sign in.
-                        </p>
-
-                        <div className="mt-4 flex justify-center">
-                          <QRCodeCanvas value={walletUrl} size={200} />
-                        </div>
-
-                        <div className="mt-4 flex flex-row items-center justify-center gap-2">
-                          <div className="w-4 h-4 border-4 border-gray-300 border-t-gray-600 rounded-full animate-spin"></div>
-                          <p className="text-sm font-medium text-gray-600">
-                            Authenticating...
-                          </p>
-                        </div>
-
-                        <div className="mt-6 flex justify-end">
-                          <Button onClick={toggleDialog}>Close</Button>
-                        </div>
-                      </div>
+                  <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+                    <div className="flex justify-between items-center">
+                      <h2 id="dialog-title" className="text-xl font-semibold">
+                        Login using your wallet
+                      </h2>
+                      <button
+                        className="text-gray-500 hover:text-gray-800 text-3xl"
+                        onClick={toggleDialog}
+                      >
+                        &times;
+                      </button>
                     </div>
-                )}
-              </div>
+                    <p className="text-gray-700 mt-2">
+                      Scan the QR code with your wallet to sign in.
+                    </p>
+
+                    <div className="mt-4 flex justify-center">
+                      <QRCodeCanvas value={walletUrl} size={200} />
+                    </div>
+
+                    <div className="mt-4 flex flex-row items-center justify-center gap-2">
+                      <div className="w-4 h-4 border-4 border-gray-300 border-t-gray-600 rounded-full animate-spin"></div>
+                      <p className="text-sm font-medium text-gray-600">
+                        Authenticating...
+                      </p>
+                    </div>
+
+                    <div className="mt-6 flex justify-end">
+                      <Button onClick={toggleDialog}>Close</Button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
-
-        <div className="w-1/2 relative flex flex-col justify-center items-center">
-          <Image
-              src="/images/loginBackGroundImage.png"
-              alt="LogIn Image"
-              layout="fill"
-              objectFit="cover"
-              className="absolute z-0"
-          />
-          <h1 className="relative z-10 text-4xl font-bold text-center font-serif">
-            CMW
-            <br />
-            Enterprise Management System
-          </h1>
-          <br />
-          <h2 className="relative z-10 text-2xl font-medium text-center italic tracking-wide">
-            Get started issuing verifiable credentials <br />
-            and having an overview of <br />
-            your employees
-          </h2>
-        </div>
       </div>
+
+      <div className="w-1/2 relative flex flex-col justify-center items-center">
+        <Image
+          src="/images/loginBackGroundImage.png"
+          alt="LogIn Image"
+          layout="fill"
+          objectFit="cover"
+          className="absolute z-0"
+        />
+        <h1 className="relative z-10 text-4xl font-bold text-center font-serif">
+          CMW
+          <br />
+          Enterprise Management System
+        </h1>
+        <br />
+        <h2 className="relative z-10 text-2xl font-medium text-center italic tracking-wide">
+          Get started issuing verifiable credentials <br />
+          and having an overview of <br />
+          your employees
+        </h2>
+      </div>
+    </div>
   );
 }

@@ -33,7 +33,7 @@ ChartJS.register(
   Tooltip,
   Legend,
   PointElement,
-  LineElement
+  LineElement,
 );
 
 interface ChartDataset {
@@ -122,7 +122,7 @@ const Dashboards = () => {
           month: "short",
           day: "numeric",
           hour: "numeric",
-        })
+        }),
       );
       const validEntriesData = logs.map((log) => log.validIdsSize);
       const invalidEntriesData = logs.map((log) => log.invalidIdsSize);
@@ -254,7 +254,7 @@ const Dashboards = () => {
           title="Costs of Last Transaction"
           isLoading={isLoading}
           content={`$ ${(latestLog.transactionCost * exchangeRate).toFixed(
-            2
+            2,
           )} / ${(latestLog.transactionCost || 0).toFixed(6)} ether`}
         />
 
