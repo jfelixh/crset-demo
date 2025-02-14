@@ -61,7 +61,6 @@ const jobtypes = [
   },
 ];
 
-
 const formSchema = z.object({
   name: z
     .string()
@@ -100,14 +99,9 @@ export default function Home() {
     },
   });
 
+  const { thereIsUnpublished, unpublishedEntries, setThereIsUnpublished } =
+    useUnpublishedEntriesContext();
 
-  const {
-    thereIsUnpublished,
-    unpublishedEntries,
-    setThereIsUnpublished,
-  } = useUnpublishedEntriesContext();
-
-  
   const handleSubmit = async (data: z.infer<typeof formSchema>) => {
     try {
       const response = await fetch("/api/generateVC", {
@@ -140,8 +134,7 @@ export default function Home() {
             },
             body: JSON.stringify({
               vcid: responseData.uuid,
-              email: "chan9908181@gmail.com",
-              //data.email,
+              email: data.email,
             }),
           });
 
@@ -353,7 +346,12 @@ export default function Home() {
           <DialogTitle>Notification</DialogTitle>
           <DialogDescription>{dialogMessage}</DialogDescription>
           <DialogFooter>
-            <Button className="bg-blue-900 hover:bg-blue-800" onClick={() => setIsDialogOpen(false)}>Close</Button>
+            <Button
+              className="bg-blue-900 hover:bg-blue-800"
+              onClick={() => setIsDialogOpen(false)}
+            >
+              Close
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
