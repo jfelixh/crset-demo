@@ -1,19 +1,16 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import Image from "next/legacy/image";
-import { AlertCircle, LogOut } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 
 const Header = ({
   showLinks,
   pathname,
-  logout,
   isUnpublished,
 }: {
   showLinks: boolean;
   pathname: string;
-  logout: () => void;
   isUnpublished: boolean;
 }) => {
   const router = useRouter();
@@ -22,29 +19,18 @@ const Header = ({
       <header className="bg-blue-900 text-white py-2 px-16">
         <nav className="flex justify-between items-center">
           <div className="flex gap-4 items-center">
-            <Link href="/">
-              <Image
-                src="/images/logoVC.png"
-                alt="Company Logo"
-                width={55}
-                height={22}
-              />
-            </Link>
-
-            {showLinks && (
-              <Button
-                onClick={() => {
-                  router.push("/");
-                }}
-                variant="ghost"
-                className={cn(
-                  "bg-blue-90 text-white",
-                  pathname && pathname === "/",
-                )}
-              >
-                Home
-              </Button>
-            )}
+            <Button
+              onClick={() => {
+                router.push("/");
+              }}
+              variant="ghost"
+              className={cn(
+                "bg-blue-90 text-white",
+                pathname && pathname === "/",
+              )}
+            >
+              Home
+            </Button>
             {showLinks && (
               <Button
                 onClick={() => {

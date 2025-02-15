@@ -164,7 +164,7 @@ async function insertEmployee(
     db.run(
       "INSERT INTO companyDataBase (name,email,jobTitle,VC, manager, employmentType, isPublished) VALUES (?,?,?,?,?,?,?);",
       [name, email, jobTitle, VC, manager, employmentType, isPublished],
-      (err:any) => {
+      (err: any) => {
         if (err) {
           console.error("Error inserting employee:", err.message);
           db.exec("ROLLBACK;");
@@ -173,7 +173,7 @@ async function insertEmployee(
           db.all(
             "SELECT MAX(rowid) AS id FROM companyDataBase;",
             [],
-            (err:any, rows: any) => {
+            (err: any, rows: any) => {
               if (err) {
                 console.error("Error inserting employee:", err.message);
                 db.exec("ROLLBACK;");

@@ -12,12 +12,15 @@ const nextConfig: NextConfig = {
 
     // fix warnings for async functions in the browser (https://github.com/vercel/next.js/issues/64792)
     if (!isServer) {
-        config.output.environment = { ...config.output.environment, asyncFunction: true };
-      }
+      config.output.environment = {
+        ...config.output.environment,
+        asyncFunction: true,
+      };
+    }
 
     if (!dev && isServer) {
-        config.output.webassemblyModuleFilename = "chunks/[id].wasm";
-        config.plugins.push(new WasmChunksFixPlugin());
+      config.output.webassemblyModuleFilename = "chunks/[id].wasm";
+      config.plugins.push(new WasmChunksFixPlugin());
     }
 
     // Polyfill for rdf-canonize-native
@@ -33,20 +36,23 @@ const nextConfig: NextConfig = {
 
 class WasmChunksFixPlugin {
   apply(compiler: Compiler) {
-    compiler.hooks.thisCompilation.tap("WasmChunksFixPlugin", (compilation: Compilation) => {
-      compilation.hooks.processAssets.tap(
-        { name: "WasmChunksFixPlugin" },
-        (assets) =>
-          Object.entries(assets).forEach(([pathname, source]) => {
-            if (!pathname.match(/\.wasm$/)) return;
-            compilation.deleteAsset(pathname);
+    compiler.hooks.thisCompilation.tap(
+      "WasmChunksFixPlugin",
+      (compilation: Compilation) => {
+        compilation.hooks.processAssets.tap(
+          { name: "WasmChunksFixPlugin" },
+          (assets) =>
+            Object.entries(assets).forEach(([pathname, source]) => {
+              if (!pathname.match(/\.wasm$/)) return;
+              compilation.deleteAsset(pathname);
 
-            const name = pathname.split("/")[1];
-            const info = compilation.assetsInfo.get(pathname);
-            compilation.emitAsset(name, source, info);
-          }),
-      );
-    });
+              const name = pathname.split("/")[1];
+              const info = compilation.assetsInfo.get(pathname);
+              compilation.emitAsset(name, source, info);
+            }),
+        );
+      },
+    );
   }
 }
 

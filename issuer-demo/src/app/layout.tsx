@@ -1,9 +1,12 @@
 "use client";
 
+import Header from "@/components/Header";
+import { usePathname } from "next/navigation";
 import { Toaster } from "@/components/ui/toaster";
 import { LogProvider } from "./contexts/BfcLogsContext";
 import {
   UnpublishedEntriesProvider,
+  useUnpublishedEntriesContext,
 } from "./contexts/UnpublishedEntriesContext";
 import "./globals.css";
 
@@ -15,13 +18,28 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body>
-          <UnpublishedEntriesProvider>
-            <LogProvider>
-              {children}
-              <Toaster />
-            </LogProvider>
-          </UnpublishedEntriesProvider>
+        <UnpublishedEntriesProvider>
+          <LogProvider>
+            <HeaderWrapper>{children}</HeaderWrapper>
+            <Toaster />
+          </LogProvider>
+        </UnpublishedEntriesProvider>
       </body>
     </html>
   );
 }
+
+const HeaderWrapper = ({ children }: { children: React.ReactNode }) => {
+  const { thereIsUnpublished } = useUnpublishedEntriesContext();
+  const pathname = usePathname();
+  return (
+    <>
+      <Header
+        showLinks={true}
+        pathname={pathname}
+        isUnpublished={thereIsUnpublished}
+      />
+      {children}
+    </>
+  );
+};

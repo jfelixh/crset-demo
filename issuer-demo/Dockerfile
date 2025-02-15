@@ -74,9 +74,8 @@ WORKDIR /app
 
 COPY --from=sqlite-builder /usr/bin/sqlite3 /usr/bin/sqlite3
 
-# Initialize the empty database
-COPY database/schema.sql ./schema.sql
-RUN mkdir data && sqlite3 data/bfc.db < schema.sql
+# Copy the schema.sql so it can be used at runtime
+COPY database/schema.sql ./database/schema.sql
 
 ENV NODE_ENV=production
 # Uncomment the following line in case you want to disable telemetry during runtime.
@@ -101,4 +100,4 @@ ENV PORT=3000
 # server.js is created by next build from the standalone output
 # https://nextjs.org/docs/pages/api-reference/config/next-config-js/output
 ENV HOSTNAME="0.0.0.0"
-CMD ["node", "server.js"]
+CMD ["sh", "-c", "npm run db:init && node server.js"]

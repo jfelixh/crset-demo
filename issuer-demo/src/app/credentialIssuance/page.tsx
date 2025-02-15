@@ -118,11 +118,13 @@ export default function Home() {
         }),
       });
       const responseData = await response.json();
-      
+
       const qrCodeData = await toDataURL(responseData.credentialOffer);
       setQrCode(qrCodeData);
       setIsDialogOpen(true);
-      setDialogMessage("Scan this QR code with your wallet app to receive the credential");
+      setDialogMessage(
+        "Scan this QR code with your wallet app to receive the credential",
+      );
     } catch (error) {
       console.error("Form submission error", error);
       setDialogMessage("Error generating credential");
