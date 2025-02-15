@@ -13,10 +13,12 @@ export const GET = async () => {
       },
     });
   } catch (error) {
-    console.error("Error fetching exchange rate:", error);
-    return new Response(
-      JSON.stringify({ error: "Failed to fetch exchange rate" }),
-      { status: 500, headers: { "Content-Type": "application/json" } },
-    );
+    console.error("Error fetching exchange rate (falling back to default):", error);
+    return new Response(JSON.stringify({ price: 3265.74 }), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
   }
 };
