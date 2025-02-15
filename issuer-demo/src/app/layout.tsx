@@ -35,7 +35,6 @@ const HeaderWrapper = ({ children }: { children: React.ReactNode }) => {
   return (
     <>
       <Header
-        showLinks={true}
         pathname={pathname}
         isUnpublished={thereIsUnpublished}
       />
