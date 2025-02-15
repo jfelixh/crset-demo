@@ -21,7 +21,7 @@ const Header = ({
             variant="ghost"
             className={cn(
               "text-white hover:text-white hover:bg-blue-800",
-              pathname === "/" && "bg-blue-950"
+              pathname === "/" && "bg-blue-950",
             )}
           >
             Home
@@ -32,7 +32,7 @@ const Header = ({
             variant="ghost"
             className={cn(
               "text-white hover:text-white hover:bg-blue-800",
-              pathname === "/credentialIssuance" && "bg-blue-950"
+              pathname === "/credentialIssuance" && "bg-blue-950",
             )}
           >
             Verifiable Credential Issuance
@@ -43,10 +43,12 @@ const Header = ({
             variant="ghost"
             className={cn(
               "text-white hover:text-white hover:bg-blue-800",
-              pathname === "/employees" && "bg-blue-950"
+              pathname === "/employees" && "bg-blue-950",
             )}
           >
-            <div className={`flex items-center ${isUnpublished ? "animate-pulse" : ""}`}>
+            <div
+              className={`flex items-center ${isUnpublished ? "animate-pulse" : ""}`}
+            >
               {isUnpublished && <AlertCircle className="h-5 w-5 mr-2" />}
               Employee List
             </div>
@@ -57,7 +59,7 @@ const Header = ({
             variant="ghost"
             className={cn(
               "text-white hover:text-white hover:bg-blue-800",
-              pathname === "/dashboard" && "bg-blue-950"
+              pathname === "/dashboard" && "bg-blue-950",
             )}
           >
             Dashboard

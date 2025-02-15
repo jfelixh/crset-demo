@@ -13,11 +13,14 @@ export const GET = async () => {
       },
     });
   } catch (error) {
-    console.error("Error fetching exchange rate (falling back to default):", error);
+    console.error(
+      "Error fetching exchange rate (falling back to default):",
+      error,
+    );
     return new Response(JSON.stringify({ price: 3265.74 }), {
       status: 200,
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     });
   }

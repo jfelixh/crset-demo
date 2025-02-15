@@ -34,10 +34,7 @@ const HeaderWrapper = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname();
   return (
     <>
-      <Header
-        pathname={pathname}
-        isUnpublished={thereIsUnpublished}
-      />
+      <Header pathname={pathname} isUnpublished={thereIsUnpublished} />
       {children}
     </>
   );
