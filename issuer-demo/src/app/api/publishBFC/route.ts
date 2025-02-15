@@ -1,15 +1,17 @@
 import * as sqlite from "sqlite3";
-import * as database from "../../../../database/database";
+import {setAllPublished} from "../../../../database/database";
 
 let db: sqlite.Database;
 export const POST = async () => {
   try {
     console.log("Posting to publish BFC...");
-    await fetch("http://bfc-issuer-backend:5050/api/status/publishBFC", {
-      method: "POST",
-    });
-    db = await database.connectToDb("data/bfc.db");
-    setAllPublished(db);
+    await fetch(
+      `http://${process.env.ISSUER_BACKEND_HOST}:${process.env.ISSUER_BACKEND_PORT}/api/status/publishBFC`,
+      {
+        method: "POST",
+      },
+    );
+    setAllPublished();
     console.log("Published BFC successfully");
     return new Response("Published BFC successfully", {
       status: 200,
@@ -24,13 +26,3 @@ export const POST = async () => {
     });
   }
 };
-
-function setAllPublished(db: sqlite.Database) {
-  db.run(`UPDATE companyDataBase SET isPublished = 1`, (err: any) => {
-    if (err) {
-      console.error("Error updating entries:", err.message);
-      return;
-    }
-    console.log("All entries have been set to published.");
-  });
-}

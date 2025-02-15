@@ -10,7 +10,7 @@ export async function POST(req: Request) {
     const credentialStatusID = getStatusIDFromVC(user);
     console.log("Revoking VC with ID:", credentialStatusID);
     fetch(
-      `http://bfc-issuer-backend:5050/api/status/revokeCredential?id=${credentialStatusID}`,
+      `http://${process.env.ISSUER_BACKEND_HOST}:${process.env.ISSUER_BACKEND_PORT}/api/status/revokeCredential?id=${credentialStatusID}`,
       {
         method: "POST",
       },

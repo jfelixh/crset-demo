@@ -1,15 +1,10 @@
-import * as sqlite from "sqlite3";
 import * as database from "../../../../database/database";
 import { UnpublishedEntries } from "@/app/types/UnpublishedEntries";
-
-let db: sqlite.Database;
 
 export const GET = async () => {
   console.log("Fetching unpublished entries...");
   try {
-    db = await database.connectToDb("data/bfc.db");
-
-    const response = await getUnpublishedEntries(db);
+    const response = await getUnpublishedEntries();
     return new Response(JSON.stringify(response), {
       status: 200,
       headers: {
@@ -26,7 +21,8 @@ export const GET = async () => {
   }
 };
 
-const getUnpublishedEntries = (db: sqlite.Database): Promise<any[]> => {
+const getUnpublishedEntries = async (): Promise<any[]> => {
+  const db = await database.connectToDb();
   return new Promise((resolve, reject) => {
     console.log("Fetching unpublished companies from companyDataBase...");
     const query = `SELECT * FROM companyDataBase WHERE isPublished = 0`;

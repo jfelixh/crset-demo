@@ -8,3 +8,19 @@ CREATE TABLE IF NOT EXISTS companyDataBase (
     manager TEXT NOT NULL,
     VC TEXT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS bfcLogs (
+    validIdsSize INTEGER NOT NULL,
+    invalidIdsSize INTEGER NOT NULL,
+    serializedDataSize INTEGER NOT NULL,
+    constructionTimeInSec REAL NOT NULL,
+    publicationTimeInSec REAL NOT NULL,
+    numberOfBlobs INTEGER NOT NULL,
+    transactionHash TEXT PRIMARY KEY NOT NULL,
+    blobVersionedHash TEXT NOT NULL,
+    publicationTimestamp TEXT NOT NULL,
+    transactionCost REAL NOT NULL,
+    calldataTotalCost REAL NOT NULL,
+    numberOfBfcLayers INTEGER NOT NULL,
+    rHat REAL NOT NULL
+);

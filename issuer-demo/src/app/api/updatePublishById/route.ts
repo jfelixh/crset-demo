@@ -1,4 +1,4 @@
-import updatePublishById, { connectToDb } from "../../../../database/database";
+import { updatePublishById } from "../../../../database/database";
 
 export async function POST(req: Request) {
   if (req.method !== "POST") {
@@ -10,8 +10,7 @@ export async function POST(req: Request) {
 
   async function updatePublishStatusById(user: any, number: number) {
     console.log("Updating publish status for VC with ID:", user.email);
-    const db = connectToDb("./data/bfc.db");
-    await updatePublishById(await db, user.email, number);
+    await updatePublishById(user.email, number);
   }
 
   try {

@@ -33,11 +33,7 @@ export const GET = async () => {
 };
 
 const getAllUsers = async (): Promise<User[]> => {
-  //console.log("Connecting to SQLite database...");
-  db = await database.connectToDb("data/bfc.db");
-  // console.log("Connected to SQLite database1.");
-  //   console.log(db)
-
+  const db = await database.connectToDb();
   try {
     const getUsers = new Promise<User[]>((resolve, reject) => {
       db.all(

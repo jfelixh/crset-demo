@@ -1,16 +1,16 @@
-import { redisGet } from "@/app/config/redis";
+import { getVC } from "../../../../../database/database";
+
 export async function POST(
   _request: Request,
-  { params }: { params: Promise<{ vcid: string }> },
+  { params }: { params: Promise<{ vcid: number }> },
 ) {
   const resolvedParams = await params;
   console.log("Resolved params for credential:", resolvedParams);
-  const vc = await redisGet("vc-" + resolvedParams.vcid);
-  const data = {
-    credential: vc,
-  };
-
-  console.log("Post request to the wallet to receive the credential");
-
-  return Response.json(data);
+  
+  try {
+    const vc = await getVC(resolvedParams.vcid);
+    return Response.json({ credential: vc });
+  } catch (error) {
+    return Response.json({ error: "Failed to retrieve credential" }, { status: 404 });
+  }
 }

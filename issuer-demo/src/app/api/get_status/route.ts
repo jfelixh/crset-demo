@@ -19,7 +19,7 @@ export async function POST(req: Request) {
     const credentialStatusID = getStatusUser(user.user);
     console.log("credentialStatusID:", credentialStatusID);
     const response = await fetch(
-      `http://bfc-issuer-backend:5050/api/status/getStatus?id=${credentialStatusID}`,
+      `http://${process.env.ISSUER_BACKEND_HOST}:${process.env.ISSUER_BACKEND_PORT}/api/status/getStatus?id=${credentialStatusID}`,
       {
         method: "POST",
       },

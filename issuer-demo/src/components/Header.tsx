@@ -34,6 +34,20 @@ const Header = ({
             {showLinks && (
               <Button
                 onClick={() => {
+                  router.push("/");
+                }}
+                variant="ghost"
+                className={cn(
+                  "bg-blue-90 text-white",
+                  pathname && pathname === "/",
+                )}
+              >
+                Home
+              </Button>
+            )}
+            {showLinks && (
+              <Button
+                onClick={() => {
                   router.push("/credentialIssuance");
                 }}
                 variant="ghost"
@@ -80,20 +94,6 @@ const Header = ({
               </Link>
             )}
           </div>
-          {showLinks && (
-            <div className="mr-4">
-              <Link
-                href="/"
-                onClick={logout}
-                className="text-white flex items-center space-x-2 group"
-              >
-                <LogOut className="w-6 h-6" />
-                <span className="opacity-0 group-hover:opacity-90">
-                  Log Out
-                </span>
-              </Link>
-            </div>
-          )}
         </nav>
       </header>
     </>

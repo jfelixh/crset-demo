@@ -2,16 +2,12 @@ import { Ed25519VerificationKey2020 } from "@digitalcredentials/ed25519-verifica
 import { Ed25519Signature2020 } from "@digitalcredentials/ed25519-signature-2020";
 import { issue } from "@digitalcredentials/vc";
 import documentLoader from "@/lib/documentLoader";
-import { redisSet } from "@/app/config/redis";
-import * as sqlite from "sqlite3";
 import * as database from "../../../../database/database";
-
-let db: sqlite.Database;
 
 async function createStatusEntry() {
   try {
     const response = await fetch(
-      `http://bfc-issuer-backend:5050/api/status/createStatusEntry`,
+      `http://${process.env.ISSUER_BACKEND_HOST}:${process.env.ISSUER_BACKEND_PORT}/api/status/createStatusEntry`,
       {
         method: "POST",
         headers: {
@@ -23,9 +19,7 @@ async function createStatusEntry() {
     if (!response.ok) {
       throw new Error(`Response is not ok! status: ${response.status}`);
     }
-    const data = await response.json();
-    //  console.log("Revocation results:", data); // Logs the data for debugging
-    return data; // Returns the actual data
+    return await response.json();
   } catch (error) {
     console.error("Error fetching status entry:", error);
     throw error; // Re-throws the error to be handled by the caller
@@ -117,9 +111,7 @@ export async function POST(req: Request) {
       documentLoader,
     });
 
-    //console.log("Start inserting into database")
-    //  db = await database.connectToDb("database/bfc.db");
-    await insertEmployee(
+    const idx = await insertEmployee(
       name,
       rawPayload.email,
       rawPayload.jobTitle,
@@ -127,15 +119,25 @@ export async function POST(req: Request) {
       rawPayload.manager,
       rawPayload.employmentType,
       0,
-    );
-    //  console.log("Finished inserting into database")
+    ).catch((err) => {
+      throw err;
+    });
 
-    const uuid = crypto.randomUUID();
-    const MAX_AGE = 300; // 300 seconds = 5min
-    const EXPIRY_MS = "EX"; // seconds
-    redisSet("vc-" + uuid, JSON.stringify(signedCredential), MAX_AGE);
+    const credentialOffer = {
+      credential_issuer: process.env.NEXT_PUBLIC_URL + "/vci/" + idx,
+      credential_configuration_ids: ["ProofOfEmploymentCredential"],
+      grants: {
+        "urn:ietf:params:oauth:grant-type:pre-authorized_code": {
+          "pre-authorized_code": "oaKazRN8I0IbtZ0C7JuMn5",
+        },
+      },
+    };
 
-    return new Response(JSON.stringify({ vc: signedCredential, uuid: uuid }), {
+    const qrData = `openid-credential-offer://?credential_offer=${encodeURIComponent(
+      JSON.stringify(credentialOffer),
+    )}`;
+
+    return new Response(JSON.stringify({ credentialOffer: qrData }), {
       status: 200,
     });
   } catch (error) {
@@ -156,32 +158,33 @@ async function insertEmployee(
   employmentType: string,
   isPublished: number,
 ): Promise<string> {
-  console.log("Start inserting employee into companyDataBase");
-  db = await database.connectToDb("data/bfc.db");
-  //await logDatabaseTables(db);
-  console.log("Connected to SQLite database in companyDataBase", { db });
+  const db = await database.connectToDb();
   return new Promise((resolve, reject) => {
+    db.exec("BEGIN;");
     db.run(
-      "INSERT INTO companyDataBase (name,email,jobTitle,VC, manager, employmentType, isPublished) VALUES (?,?,?,?,?,?,?)",
+      "INSERT INTO companyDataBase (name,email,jobTitle,VC, manager, employmentType, isPublished) VALUES (?,?,?,?,?,?,?);",
       [name, email, jobTitle, VC, manager, employmentType, isPublished],
-      (err) => {
+      (err:any) => {
         if (err) {
           console.error("Error inserting employee:", err.message);
+          db.exec("ROLLBACK;");
           reject(err);
-          return "";
+        } else {
+          db.all(
+            "SELECT MAX(rowid) AS id FROM companyDataBase;",
+            [],
+            (err:any, rows: any) => {
+              if (err) {
+                console.error("Error inserting employee:", err.message);
+                db.exec("ROLLBACK;");
+                reject(err);
+              } else {
+                db.exec("COMMIT;");
+                resolve(rows[0].id);
+              }
+            },
+          );
         }
-        console.log(
-          "Employee inserted successfully with email_address:",
-          email,
-        );
-        db.all("SELECT * FROM companyDataBase", [], (err, rows) => {
-          if (err) {
-            console.error("Error fetching data:", err.message);
-          } else {
-            console.log("Current table content:", rows);
-          }
-        });
-        resolve(email);
       },
     );
   });

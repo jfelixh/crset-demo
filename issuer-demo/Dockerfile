@@ -18,6 +18,37 @@ RUN \
   fi
 
 
+FROM base AS sqlite-builder
+
+# Install sqlite build dependencies
+RUN \
+  apk update && \
+  apk upgrade && \
+  apk add \
+  alpine-sdk \
+  build-base  \
+  tcl-dev \
+  tk-dev \
+  mesa-dev \
+  jpeg-dev \
+  libjpeg-turbo-dev
+
+# Download latest sqlite release
+RUN \
+  wget \
+  -O sqlite.tar.gz \
+  https://www.sqlite.org/src/tarball/sqlite.tar.gz?r=release && \
+  tar xvfz sqlite.tar.gz
+
+# Configure and make SQLite3 binary
+RUN \
+  ./sqlite/configure --prefix=/usr && \
+  make && \
+  make install && \
+  # Smoke test
+  sqlite3 --version
+
+
 # Rebuild the source code only when needed
 FROM base AS builder
 WORKDIR /app
@@ -27,7 +58,7 @@ COPY . .
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
 # Uncomment the following line in case you want to disable telemetry during the build.
-# ENV NEXT_TELEMETRY_DISABLED=1
+ENV NEXT_TELEMETRY_DISABLED=1
 
 RUN \
   if [ -f yarn.lock ]; then yarn run build; \
@@ -36,16 +67,20 @@ RUN \
   else echo "Lockfile not found." && exit 1; \
   fi
 
-# Initialize the empty database
-RUN npm run db:init
 
 # Production image, copy all the files and run next
 FROM base AS runner
 WORKDIR /app
 
+COPY --from=sqlite-builder /usr/bin/sqlite3 /usr/bin/sqlite3
+
+# Initialize the empty database
+COPY database/schema.sql ./schema.sql
+RUN mkdir data && sqlite3 data/bfc.db < schema.sql
+
 ENV NODE_ENV=production
 # Uncomment the following line in case you want to disable telemetry during runtime.
-# ENV NEXT_TELEMETRY_DISABLED=1
+ENV NEXT_TELEMETRY_DISABLED=1
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
