@@ -67,15 +67,15 @@ const Header = ({
               </Button>
             )}
             {showLinks && (
-              <Link href="/dashboards" passHref>
+              <Link href="/dashboard" passHref>
                 <Button
                   variant="ghost"
                   className={cn(
                     "text-white",
-                    pathname === "/dashboards" && "underline",
+                    pathname === "/dashboard" && "underline",
                   )}
                 >
-                  Dashboards
+                  Dashboard
                 </Button>
               </Link>
             )}

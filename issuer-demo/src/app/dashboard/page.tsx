@@ -1,17 +1,5 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-  PointElement,
-  LineElement,
-} from "chart.js";
-
 import LastTransactionsCard from "@/components/LastTransactionsCard";
 import BarChart from "@/components/BarChart";
 import LineChart from "@/components/LineChart";
@@ -24,16 +12,6 @@ import {
 } from "@/lib/constants";
 import { timeAgo } from "@/lib/constants";
 import LoadingComponent from "@/components/LoadingComponent";
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-  PointElement,
-  LineElement,
-);
 
 interface ChartDataset {
   label: string;
@@ -50,7 +28,7 @@ interface ChartData {
   datasets: ChartDataset[];
 }
 
-const Dashboards = () => {
+const Dashboard = () => {
   const [logs, setLogs] = useState<LogData[]>([]);
   const [latestLog, setLatestLog] = useState<LogData>({} as LogData);
   const [last5Logs, setLast5Logs] = useState<LogData[]>([]);
@@ -324,4 +302,4 @@ const Dashboards = () => {
   );
 };
 
-export default Dashboards;
+export default Dashboard;
