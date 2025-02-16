@@ -1,7 +1,5 @@
-import * as sqlite from "sqlite3";
 import { setAllPublished } from "../../../../database/database";
 
-let db: sqlite.Database;
 export const POST = async () => {
   try {
     console.log("Posting to publish BFC...");

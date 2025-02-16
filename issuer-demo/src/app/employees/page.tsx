@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import {
   Table,
   TableBody,
@@ -48,17 +48,31 @@ const UsersPage = () => {
   const [loading, setLoading] = useState(true);
   const [selectedOption, setSelectedOption] = useState("all");
   const [isMounted, setIsMounted] = useState(false);
+
+  const getCredentialStatus = useCallback(async (user: any) => {
+    const response = await fetch("/api/get_status", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ user: user }),
+    });
+    const result = await response.json();
+    return result.data.status;
+  }, []);
+
   useEffect(() => {
     // Ensure the component is mounted before changing state
     setIsMounted(true);
   }, []);
+
   useEffect(() => {
     if (!isMounted) return; // Only update on the client side after mount
     // Optionally, you can update selectedOption here if needed
   }, [isMounted]);
+
   const toggleDialog = () => {
     setIsDialogOpen(!isDialogOpen);
   };
+
   const fetchUsers = async () => {
     try {
       const response = await fetch("/api/users");
@@ -71,6 +85,7 @@ const UsersPage = () => {
       setLoading(false); // Set loading to false once data is fetched
     }
   };
+
   useEffect(() => {
     console.log("repeatedly going?");
     fetchUsers();
@@ -98,25 +113,23 @@ const UsersPage = () => {
     setTopUsers(filteredUsers.slice(0, 20));
   }, [users, searchTerm, selectedOption]);
 
-  const fetchStatusForTopUsers = async (topUsers: any) => {
-    const userStatuses: { [key: string]: string } = {};
-    for (const user of topUsers) {
-      // console.log("user:", user);
-      const validity = await getCredentialStatus(user);
-      console.log("validity:", validity);
-      if (validity) {
-        userStatuses[user.email] = "1";
-      } else {
-        userStatuses[user.email] = "0";
-      }
-      //  console.log("userStatuses:", userStatuses[user.email_address]);
-    }
-    setStatuses(userStatuses);
-  };
-
   useEffect(() => {
+    const fetchStatusForTopUsers = async (users: any[]) => {
+      const userStatuses: { [key: string]: string } = {};
+      for (const user of users) {
+        const validity = await getCredentialStatus(user);
+        console.log("validity:", validity);
+        if (validity) {
+          userStatuses[user.email] = "1";
+        } else {
+          userStatuses[user.email] = "0";
+        }
+      }
+      setStatuses(userStatuses);
+    };
+
     fetchStatusForTopUsers(topUsers);
-  }, [topUsers]);
+  }, [topUsers, getCredentialStatus]);
 
   const handleCheckboxChange = (user: any) => {
     setSelectedUser((prevSelected) => (prevSelected === user ? null : user));
@@ -201,18 +214,6 @@ const UsersPage = () => {
       console.error("Error publishing to BFC:", error);
     }
     router.push("/bfc");
-  };
-
-  const getCredentialStatus = async (user: any) => {
-    const response = await fetch("/api/get_status", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ user: user }),
-    });
-    const result = await response.json(); // Wait for the Promise to resolve
-    return result.data.status;
   };
 
   return (

@@ -10,7 +10,8 @@ export async function POST(
   try {
     const vc = await getVC(resolvedParams.vcid);
     return Response.json({ credential: vc });
-  } catch (error) {
+  } catch (err) {
+    console.error("Failed to retrieve credential " + err);
     return Response.json(
       { error: "Failed to retrieve credential" },
       { status: 404 },

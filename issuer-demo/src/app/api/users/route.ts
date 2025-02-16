@@ -1,7 +1,4 @@
-import * as sqlite from "sqlite3";
 import * as database from "../../../../database/database";
-
-let db: sqlite.Database;
 
 type User = {
   name: string;

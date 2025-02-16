@@ -22,15 +22,7 @@ import { z } from "zod";
 import * as React from "react";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useUnpublishedEntriesContext } from "../contexts/UnpublishedEntriesContext";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Command,
   CommandEmpty,
@@ -46,21 +38,7 @@ import {
 } from "@/components/ui/popover";
 import { useState } from "react";
 import { toDataURL } from "qrcode";
-
-const jobtypes = [
-  {
-    value: "Full Time",
-    label: "Full Time",
-  },
-  {
-    value: "Part Time",
-    label: "Part Time",
-  },
-  {
-    value: "Intern",
-    label: "Intern",
-  },
-];
+import Image from "next/image";
 
 const formSchema = z.object({
   name: z
@@ -85,6 +63,7 @@ const formSchema = z.object({
     .regex(/^[^\d]*$/, { message: "Manager name cannot contain numbers" }), // Custom error message
   employmentType: z.string().min(1),
 });
+
 export default function Home() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [dialogMessage, setDialogMessage] = useState("");
@@ -100,8 +79,6 @@ export default function Home() {
       employmentType: "",
     },
   });
-
-  const { setThereIsUnpublished } = useUnpublishedEntriesContext();
 
   const handleSubmit = async (data: z.infer<typeof formSchema>) => {
     try {
@@ -318,7 +295,9 @@ export default function Home() {
           <DialogTitle>Credential QR Code</DialogTitle>
           <DialogDescription>{dialogMessage}</DialogDescription>
           <div className="flex items-center justify-center py-6">
-            {qrCode && <img src={qrCode} alt="QR Code" className="w-64 h-64" />}
+            {qrCode && (
+              <Image src={qrCode} alt="QR Code" className="w-64 h-64" />
+            )}
           </div>
           <DialogFooter>
             <Button
