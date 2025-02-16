@@ -113,23 +113,22 @@ const UsersPage = () => {
     setTopUsers(filteredUsers.slice(0, 20));
   }, [users, searchTerm, selectedOption]);
 
-  useEffect(() => {
-    const fetchStatusForTopUsers = async (users: any[]) => {
-      const userStatuses: { [key: string]: string } = {};
-      for (const user of users) {
-        const validity = await getCredentialStatus(user);
-        console.log("validity:", validity);
-        if (validity) {
-          userStatuses[user.email] = "1";
-        } else {
-          userStatuses[user.email] = "0";
-        }
+  const fetchStatusForTopUsers = useCallback(async (users: any[]) => {
+    const userStatuses: { [key: string]: string } = {};
+    for (const user of users) {
+      const validity = await getCredentialStatus(user);
+      if (validity) {
+        userStatuses[user.email] = "1";
+      } else {
+        userStatuses[user.email] = "0";
       }
-      setStatuses(userStatuses);
-    };
+    }
+    setStatuses(userStatuses);
+  }, [getCredentialStatus]);
 
+  useEffect(() => {
     fetchStatusForTopUsers(topUsers);
-  }, [topUsers, getCredentialStatus]);
+  }, [topUsers, fetchStatusForTopUsers]);
 
   const handleCheckboxChange = (user: any) => {
     setSelectedUser((prevSelected) => (prevSelected === user ? null : user));
@@ -174,23 +173,6 @@ const UsersPage = () => {
 
   const publishtoBFC = async () => {
     try {
-      /* toast({
-              title: "Publishing the list to Sepolia...",
-              description: "This may take a moment, depending on network congestion.",
-            })       */
-      /*
-      const responseForPublish = await fetch("/api/publishBFC", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!responseForPublish.ok) {
-        throw new Error(
-          `Response is not ok! status: ${responseForPublish.status}`
-        );
-      }*/
       console.log("unpublishedEntries:", unpublishedEntries);
       const responseForUpdatePublish = await fetch("/api/updatePublishById", {
         method: "POST",
