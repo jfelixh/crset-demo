@@ -50,7 +50,7 @@ const UsersPage = () => {
   const [isMounted, setIsMounted] = useState(false);
 
   const getCredentialStatus = useCallback(async (user: any) => {
-    const response = await fetch("/api/get_status", {
+    const response = await fetch("/api/getStatus", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ user: user }),
@@ -136,7 +136,7 @@ const UsersPage = () => {
 
   const revokeSelectedUser = async () => {
     try {
-      const response = await fetch("/api/revoke-users", {
+      const response = await fetch("/api/revokeUsers", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
