@@ -1,9 +1,9 @@
+# syntax=docker.io/docker/dockerfile:1
+
 FROM node:18-alpine AS base
 
 # Install dependencies only when needed
 FROM base AS deps
-# Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
-# RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 # Install dependencies based on the preferred package manager
@@ -69,10 +69,12 @@ COPY --from=sqlite-builder /usr/bin/sqlite3 /usr/bin/sqlite3
 
 # Copy the schema.sql so it can be used at runtime
 COPY src/db/schema.sql ./src/db/schema.sql
+COPY package.json ./package.json
 
 ENV NODE_ENV=production
 
 COPY --from=builder /app/dist ./dist
+COPY --from=deps /app/node_modules ./node_modules
 
 USER node
 

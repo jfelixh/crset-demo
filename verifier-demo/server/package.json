@@ -9,7 +9,7 @@
     "dev": "nodemon --watch src --ext ts,tsx --exec tsx src/index.ts",
     "lint": "eslint",
     "lint:fix": "eslint --fix",
-    "db:init": "test -f data/loans.db || (sqlite3 data/loans.db < src/db/schema.sql)"
+    "db:init": "sqlite3 data/loans.db < src/db/schema.sql"
   },
   "description": "",
   "dependencies": {
