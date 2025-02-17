@@ -30,7 +30,6 @@
     "ws": "^8.18.0"
   },
   "devDependencies": {
-    "@types/connect-redis": "^0.0.23",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/ioredis": "^4.28.10",

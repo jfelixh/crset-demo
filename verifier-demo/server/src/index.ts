@@ -23,7 +23,7 @@ app.use(
 );
 
 // Initialize store
-let redisStore = new RedisStore({
+let redisStore:RedisStore = new RedisStore({
   client: redisClient,
   prefix: "login_id:",
 });

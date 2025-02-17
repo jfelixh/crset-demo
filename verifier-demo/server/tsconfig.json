@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "target": "es6",
+    "target": "es2018",
     "moduleDetection": "auto",
-    "module": "nodenext",
+    "module": "commonjs",
     "baseUrl": "./",
     "paths": {
       "@/*": ["src/*"]
