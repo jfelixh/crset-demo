@@ -1,7 +1,5 @@
-import { getConfiguredLoginPolicy } from "@/config/loginPolicy";
 import { redisGet, redisSet } from "@/config/redis";
 import { checkRevocationStatus } from "@/lib/checkRevocationStatus";
-import { generatePresentationDefinition } from "@/lib/generatePresentationDefinition";
 import { getMetadata } from "@/lib/getMetadata";
 import { verifyAuthenticationPresentation } from "@/lib/verifyPresentation";
 import { keyToDID, keyToVerificationMethod } from "@spruceid/didkit-wasm-node";
@@ -72,13 +70,48 @@ export const generateWalletURL = async (req: Request, res: any) => {
 export const presentCredentialGet = async (req: Request, res: Response) => {
   console.log("presentCredentialGet");
   try {
-    const configuredPolicy = getConfiguredLoginPolicy();
-    console.log("Policy: " + configuredPolicy);
+    const presentation_definition = {
+      format: {
+        ldp_vc: {
+          proof_type: [
+            "JsonWebSignature2020",
+            "Ed25519Signature2018",
+            "EcdsaSecp256k1Signature2019",
+            "RsaSignature2018",
+          ],
+        },
+        ldp_vp: {
+          proof_type: [
+            "JsonWebSignature2020",
+            "Ed25519Signature2018",
+            "EcdsaSecp256k1Signature2019",
+            "RsaSignature2018",
+          ],
+        },
+      },
+      id: crypto.randomUUID(),
+      name: "M26 Demo Service",
+      purpose: "Sign-in",
+      input_descriptors: [
+        {
+          id: "anything_1",
+          name: "Input descriptor for credential 1",
+          purpose: "Sign-in",
+          constraints: {
+            fields: [
+              {
+                path: ["$.type"],
+                filter: {
+                  type: "string",
+                  pattern: "VerifiableCredential",
+                },
+              },
+            ],
+          },
+        },
+      ],
+    };
 
-    const presentation_definition = generatePresentationDefinition(
-      configuredPolicy!,
-    );
-    console.log("Presentation Definition: " + presentation_definition);
     const did = keyToDID("key", process.env.DID_KEY_JWK!);
     const verificationMethod = await keyToVerificationMethod(
       "key",
