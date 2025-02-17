@@ -11,8 +11,8 @@ import * as jose from "jose";
 import { WebSocket, WebSocketServer } from "ws";
 
 const emitter = new EventEmitter();
-const wss = new WebSocketServer({port: 8090});
-wss.on('listening', () => {
+const wss = new WebSocketServer({ port: 8090 });
+wss.on("listening", () => {
   console.log("WebSocket server started:", wss.address());
 });
 // Use client id to send events to the correct client
@@ -54,7 +54,7 @@ export const generateWalletURL = async (req: Request, res: any) => {
       keyToDID("key", process.env.DID_KEY_JWK!) +
       "&request_uri=" +
       encodeURIComponent(
-        externalUrl + "/present/presentCredential?challenge=" + challenge
+        externalUrl + "/present/presentCredential?challenge=" + challenge,
       );
 
     return res.status(200).json({
@@ -76,13 +76,13 @@ export const presentCredentialGet = async (req: Request, res: Response) => {
     console.log("Policy: " + configuredPolicy);
 
     const presentation_definition = generatePresentationDefinition(
-      configuredPolicy!
+      configuredPolicy!,
     );
     console.log("Presentation Definition: " + presentation_definition);
     const did = keyToDID("key", process.env.DID_KEY_JWK!);
     const verificationMethod = await keyToVerificationMethod(
       "key",
-      process.env.DID_KEY_JWK!
+      process.env.DID_KEY_JWK!,
     );
 
     const { challenge } = req.query;
@@ -101,7 +101,7 @@ export const presentCredentialGet = async (req: Request, res: Response) => {
     };
     const privateKey = await jose.importJWK(
       JSON.parse(process.env.DID_KEY_JWK!),
-      "EdDSA"
+      "EdDSA",
     );
     const token = await new jose.SignJWT(payload)
       .setProtectedHeader({
@@ -200,7 +200,7 @@ export const presentCredentialPost = async (req: Request, res: Response) => {
     // create a session by signing the user claims in to an ID token
     const privateKey = await jose.importJWK(
       JSON.parse(process.env.DID_KEY_JWK!),
-      "EdDSA"
+      "EdDSA",
     );
 
     let idToken: string | void;

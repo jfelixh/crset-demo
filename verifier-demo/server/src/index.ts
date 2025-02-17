@@ -20,11 +20,11 @@ app.use(
     origin: ["http://localhost:5173"],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
-  })
+  }),
 );
 
 // Initialize store
-let redisStore:RedisStore = new RedisStore({
+const redisStore: RedisStore = new RedisStore({
   client: redisClient,
   prefix: "login_id:",
 });
@@ -41,7 +41,7 @@ app.use(
       httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24, // 1 day
     },
-  })
+  }),
 );
 
 // Initialize DB

@@ -6,7 +6,7 @@
 import { promises as fs } from "fs";
 import { LoginPolicy } from "@/types/LoginPolicy";
 
-var configuredPolicy: LoginPolicy | undefined = undefined;
+let configuredPolicy: LoginPolicy | undefined = undefined;
 const path = "./src/policies/acceptAnything.json";
 
 export const reloadConfiguredLoginPolicy = () => {

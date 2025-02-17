@@ -8,7 +8,7 @@ import { PresentationDefinition } from "@/types/PresentationDefinition";
 import { LoginPolicy } from "@/types/LoginPolicy";
 import { promises as fs } from "fs";
 
-var inputDescriptorOverride: any = undefined;
+let inputDescriptorOverride: any = undefined;
 if (process.env.PEX_DESCRIPTOR_OVERRIDE) {
   fs.readFile(process.env.PEX_DESCRIPTOR_OVERRIDE as string, "utf8").then(
     (file) => {
@@ -23,7 +23,7 @@ export const generatePresentationDefinition = (policy: LoginPolicy) => {
       "A policy must be specified to generate a presentation definition",
     );
 
-  var pd: PresentationDefinition = {
+  const pd: PresentationDefinition = {
     format: {
       ldp_vc: {
         proof_type: [
@@ -48,9 +48,9 @@ export const generatePresentationDefinition = (policy: LoginPolicy) => {
     input_descriptors: [] as InputDescriptor[],
   };
 
-  for (let expectation of policy) {
+  for (const expectation of policy) {
     if (expectation.patterns.length > 1) {
-      let req = {
+      const req = {
         name: "Group " + expectation.credentialId,
         rule: "pick",
         count: 1,
@@ -59,8 +59,8 @@ export const generatePresentationDefinition = (policy: LoginPolicy) => {
       pd.submission_requirements!.push(req);
     }
 
-    for (let pattern of expectation.patterns) {
-      let descr: InputDescriptor = {
+    for (const pattern of expectation.patterns) {
+      const descr: InputDescriptor = {
         id: expectation.credentialId,
         purpose: "Sign-in",
         name: "Input descriptor for " + expectation.credentialId,
@@ -71,7 +71,7 @@ export const generatePresentationDefinition = (policy: LoginPolicy) => {
         descr.group = ["group_" + expectation.credentialId];
       }
 
-      let fields = pattern.claims
+      const fields = pattern.claims
         .filter((claim) =>
           Object.prototype.hasOwnProperty.call(claim, "required")
             ? claim.required

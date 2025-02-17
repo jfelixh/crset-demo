@@ -30,7 +30,7 @@ export const postLoan = async (db: Database, loan: Loan) => {
         }
 
         resolve();
-      }
+      },
     );
   });
 };
