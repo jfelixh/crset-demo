@@ -7,21 +7,20 @@ import { InputDescriptor } from "@/types/InputDescriptor";
 import { PresentationDefinition } from "@/types/PresentationDefinition";
 import { LoginPolicy } from "@/types/LoginPolicy";
 import { promises as fs } from "fs";
-// import { logger } from "@/config/logger";
 
 var inputDescriptorOverride: any = undefined;
 if (process.env.PEX_DESCRIPTOR_OVERRIDE) {
   fs.readFile(process.env.PEX_DESCRIPTOR_OVERRIDE as string, "utf8").then(
     (file) => {
       inputDescriptorOverride = JSON.parse(file);
-    }
+    },
   );
 }
 
 export const generatePresentationDefinition = (policy: LoginPolicy) => {
   if (policy === undefined)
     throw Error(
-      "A policy must be specified to generate a presentation definition"
+      "A policy must be specified to generate a presentation definition",
     );
 
   var pd: PresentationDefinition = {
@@ -76,7 +75,7 @@ export const generatePresentationDefinition = (policy: LoginPolicy) => {
         .filter((claim) =>
           Object.prototype.hasOwnProperty.call(claim, "required")
             ? claim.required
-            : true
+            : true,
         )
         .map((claim) => {
           return {

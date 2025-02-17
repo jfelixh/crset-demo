@@ -11,7 +11,6 @@ import {
 import * as jp from "jsonpath";
 import { getConfiguredLoginPolicy } from "@/config/loginPolicy";
 import { isLoginPolicy } from "@/lib/isLoginPolicy";
-// import { logger } from "@/config/logger";
 
 export const isTrustedPresentation = (VP: any, policy?: LoginPolicy) => {
   var configuredPolicy = getConfiguredLoginPolicy();
@@ -78,7 +77,7 @@ export const extractClaims = (VP: any, policy?: LoginPolicy) => {
 
   const claims = vcClaimsList.reduce(
     (acc: any, vc: any) => deepMerge(acc, vc),
-    {}
+    {},
   );
   return claims;
 };
@@ -86,7 +85,7 @@ export const extractClaims = (VP: any, policy?: LoginPolicy) => {
 const getConstraintFit = (
   creds: any[],
   policy: LoginPolicy,
-  VP: any
+  VP: any,
 ): any[] => {
   const credentialFits = getCredentialClaimFits(creds, policy);
   const uniqueFits = getAllUniqueDraws(credentialFits);
@@ -119,7 +118,7 @@ const getCredentialClaimFits = (creds: any[], policy: LoginPolicy): any[][] => {
 
 const isCredentialFittingPatternList = (
   cred: any,
-  patterns: CredentialPattern[]
+  patterns: CredentialPattern[],
 ): boolean => {
   for (let pattern of patterns) {
     if (isCredentialFittingPattern(cred, pattern)) {
@@ -132,7 +131,7 @@ const isCredentialFittingPatternList = (
 
 const isCredentialFittingPattern = (
   cred: any,
-  pattern: CredentialPattern
+  pattern: CredentialPattern,
 ): boolean => {
   if (cred.issuer !== pattern.issuer && pattern.issuer !== "*") {
     return false;
@@ -158,7 +157,7 @@ const getAllUniqueDraws = (credentialFits: any[][]): any[][] => {
 
 const getAllUniqueDrawsHelper = (
   credentialFits: any[][],
-  usedIds: any[]
+  usedIds: any[],
 ): any[][] => {
   if (credentialFits.length === 0) {
     return [[]];
@@ -182,7 +181,7 @@ const getAllUniqueDrawsHelper = (
 const getPatternConstraintFit = (
   credFit: any[],
   policy: LoginPolicy,
-  VP: any
+  VP: any,
 ): CredentialPattern[] => {
   const credDict: any = {};
   for (let i = 0; i < policy.length; i++) {
@@ -201,7 +200,7 @@ const getPatternConstraintFit = (
             pattern.constraint,
             cred,
             credDict,
-            VP
+            VP,
           );
           if (res) {
             patternList.push(pattern);
@@ -226,7 +225,7 @@ const evaluateConstraint = (
   constraint: VcConstraint,
   cred: any,
   credDict: any,
-  VP: any
+  VP: any,
 ): boolean => {
   var a = undefined,
     b = undefined;
@@ -272,7 +271,7 @@ const evaluateConstraint = (
         constraint.a as VcConstraint,
         cred,
         credDict,
-        VP
+        VP,
       );
   }
   throw Error("Unknown constraint operator: " + constraint.op);
@@ -282,7 +281,7 @@ const resolveValue = (
   expression: string,
   cred: any,
   credDict: any,
-  VP: any
+  VP: any,
 ): string | undefined => {
   if (expression.startsWith("$")) {
     var nodes: any;
@@ -293,7 +292,7 @@ const resolveValue = (
     } else {
       nodes = jp.nodes(
         credDict[expression.slice(1).split(".")[0]],
-        expression.slice(1).split(".").slice(1).join(".")
+        expression.slice(1).split(".").slice(1).join("."),
       );
     }
     if (nodes.length > 1) {
@@ -340,7 +339,7 @@ const extractClaimsFromVC = (VC: any, pattern: CredentialPattern) => {
     if (nodes.length > 1) {
       if (!newPath) {
         throw Error(
-          "New path not defined for multi-valued claim: " + claim.claimPath
+          "New path not defined for multi-valued claim: " + claim.claimPath,
         );
       }
 
