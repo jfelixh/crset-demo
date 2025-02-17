@@ -16,6 +16,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(
   cors({
+    //TODO: Change to the dynamic frontend URL
     origin: ["http://localhost:5173"],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,

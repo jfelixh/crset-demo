@@ -1,22 +1,84 @@
-FROM node:20.13.1
+FROM node:18-alpine AS base
 
-# Set the working directory inside the container
+# Install dependencies only when needed
+FROM base AS deps
+# Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
+# RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-# Install sqlite3
-RUN apt-get update && apt-get install -y --no-install-recommends sqlite3 && rm -rf /var/lib/apt/lists/*
+# Install dependencies based on the preferred package manager
+COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* .npmrc* ./
+RUN \
+  if [ -f yarn.lock ]; then yarn --frozen-lockfile; \
+  elif [ -f package-lock.json ]; then npm ci; \
+  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm i --frozen-lockfile; \
+  else echo "Lockfile not found." && exit 1; \
+  fi
 
-# Copy package.json and package-lock.json to the working directory
-COPY package*.json ./
 
-# Install npm packages
-RUN npm ci
+FROM base AS sqlite-builder
 
-# Copy the rest of the application code to the container
+# Install sqlite build dependencies
+RUN \
+  apk update && \
+  apk upgrade && \
+  apk add \
+  alpine-sdk \
+  build-base  \
+  tcl-dev \
+  tk-dev \
+  mesa-dev \
+  jpeg-dev \
+  libjpeg-turbo-dev
+
+# Download latest sqlite release
+RUN \
+  wget \
+  -O sqlite.tar.gz \
+  https://www.sqlite.org/src/tarball/sqlite.tar.gz?r=release && \
+  tar xvfz sqlite.tar.gz
+
+# Configure and make SQLite3 binary
+RUN \
+  ./sqlite/configure --prefix=/usr && \
+  make && \
+  make install && \
+  # Smoke test
+  sqlite3 --version
+
+
+# Rebuild the source code only when needed
+FROM base AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Expose the port that the server will listen on
-EXPOSE 8080 8090
+RUN \
+  if [ -f yarn.lock ]; then yarn run build; \
+  elif [ -f package-lock.json ]; then npm run build; \
+  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm run build; \
+  else echo "Lockfile not found." && exit 1; \
+  fi
 
-# Initialize sqliteDB and start the Express server
-CMD ["sh", "-c", "npm run db:init && npm run dev"]
+
+# Production image, copy all the files and run node
+FROM base AS runner
+WORKDIR /app
+
+COPY --from=sqlite-builder /usr/bin/sqlite3 /usr/bin/sqlite3
+
+# Copy the schema.sql so it can be used at runtime
+COPY src/db/schema.sql ./src/db/schema.sql
+
+ENV NODE_ENV=production
+
+COPY --from=builder /app/dist ./dist
+
+USER node
+
+EXPOSE 8080
+
+ENV PORT=8080
+
+ENV HOSTNAME="0.0.0.0"
+CMD ["sh", "-c", "npm run db:init && node dist/index.js"]
