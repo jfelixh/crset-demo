@@ -215,6 +215,7 @@ export const presentCredentialPost = async (req: Request, res: Response) => {
 
     // if employee cred, check revocation status
     // else cred is used for login so continue with the current flow
+    // TODO: make this check proper
     if (vc[0]["type"].includes("EmploymentCredential")) {
       console.log("Checking Employee credential revocation status…");
 
@@ -231,52 +232,12 @@ export const presentCredentialPost = async (req: Request, res: Response) => {
       res.status(200).end();
       return;
     }
-    // create a session by signing the user claims in to an ID token
-    const privateKey = await jose.importJWK(
-      JSON.parse(process.env.DID_KEY_JWK!),
-      "EdDSA",
-    );
-
-    let idToken: string | void;
-    try {
-      idToken = await new jose.SignJWT({
-        credentialSubject: credSubject,
-      })
-        .setProtectedHeader({
-          alg: "EdDSA",
-          typ: "JWT",
-        })
-        .setSubject(credSubject.id)
-        .setIssuer("https://example.com")
-        .setAudience("https://example.com")
-        .setExpirationTime("1h")
-        .sign(privateKey);
-    } catch (err) {
-      console.error(err, "Failed signing session token");
-      res.status(500).end();
-      return;
-    }
-    console.log("ID token: ", idToken);
-
-    // Store the session token in Redis
-    redisSet(`challenge:${challenge}`, idToken, 3600); // Session (and JWT) last for 1 hour
-
-    console.log("User claims: ", credSubject);
-    res.status(200).end();
   } catch (error: any) {
     res.status(500).json({
       error: error.message,
     });
   }
 };
-
-// Extend the express session data to include a token
-declare module "express-session" {
-  interface SessionData {
-    token: string;
-    test: string;
-  }
-}
 
 export const presentCallback = async (req: Request, res: Response) => {
   console.log("presentCallback");
@@ -297,14 +258,14 @@ export const presentCallback = async (req: Request, res: Response) => {
       } catch (error) {
         console.error("Error fetching revocation status from Redis:", error);
         res.status(404).json({
-          error: "Session not found",
+          error: "Challenge not found",
         });
         return;
       }
 
-      // Req accepted, but still pending for a token to be stored in Redis after presenting the credential
+      // Req accepted, but still pending for a token to be stored in Redis
       if (!isRevoked) {
-        console.log("Session token not found");
+        console.log("Challenge token not found");
         res.status(202).end();
         return;
       }
@@ -316,40 +277,9 @@ export const presentCallback = async (req: Request, res: Response) => {
       }
 
       console.log("Employee credential is valid");
-      res.status(200).json({ success: true, credential: isRevoked }); // Return the presented credential to the client
+      res.status(200).json({ success: true, credential: isRevoked }); 
       return;
     }
-
-    // Alternative login flow
-    let idToken;
-    try {
-      idToken = await redisGet(`challenge:${challenge}`);
-      console.log("ID token: " + idToken);
-    } catch (error) {
-      console.error("Error fetching session token from Redis:", error);
-      res.status(404).json({
-        error: "Session not found",
-      });
-      return;
-    }
-
-    // Req accepted, but still pending for a token to be stored in Redis after presenting the credential
-    if (!idToken) {
-      console.log("Session token not found");
-      res.status(202).end();
-      return;
-    }
-
-    // if an ID token is found, create a session
-    req.session.token = idToken;
-    res.cookie("token", idToken, {
-      httpOnly: false, // https://stackoverflow.com/questions/17508027/cant-access-cookies-from-document-cookie-in-js-but-browser-shows-cookies-exist
-      secure: false,
-      sameSite: "strict",
-      maxAge: 3600000, // 1 hour
-    });
-
-    res.status(200).json({ success: true, token: idToken });
   } catch (error: any) {
     res.status(500).json({
       error: error.message,
