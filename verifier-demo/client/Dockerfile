@@ -1,23 +1,22 @@
-# Use the official Node.js image
-FROM node:20-alpine
+FROM node:20-alpine AS builder
 
-# Set the working directory
+# Define build arguments
+ARG VITE_BACKEND_HOST
+ARG VITE_BACKEND_PORT
+
+# Make them available as environment variables during build
+ENV VITE_BACKEND_HOST=$VITE_BACKEND_HOST
+ENV VITE_BACKEND_PORT=$VITE_BACKEND_PORT
+
 WORKDIR /app
-
-# Copy package.json and package-lock.json
-COPY package*.json ./
-
-# Install dependencies
+COPY package.json package-lock.json ./
 RUN npm ci
-
-# Copy the rest of the application code
 COPY . .
-
-# Build the React app
 RUN npm run build
 
-# Expose port
-EXPOSE 5173
-
-# Command preview based on built files in /dist
-CMD ["npm", "run", "preview"]
+FROM busybox:1.37 AS runner
+WORKDIR /app
+ENV NODE_ENV=production
+COPY --from=builder /app/dist .
+EXPOSE 8080
+CMD ["busybox", "httpd", "-f", "-v", "-p", "8080"]

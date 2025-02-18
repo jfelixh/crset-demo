@@ -4,7 +4,6 @@ import { baseUrl } from "./api/base";
 interface CallbackPollingProps {
   walletUrl: string | null;
   challenge: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onSuccess: (result: { success: boolean; [key: string]: any }) => void;
   onError?: (error: Error) => void;
   intervalMs?: number;

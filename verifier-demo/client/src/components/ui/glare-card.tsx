@@ -37,7 +37,6 @@ export const GlareCard = ({
     "--radius": "24px",
     "--easing": "ease",
     "--transition": "var(--duration) var(--easing)",
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } as any;
 
   const backgroundStyle = {

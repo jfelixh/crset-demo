@@ -5,16 +5,16 @@ services:
     restart: always
     expose:
       - 6380
-    command: ["redis-server", "--port", "6380"]
+    command: [ "redis-server", "--port", "6380" ]
     networks:
       - crset-network
-    profiles: [verifier]
+    profiles: [ verifier ]
 
   verifier-backend:
     build: ./verifier-demo/server
     ports:
       - "3000:8080"
-      # - 8090
+      - "8090:8090"
     volumes:
       - ./verifier-demo/server/data:/app/data
     environment:
@@ -27,19 +27,26 @@ services:
       - .env
     networks:
       - crset-network
-    profiles: [verifier]
+    profiles: [ verifier ]
 
   verifier-frontend:
-    build: ./verifier-demo/client
+    build:
+      context: ./verifier-demo/client
+      args:
+        - VITE_BACKEND_HOST=localhost
+        - VITE_BACKEND_PORT=3000
     ports:
-      - "3001:5173"
+      - "3001:8080"
     depends_on:
       - verifier-backend
     env_file:
       - .env
+    environment:
+      - VITE_BACKEND_HOST=localhost
+      - VITE_BACKEND_PORT=3000
     networks:
       - crset-network
-    profiles: [verifier]
+    profiles: [ verifier ]
 
   issuer-app:
     build:
@@ -56,7 +63,7 @@ services:
       - .env
     networks:
       - crset-network
-    profiles: [issuer]
+    profiles: [ issuer ]
 
 networks:
   crset-network:
