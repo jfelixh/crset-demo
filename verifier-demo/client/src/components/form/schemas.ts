@@ -19,7 +19,7 @@ export const formSchema = personalInfoSchema.merge(loanInfoSchema).merge(
     id: z.string(),
     employeeCredentialConfirmed: z.boolean(),
     employeeCredentialSubject: z.object({}),
-  })
+  }),
 );
 
 export type FormData = z.infer<typeof formSchema>;

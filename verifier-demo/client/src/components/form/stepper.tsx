@@ -25,7 +25,7 @@ const Stepper: React.FC<StepperProps> = ({ steps, currentStep }) => {
                   ? "bg-primary text-white scale-110"
                   : "bg-gray-300 text-gray-600",
                 index + 1 === currentStep &&
-                  " outline outline-offset-2 outline-2 outline-primary transition-opacity"
+                  " outline outline-offset-2 outline-2 outline-primary transition-opacity",
               )}
             >
               {index + 1 < currentStep ? <CheckIcon /> : index + 1}
@@ -36,7 +36,7 @@ const Stepper: React.FC<StepperProps> = ({ steps, currentStep }) => {
                 "text-xs mt-2 transition-colors duration-300 text-center w-fit",
                 index + 1 <= currentStep
                   ? "text-primary font-medium"
-                  : "text-gray-600"
+                  : "text-gray-600",
               )}
             >
               {step}

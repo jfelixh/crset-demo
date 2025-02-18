@@ -59,7 +59,7 @@ const SteppedForm = () => {
       form.setValue("id", credentialSubject?.id || "");
       form.setValue(
         "name",
-        credentialSubject?.givenName + " " + credentialSubject?.familyName
+        credentialSubject?.givenName + " " + credentialSubject?.familyName,
       );
       form.setValue("birthDate", new Date(credentialSubject?.birthDate || ""));
       form.setValue("address", credentialSubject?.address || "");
@@ -156,7 +156,7 @@ const SteppedForm = () => {
               "flex justify-end mt-6",
               (step > 1 && step < steps.length) || step === steps.length
                 ? "justify-between"
-                : ""
+                : "",
             )}
           >
             {step > 1 && step !== steps.length && (

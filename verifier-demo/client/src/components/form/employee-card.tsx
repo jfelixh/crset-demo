@@ -15,7 +15,7 @@ export function EmployeeCard({ employee }: EmployeeCardProps) {
     <GlareCard className="p-2">
       <Card
         className={cn(
-          "w-full h-full bg-transparent border-none shadow-none space-y-2"
+          "w-full h-full bg-transparent border-none shadow-none space-y-2",
         )}
       >
         <CardHeader className="flex flex-row items-center space-x-4 pb-2">

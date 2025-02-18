@@ -35,7 +35,7 @@ export const useCallbackPolling = ({
       try {
         const response = await fetch(
           `${baseUrl}/present/callback?${params.toString()}`,
-          { credentials: "include" }
+          { credentials: "include" },
         );
 
         if (response.status === 202) return; // Pending
@@ -49,7 +49,7 @@ export const useCallbackPolling = ({
           return;
         } else if (response.status === 401) {
           onError?.(
-            new Error("The presented credential is revoked or invalid")
+            new Error("The presented credential is revoked or invalid"),
           );
           clearInterval(intervalId);
           setIsPending(false);

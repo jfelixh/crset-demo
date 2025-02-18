@@ -19,6 +19,6 @@ if (!rootElement.innerHTML) {
           <App />
         </QueryClientProvider>
       </AuthProvider>
-    </StrictMode>
+    </StrictMode>,
   );
 }

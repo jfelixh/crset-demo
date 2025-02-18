@@ -34,7 +34,6 @@ interface Step {
   };
 }
 
-
 const EmployeeCredentialInfoStep = ({
   nextButtonRef,
 }: EmployeeCredentialInfoStepProps) => {

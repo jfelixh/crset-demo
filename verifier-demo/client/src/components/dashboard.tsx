@@ -311,7 +311,7 @@ const Dashboard = () => {
                           stroke="none"
                           fontSize={12}
                           formatter={(
-                            value: keyof typeof chartConfigExpenseCategories
+                            value: keyof typeof chartConfigExpenseCategories,
                           ) => value}
                         />
                       </Pie>
@@ -332,7 +332,7 @@ const Dashboard = () => {
                     <BarChart
                       accessibilityLayer
                       data={expenseCategories.sort(
-                        (a, b) => b.percentage - a.percentage
+                        (a, b) => b.percentage - a.percentage,
                       )}
                       layout="vertical"
                       margin={{
@@ -346,7 +346,7 @@ const Dashboard = () => {
                         tickMargin={10}
                         axisLine={false}
                         tickFormatter={(
-                          value: keyof typeof chartConfigExpenseCategories
+                          value: keyof typeof chartConfigExpenseCategories,
                         ) => value}
                       />
                       <XAxis dataKey="percentage" type="number" hide />
