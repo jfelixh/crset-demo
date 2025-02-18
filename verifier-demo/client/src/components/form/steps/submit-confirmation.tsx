@@ -24,8 +24,8 @@ const LoanApplicationConfirmation = () => {
         </CardContent>
         <CardFooter className="justify-end">
           <Button asChild>
-            <Link to="/dashboard" className="[&.active]:font-bold">
-              Go back to Dashboard
+            <Link to="/" className="[&.active]:font-bold">
+              Go back to Home
             </Link>
           </Button>
         </CardFooter>

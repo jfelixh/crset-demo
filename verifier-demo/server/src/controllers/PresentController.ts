@@ -104,7 +104,7 @@ export const presentCredentialGet = async (req: Request, res: Response) => {
                 path: ["$.type"],
                 filter: {
                   type: "string",
-                  pattern: "VerifiableCredential",
+                  pattern: "EmploymentCredentials",
                 },
               },
             ],
@@ -169,8 +169,7 @@ export const getClientMetadata = async (req: Request, res: Response) => {
     // step 12
     if (method === "GET") {
       const metadata = getMetadata([
-        //TODO: Add the correct URL (do we even need this?)
-        process.env.PUBLIC_INTERNET_URL + "/api/dynamic/presentCredential",
+        process.env.EXPRESS_PUBLIC_URL + "/present/presentCredential",
       ]);
       // step 13
       console.log(JSON.stringify(metadata));
@@ -277,7 +276,7 @@ export const presentCallback = async (req: Request, res: Response) => {
       }
 
       console.log("Employee credential is valid");
-      res.status(200).json({ success: true, credential: isRevoked }); 
+      res.status(200).json({ success: true, credential: isRevoked });
       return;
     }
   } catch (error: any) {

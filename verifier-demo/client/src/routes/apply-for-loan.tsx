@@ -1,5 +1,5 @@
 import SteppedForm from "@/components/form/stepped-form";
-import { createFileRoute} from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/apply-for-loan")({
   component: RouteComponent,
