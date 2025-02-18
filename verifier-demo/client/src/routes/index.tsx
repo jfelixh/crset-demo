@@ -66,7 +66,8 @@ export default function Index() {
                 <h2 className="text-xl font-light">
                   Fast, secure and reliable.
                   <br />
-                  Apply for a loan lightning-fast thanks to the power of blobkchain-backed Self-Sovereign Identity!
+                  Apply for a loan lightning-fast thanks to the power of
+                  blobkchain-backed Self-Sovereign Identity!
                 </h2>
                 <Link to="/apply-for-loan">
                   <Button size="lg">Apply for a loan now!</Button>
