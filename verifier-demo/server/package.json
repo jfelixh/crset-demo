@@ -2,16 +2,14 @@
   "name": "crset-demo-verifier-server",
   "version": "0.1.0",
   "private": true,
-  "main": "index.js",
   "scripts": {
-    "build": "tsc --project tsconfig.json && tscpaths -p tsconfig.json -s ./src -o ./dist",
+    "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
     "start": "node dist/index.js",
     "dev": "nodemon --watch src --ext ts,tsx --exec tsx src/index.ts",
     "lint": "eslint",
     "lint:fix": "eslint --fix",
     "db:init": "sqlite3 data/loans.db < src/db/schema.sql"
   },
-  "description": "",
   "dependencies": {
     "@spruceid/didkit-wasm-node": "^0.2.1",
     "@types/express-session": "^1.18.1",
@@ -26,7 +24,6 @@
     "jsonpath": "^1.1.1",
     "sqlite": "^5.1.1",
     "sqlite3": "^5.1.7",
-    "tscpaths": "^0.0.9",
     "ws": "^8.18.0"
   },
   "devDependencies": {
@@ -41,6 +38,7 @@
     "globals": "^15.15.0",
     "nodemon": "^3.1.7",
     "prettier": "3.5.1",
+    "tsc-alias": "^1.8.10",
     "tsx": "^4.19.2",
     "typescript": "^5.7.2",
     "typescript-eslint": "^8.24.0"

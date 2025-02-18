@@ -7,6 +7,7 @@ import { EventEmitter } from "events";
 import { Request, Response } from "express";
 import * as jose from "jose";
 import { WebSocket, WebSocketServer } from "ws";
+import crypto from "crypto";
 
 const emitter = new EventEmitter();
 const wss = new WebSocketServer({ port: 8090 });

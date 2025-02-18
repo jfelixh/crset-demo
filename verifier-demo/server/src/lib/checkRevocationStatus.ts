@@ -1,4 +1,5 @@
 import { EventEmitter } from "events";
+import { isRevoked } from "crset-check";
 
 export const checkRevocationStatus = async (
   VC: any,
@@ -13,9 +14,6 @@ export const checkRevocationStatus = async (
     };
 
     emitter.emit("vcid", { vcid: VC.id, clientId });
-
-    // importing here dynamically to avoid commonJS module issues
-    const { isRevoked } = await import("crset-check");
 
     const status = await isRevoked(VC, apiConfig, {
       emitter,
