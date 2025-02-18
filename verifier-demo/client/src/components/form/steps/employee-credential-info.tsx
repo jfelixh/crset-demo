@@ -11,7 +11,6 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import useGenerateWalletURL from "@/hooks/api/useGenerateWalletURL";
 import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/hooks/useAuth";
 import { useCallbackPolling } from "@/hooks/useCallbackPolling";
 import useIsMobileDevice from "@/hooks/useIsMobileDevice";
 import { EmployeeCredential } from "@/models/employee";
@@ -19,6 +18,7 @@ import { CheckCircleIcon } from "lucide-react";
 import { QRCodeCanvas } from "qrcode.react";
 import { RefObject, useEffect, useRef, useState } from "react";
 import { useFormContext } from "react-hook-form";
+import crypto from "crypto";
 
 type EmployeeCredentialInfoStepProps = {
   nextButtonRef: RefObject<HTMLButtonElement>;
@@ -51,7 +51,8 @@ const EmployeeCredentialInfoStep = ({
   const { isMobile } = useIsMobileDevice();
   const { toast } = useToast();
 
-  const { id } = useAuth();
+  // TODO: make sure this placeholder does not break the app
+  const id = crypto.randomUUID();
   const protocol = id?.split(":")[id.split(":").length - 1];
   // Use Ref to store the WebSocket connection: prevents reconnection on re-render
   const wsRef = useRef<WebSocket | null>(null);

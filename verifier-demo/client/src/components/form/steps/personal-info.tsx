@@ -89,7 +89,7 @@ const PersonalInfoStep = () => {
           <FormItem>
             <FormLabel>Address</FormLabel>
             <FormControl>
-              <Input placeholder="your home address" {...field} />
+              <Input placeholder="Your home address" {...field} />
             </FormControl>
             <FormDescription>
               Address at which you currently reside

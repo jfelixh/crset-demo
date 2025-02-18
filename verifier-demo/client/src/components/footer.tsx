@@ -15,9 +15,6 @@ export function Footer() {
               <Link to="/">Home</Link>
             </Button>
             <Button variant="ghost" asChild className="text-primary-foreground">
-              <Link to="/dashboard">Dashboard</Link>
-            </Button>
-            <Button variant="ghost" asChild className="text-primary-foreground">
               <Link href="/apply-for-loan">Apply for Loan</Link>
             </Button>
           </nav>

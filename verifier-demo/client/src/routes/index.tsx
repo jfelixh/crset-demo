@@ -4,7 +4,7 @@ import { TestimonialsCarousel } from "@/components/testimonial";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 
@@ -66,10 +66,11 @@ export default function Index() {
                 <h2 className="text-xl font-light">
                   Fast, secure and reliable.
                   <br />
-                  We don't care about your credit score. Apply for a loan now
-                  with the power of Self-Sovereign Identity!
+                  Apply for a loan lightning-fast thanks to the power of blobkchain-backed Self-Sovereign Identity!
                 </h2>
-                <Button size="lg">Apply for a loan now!</Button>
+                <Link to="/apply-for-loan">
+                  <Button size="lg">Apply for a loan now!</Button>
+                </Link>
               </motion.div>
             </motion.div>
 

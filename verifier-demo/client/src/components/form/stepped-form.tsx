@@ -1,12 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { usePostLoan } from "@/hooks/api/usePostLoan";
 import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
 import { LoanRequest } from "@/models/loan";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowBigLeftIcon, ArrowBigRightIcon } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { z } from "zod";
 import { formSchema } from "./schemas";
@@ -50,26 +49,7 @@ const SteppedForm = () => {
 
   const { handleSubmit, trigger } = form;
   const { toast } = useToast();
-  const { token } = useAuth();
   const nextButtonRef = useRef<HTMLButtonElement>(null);
-
-  useEffect(() => {
-    if (token) {
-      const { credentialSubject } = token;
-      form.setValue("id", credentialSubject?.id || "");
-      form.setValue(
-        "name",
-        credentialSubject?.givenName + " " + credentialSubject?.familyName,
-      );
-      form.setValue("birthDate", new Date(credentialSubject?.birthDate || ""));
-      form.setValue("address", credentialSubject?.address || "");
-
-      toast({
-        title: "Form pre-filled",
-        description: "Your information has been pre-filled from your ID",
-      });
-    }
-  }, [form, toast, token]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const { id, loanAmount, employeeCredentialSubject } = values;
@@ -144,7 +124,7 @@ const SteppedForm = () => {
     <div>
       <FormProvider {...form}>
         <h1 className="text-3xl font-bold text-center mb-6">
-          Loan Application
+          Fast Loan Application
         </h1>
 
         <Stepper steps={steps} currentStep={step} />
