@@ -41,9 +41,6 @@ services:
       - verifier-backend
     env_file:
       - .env
-    environment:
-      - VITE_BACKEND_HOST=localhost
-      - VITE_BACKEND_PORT=3000
     networks:
       - crset-network
     profiles: [ verifier ]

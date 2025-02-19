@@ -47,7 +47,7 @@ wss.on("connection", (ws: WebSocket, req) => {
 export const generateWalletURL = async (req: Request, res: any) => {
   try {
     const challenge = crypto.randomUUID();
-    const externalUrl = process.env.EXTERNAL_URL!;
+    const externalUrl = process.env.EXPRESS_PUBLIC_URL!;
     const walletUrl =
       "openid-vc://?client_id=" +
       keyToDID("key", process.env.DID_KEY_JWK!) +
@@ -104,7 +104,7 @@ export const presentCredentialGet = async (req: Request, res: Response) => {
                 path: ["$.type"],
                 filter: {
                   type: "string",
-                  pattern: "EmploymentCredentials",
+                  pattern: "EmploymentCredential",
                 },
               },
             ],
@@ -125,12 +125,12 @@ export const presentCredentialGet = async (req: Request, res: Response) => {
     const payload = {
       client_id: did,
       client_id_scheme: "did",
-      client_metadata_uri: process.env.EXTERNAL_URL + "/present/clientMetadata",
+      client_metadata_uri: process.env.EXPRESS_PUBLIC_URL + "/present/clientMetadata",
       nonce: challenge,
       presentation_definition,
       response_mode: "direct_post",
       response_type: "vp_token",
-      response_uri: process.env.EXTERNAL_URL + "/present/presentCredential",
+      response_uri: process.env.EXPRESS_PUBLIC_URL + "/present/presentCredential",
       state: stateChallenge,
     };
     const privateKey = await jose.importJWK(
@@ -212,25 +212,18 @@ export const presentCredentialPost = async (req: Request, res: Response) => {
     const credSubject = vc[0]["credentialSubject"];
     console.log("Cred Subject: ", credSubject);
 
-    // if employee cred, check revocation status
-    // else cred is used for login so continue with the current flow
-    // TODO: make this check proper
-    if (vc[0]["type"].includes("EmploymentCredential")) {
-      console.log("Checking Employee credential revocation status…");
-
-      const isRevoked = await checkRevocationStatus(vc[0], emitter, clientId);
-      if (isRevoked) {
-        console.log("Employee credential is revoked");
-        redisSet(`challenge:${challenge}`, "false", 3600);
-        res.status(401).end();
-        return;
-      }
-
-      console.log("Employee credential is valid");
-      redisSet(`challenge:${challenge}`, JSON.stringify(credSubject), 3600); // Credential subject stored in Redis
-      res.status(200).end();
+    const isRevoked = await checkRevocationStatus(vc[0], emitter, clientId);
+    if (isRevoked) {
+      console.log("VC is revoked");
+      redisSet(`challenge:${challenge}`, "revoked", 3600);
+      res.status(401).end();
       return;
     }
+
+    console.log("VC is valid");
+    redisSet(`challenge:${challenge}`, "valid:"+JSON.stringify(credSubject), 3600);
+    res.status(200).end();
+    return;
   } catch (error: any) {
     res.status(500).json({
       error: error.message,
@@ -241,7 +234,7 @@ export const presentCredentialPost = async (req: Request, res: Response) => {
 export const presentCallback = async (req: Request, res: Response) => {
   console.log("presentCallback");
   try {
-    const { challenge, isEmployeeCredential } = req.query;
+    const { challenge } = req.query;
 
     console.log("Query: " + challenge);
     if (!challenge) {
@@ -249,36 +242,34 @@ export const presentCallback = async (req: Request, res: Response) => {
       return;
     }
 
-    // If the request is for an employee credential, check in the cache if the credential was revoked
-    if (isEmployeeCredential) {
-      let isRevoked;
-      try {
-        isRevoked = await redisGet(`challenge:${challenge}`);
-      } catch (error) {
-        console.error("Error fetching revocation status from Redis:", error);
-        res.status(404).json({
-          error: "Challenge not found",
-        });
-        return;
-      }
-
-      // Req accepted, but still pending for a token to be stored in Redis
-      if (!isRevoked) {
-        console.log("Challenge token not found");
-        res.status(202).end();
-        return;
-      }
-
-      if (isRevoked === "false") {
-        console.log("Employee credential is revoked");
-        res.status(401).end();
-        return;
-      }
-
-      console.log("Employee credential is valid");
-      res.status(200).json({ success: true, credential: isRevoked });
+    // check in the cache if the credential was revoked
+    let isRevoked;
+    try {
+      isRevoked = await redisGet(`challenge:${challenge}`);
+    } catch (error) {
+      console.error("Error fetching revocation status from Redis:", error);
+      res.status(404).json({
+        error: "Challenge not found",
+      });
       return;
     }
+
+    // Req accepted, but still pending for a token to be stored in Redis
+    if (!isRevoked) {
+      console.log("Challenge token not found");
+      res.status(202).end();
+      return;
+    }
+
+    if (isRevoked === "revoked") {
+      console.log("VC is revoked");
+      res.status(401).end();
+      return;
+    }
+
+    console.log("VC is valid");
+    res.status(200).json({ success: true, credential: isRevoked.substring(6) });
+    return;
   } catch (error: any) {
     res.status(500).json({
       error: error.message,
