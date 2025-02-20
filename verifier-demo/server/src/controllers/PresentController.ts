@@ -125,12 +125,14 @@ export const presentCredentialGet = async (req: Request, res: Response) => {
     const payload = {
       client_id: did,
       client_id_scheme: "did",
-      client_metadata_uri: process.env.EXPRESS_PUBLIC_URL + "/present/clientMetadata",
+      client_metadata_uri:
+        process.env.EXPRESS_PUBLIC_URL + "/present/clientMetadata",
       nonce: challenge,
       presentation_definition,
       response_mode: "direct_post",
       response_type: "vp_token",
-      response_uri: process.env.EXPRESS_PUBLIC_URL + "/present/presentCredential",
+      response_uri:
+        process.env.EXPRESS_PUBLIC_URL + "/present/presentCredential",
       state: stateChallenge,
     };
     const privateKey = await jose.importJWK(
@@ -221,7 +223,11 @@ export const presentCredentialPost = async (req: Request, res: Response) => {
     }
 
     console.log("VC is valid");
-    redisSet(`challenge:${challenge}`, "valid:"+JSON.stringify(credSubject), 3600);
+    redisSet(
+      `challenge:${challenge}`,
+      "valid:" + JSON.stringify(credSubject),
+      3600,
+    );
     res.status(200).end();
     return;
   } catch (error: any) {
@@ -242,7 +248,7 @@ export const presentCallback = async (req: Request, res: Response) => {
       return;
     }
 
-    // check in the cache if the credential was revoked
+    // check in redis if there is a result for the challenge
     let isRevoked;
     try {
       isRevoked = await redisGet(`challenge:${challenge}`);

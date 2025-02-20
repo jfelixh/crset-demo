@@ -1,7 +1,5 @@
 import cors from "cors";
 import express, { Express, Request, Response } from "express";
-import { connectDB } from "@/db/database";
-import LoanRoute from "@/routes/LoanRoute";
 import LoginRoute from "@/routes/PresentCredentialRoute";
 import { config } from "@/config/base";
 
@@ -19,20 +17,8 @@ app.use(
   }),
 );
 
-// Initialize DB
-const initializeDatabase = async () => {
-  try {
-    await connectDB();
-    console.log("Database and table setup complete.");
-  } catch (error) {
-    console.error("Error setting up the database:", error);
-  }
-};
-initializeDatabase();
-
 // Routes
 app.use("/present", LoginRoute);
-app.use("/loans", LoanRoute);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Express + TypeScript Server");
