@@ -35,7 +35,8 @@ export async function POST(req: Request) {
   }
 
   try {
-    // Needed for creating cryptographically secure proofs on the credential
+    // for simplicity, we generate a new issuer key pair for each request
+    // in a real scenario, the issuer would have a fixed key pair
     const keyPair = await Ed25519VerificationKey2020.generate();
     const suite = new Ed25519Signature2020({ key: keyPair });
 
@@ -82,12 +83,14 @@ export async function POST(req: Request) {
       type: ["VerifiableCredential", "EmploymentCredential"],
       issuer: `did:key:${keyPair.publicKeyMultibase}`,
       credentialSubject: {
-        id: `did:example:${Math.random().toString(36).substr(2)}`, //crypto.randomUUID(),
+        // in a real scenario, the id would be the employee's DID
+        // for simplicity, we generate a dummy id here
+        id: `did:example:${Math.random().toString(36).slice(2)}`,
         email: rawPayload.email,
         name: rawPayload.name,
         familyName: rawPayload.lastName,
         jobTitle: rawPayload.jobTitle,
-        companyName: "CMW Group",
+        companyName: "ACME Inc.",
         comment: "I am just a test employment credential.",
         type: "EmploymentCredential",
       },
