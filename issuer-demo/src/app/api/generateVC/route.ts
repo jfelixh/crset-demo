@@ -51,7 +51,7 @@ export async function POST(req: Request) {
       "@context": [
         "https://www.w3.org/2018/credentials/v1",
         {
-          BFCStatusEntry: {
+          CRSetEntry: {
             "@context": {
               "@protected": true,
               id: "@id",
