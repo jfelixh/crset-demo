@@ -100,11 +100,11 @@ The issuer demo can be accessed at `http://localhost:3000` and the verifier demo
 
 - ![arXiv](https://img.shields.io/badge/arXiv-2501.17089-b31b1b.svg) **[CRSet: Non-Interactive Verifiable Credential Revocation with Metadata Privacy for Issuers and Everyone Else](https://arxiv.org/abs/2501.17089)**  
   _Hoops et al., 2025._
-- ![GitHub](https://img.shields.io/badge/GitHub-bfc--status--issuer--backend-blue?logo=github) **[bfc-status-issuer-backend](https://github.com/jfelixh/bfc-status-issuer-backend)**
-- ![GitHub](https://img.shields.io/badge/GitHub-bfc--status--check-blue?logo=github) **[bfc-status-check](https://github.com/jfelixh/bfc-status-check)**
-- ![GitHub](https://img.shields.io/badge/GitHub-padded--bloom--filter--cascade-blue?logo=github)
-  **[padded-bloom-filter-cascade](https://github.com/jfelixh/padded-bloom-filter-cascade/)**
+- ![GitHub](https://img.shields.io/badge/GitHub-crset--issuer--backend-blue?logo=github) **[crset-issuer-backend](https://github.com/jfelixh/crset-issuer-backend)**
+- ![GitHub](https://img.shields.io/badge/GitHub-crset--check-blue?logo=github) **[crset-check](https://github.com/jfelixh/crset-check)**
+- ![GitHub](https://img.shields.io/badge/GitHub-crset--cascade-blue?logo=github)
+  **[crset-cascade](https://github.com/jfelixh/crset-cascade/)**
 
 - **[EIP-4844: Shard Blob Transactions](https://eips.ethereum.org/EIPS/eip-4844)**
-- **[W3C Verifiable Credentials Data Model 2.0](https://www.w3.org/TR/vc-data-model-2.0/)**
+- **[W3C Verifiable Credentials Data Model 1.1](https://www.w3.org/TR/vc-data-model/)**
 
