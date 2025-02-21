@@ -13,7 +13,7 @@ interface Step {
   };
 }
 
-const ws = new WebSocket("ws://localhost:8091");
+const ws = new WebSocket(`ws://${process.env.ISSUER_BACKEND_HOST}:${process.env.ISSUER_BACKEND_PORT_WS}`);
 ws.onerror = (error) => {
   console.error("WebSocket Error:", error);
 };

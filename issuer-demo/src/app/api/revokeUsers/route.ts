@@ -7,7 +7,8 @@ export async function POST(req: Request) {
   }
 
   async function revokeVC(user: any) {
-    const credentialStatusID = getStatusIDFromVC(user);
+    const idParts = JSON.parse(user.VC).credentialStatus.id.split(":");
+    const credentialStatusID = idParts[idParts.length - 1];
     console.log("Revoking VC with ID:", credentialStatusID);
     fetch(
       `http://${process.env.ISSUER_BACKEND_HOST}:${process.env.ISSUER_BACKEND_PORT}/api/status/revokeCredential?id=${credentialStatusID}`,
@@ -19,15 +20,7 @@ export async function POST(req: Request) {
       .then((data) => console.log("Revocation results:", data))
       .catch((error) => console.error("Error:", error));
   }
-  function getStatusIDFromVC(user: any) {
-    const vc = JSON.parse(user.VC);
-    console.log("vc:", vc);
-    if (Array.isArray(vc.credentialStatus)) {
-      return vc.credentialStatus[0].id;
-    } else {
-      return vc.credentialStatus.id;
-    }
-  }
+
   try {
     const rawPayload = await req.json();
     await revokeVC(rawPayload.user);

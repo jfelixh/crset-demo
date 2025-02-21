@@ -5,18 +5,10 @@ export async function POST(req: Request) {
       headers: { Allow: "POST" },
     });
   }
-  function getStatusUser(user: any) {
-    const vc = JSON.parse(user.VC);
-    if (Array.isArray(vc.credentialStatus)) {
-      return vc.credentialStatus[0].id;
-    } else {
-      return vc.credentialStatus.id;
-    }
-  }
   try {
-    const user = await req.json();
-    // console.log("user", user)
-    const credentialStatusID = getStatusUser(user.user);
+    const { user } = await req.json();
+    const idParts = JSON.parse(user.VC).credentialStatus.id.split(":");
+    const credentialStatusID = idParts[idParts.length - 1];
     console.log("credentialStatusID:", credentialStatusID);
     const response = await fetch(
       `http://${process.env.ISSUER_BACKEND_HOST}:${process.env.ISSUER_BACKEND_PORT}/api/status/getStatus?id=${credentialStatusID}`,
