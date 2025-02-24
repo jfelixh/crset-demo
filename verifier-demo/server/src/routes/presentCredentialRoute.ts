@@ -5,7 +5,7 @@ import {
   presentCallback,
   presentCredentialGet,
   presentCredentialPost,
-} from "@/controllers/PresentController";
+} from "@/controllers/presentController";
 
 const router = express.Router();
 

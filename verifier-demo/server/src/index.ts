@@ -1,6 +1,6 @@
 import cors from "cors";
 import express, { Express, Request, Response } from "express";
-import LoginRoute from "@/routes/PresentCredentialRoute";
+import LoginRoute from "@/routes/presentCredentialRoute";
 import { config } from "@/config/base";
 
 const app: Express = express();
