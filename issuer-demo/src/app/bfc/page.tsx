@@ -13,7 +13,9 @@ interface Step {
   };
 }
 
-const ws = new WebSocket(`ws://${process.env.ISSUER_BACKEND_HOST}:${process.env.ISSUER_BACKEND_PORT_WS}`);
+const ws = new WebSocket(
+  `ws://${process.env.NEXT_PUBLIC_ISSUER_BACKEND_HOST}:${process.env.NEXT_PUBLIC_ISSUER_BACKEND_PORT_WS}`,
+);
 ws.onerror = (error) => {
   console.error("WebSocket Error:", error);
 };
@@ -78,7 +80,7 @@ const BFCPage = () => {
     },
     {
       id: 5,
-      name: "Send transaction & wait for chain-inclusion",
+      name: "Send transaction & wait for on-chain inclusion",
       status: "not_started",
       timeElapsed: 0,
       additionalMetrics: {},

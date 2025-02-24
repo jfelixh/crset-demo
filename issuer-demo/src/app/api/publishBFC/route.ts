@@ -4,7 +4,7 @@ export const POST = async () => {
   try {
     console.log("Posting to publish BFC...");
     await fetch(
-      `http://${process.env.ISSUER_BACKEND_HOST}:${process.env.ISSUER_BACKEND_PORT}/api/status/publishBFC`,
+      `http://${process.env.BE_ISSUER_BACKEND_HOST}:${process.env.BE_ISSUER_BACKEND_PORT}/api/status/publishBFC`,
       {
         method: "POST",
       },

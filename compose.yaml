@@ -5,10 +5,10 @@ services:
     restart: always
     expose:
       - 6380
-    command: [ "redis-server", "--port", "6380" ]
+    command: ["redis-server", "--port", "6380"]
     networks:
       - crset-network
-    profiles: [ verifier ]
+    profiles: [verifier]
 
   verifier-backend:
     build: ./verifier-demo/server
@@ -27,7 +27,7 @@ services:
       - .env
     networks:
       - crset-network
-    profiles: [ verifier ]
+    profiles: [verifier]
 
   verifier-frontend:
     build:
@@ -35,6 +35,7 @@ services:
       args:
         - VITE_BACKEND_HOST=localhost
         - VITE_BACKEND_PORT=3000
+        - VITE_BACKEND_PORT_WS=8090
     ports:
       - "3001:8080"
     depends_on:
@@ -43,25 +44,27 @@ services:
       - .env
     networks:
       - crset-network
-    profiles: [ verifier ]
+    profiles: [verifier]
 
   issuer-app:
     build:
       context: ./issuer-demo
+      args:
+        - ISSUER_BACKEND_HOST=localhost
+        - ISSUER_BACKEND_PORT=5050
+        - ISSUER_BACKEND_PORT_WS=8091
     ports:
       - "3000:3000"
     volumes:
       - ./issuer-demo/data:/app/data
     environment:
-      - ISSUER_BACKEND_HOST=host.docker.internal
-      - ISSUER_BACKEND_PORT=5050
-      - ISSUER_BACKEND_PORT_WS=8091
-      - NEXT_PUBLIC_URL=$NEXT_PUBLIC_URL
+      - BE_ISSUER_BACKEND_HOST=host.docker.internal
+      - BE_ISSUER_BACKEND_PORT=5050
     env_file:
       - .env
     networks:
       - crset-network
-    profiles: [ issuer ]
+    profiles: [issuer]
 
 networks:
   crset-network:

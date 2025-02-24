@@ -34,7 +34,9 @@ export const LogProvider = ({ children }: { children: ReactNode }) => {
 
   const fetchLogs = async () => {
     try {
-      const response = await fetch(`http://${process.env.ISSUER_BACKEND_HOST}:${process.env.ISSUER_BACKEND_PORT}/api/bfcLogs/logs`);
+      const response = await fetch(
+        `http://${process.env.NEXT_PUBLIC_ISSUER_BACKEND_HOST}:${process.env.NEXT_PUBLIC_ISSUER_BACKEND_PORT}/api/bfcLogs/logs`,
+      );
       console.log("Response:", response);
       if (!response.ok) {
         throw new Error("Failed to fetch logs in the frontend");
@@ -42,6 +44,7 @@ export const LogProvider = ({ children }: { children: ReactNode }) => {
       const data = await response.json();
       setLogs(data);
     } catch (err) {
+      console.error(JSON.stringify(process.env));
       console.error("Error fetching logs in the frontend:", err);
     }
   };

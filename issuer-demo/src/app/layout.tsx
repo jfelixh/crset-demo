@@ -7,7 +7,7 @@ import { LogProvider } from "./contexts/logsContext";
 import {
   UnpublishedEntriesProvider,
   useUnpublishedEntriesContext,
-} from "./contexts/unpublishedStatusContext";
+} from "./contexts/unpublishedEntriesContext";
 import "./globals.css";
 
 export default function RootLayout({

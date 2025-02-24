@@ -19,7 +19,7 @@ const LastTransactionsCard = ({
     const getAddress = async () => {
       try {
         const response = await fetch(
-          `http://${process.env.ISSUER_BACKEND_HOST}:${process.env.ISSUER_BACKEND_PORT}/api/bfcLogs/address`,
+          `http://${process.env.NEXT_PUBLIC_ISSUER_BACKEND_HOST}:${process.env.NEXT_PUBLIC_ISSUER_BACKEND_PORT}/api/bfcLogs/address`,
         );
         const responseData = await response.json();
         setAddress(responseData);

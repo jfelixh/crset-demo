@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useUnpublishedEntriesContext } from "../contexts/unpublishedStatusContext";
+import { useUnpublishedEntriesContext } from "../contexts/unpublishedEntriesContext";
 import { AlertTitle } from "@/components/ui/alert";
 import { File, Filter, AlertCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";

@@ -11,7 +11,7 @@ export async function POST(req: Request) {
     const credentialStatusID = idParts[idParts.length - 1];
     console.log("credentialStatusID:", credentialStatusID);
     const response = await fetch(
-      `http://${process.env.ISSUER_BACKEND_HOST}:${process.env.ISSUER_BACKEND_PORT}/api/status/getStatus?id=${credentialStatusID}`,
+      `http://${process.env.BE_ISSUER_BACKEND_HOST}:${process.env.BE_ISSUER_BACKEND_PORT}/api/status/getStatus?id=${credentialStatusID}`,
       {
         method: "POST",
       },

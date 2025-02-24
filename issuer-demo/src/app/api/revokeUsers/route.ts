@@ -11,7 +11,7 @@ export async function POST(req: Request) {
     const credentialStatusID = idParts[idParts.length - 1];
     console.log("Revoking VC with ID:", credentialStatusID);
     fetch(
-      `http://${process.env.ISSUER_BACKEND_HOST}:${process.env.ISSUER_BACKEND_PORT}/api/status/revokeCredential?id=${credentialStatusID}`,
+      `http://${process.env.BE_ISSUER_BACKEND_HOST}:${process.env.BE_ISSUER_BACKEND_PORT}/api/status/revokeCredential?id=${credentialStatusID}`,
       {
         method: "POST",
       },

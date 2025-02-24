@@ -18,6 +18,7 @@ import { CheckCircleIcon } from "lucide-react";
 import { QRCodeCanvas } from "qrcode.react";
 import { RefObject, useEffect, useRef, useState } from "react";
 import { useFormContext } from "react-hook-form";
+import { wsUrl } from "@/hooks/api/base";
 
 type EmployeeCredentialInfoStepProps = {
   nextButtonRef: RefObject<HTMLButtonElement>;
@@ -57,14 +58,14 @@ const EmployeeCredentialInfoStep = ({
   const [steps, setSteps] = useState<Step[]>([
     {
       id: 0,
-      name: "Extract Publisher Address",
+      name: "Extract publisher address",
       status: "not_started",
       timeElapsed: 0,
       additionalMetrics: {},
     },
     {
       id: 1,
-      name: "Retrieve Transactions",
+      name: "Retrieve transactions",
       status: "not_started",
       timeElapsed: 0,
       additionalMetrics: {},
@@ -108,7 +109,7 @@ const EmployeeCredentialInfoStep = ({
   useEffect(() => {
     if (!wsRef.current) {
       // Use websocket protocol to pass client identifier
-      wsRef.current = new WebSocket("ws://localhost:8090", protocol);
+      wsRef.current = new WebSocket(wsUrl, protocol);
 
       wsRef.current.onerror = (error) => {
         console.error("WebSocket Error:", error);

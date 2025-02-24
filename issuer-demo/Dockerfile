@@ -51,6 +51,17 @@ RUN \
 
 # Rebuild the source code only when needed
 FROM base AS builder
+
+# Define build arguments
+ARG ISSUER_BACKEND_HOST
+ARG ISSUER_BACKEND_PORT
+ARG ISSUER_BACKEND_PORT_WS
+
+# Make them available as environment variables during build
+ENV NEXT_PUBLIC_ISSUER_BACKEND_HOST=$ISSUER_BACKEND_HOST
+ENV NEXT_PUBLIC_ISSUER_BACKEND_PORT=$ISSUER_BACKEND_PORT
+ENV NEXT_PUBLIC_ISSUER_BACKEND_PORT_WS=$ISSUER_BACKEND_PORT_WS
+
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .

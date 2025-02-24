@@ -7,7 +7,7 @@ import * as database from "../../../../database/database";
 async function createStatusEntry() {
   try {
     const response = await fetch(
-      `http://${process.env.ISSUER_BACKEND_HOST}:${process.env.ISSUER_BACKEND_PORT}/api/status/createStatusEntry`,
+      `http://${process.env.BE_ISSUER_BACKEND_HOST}:${process.env.BE_ISSUER_BACKEND_PORT}/api/status/createStatusEntry`,
       {
         method: "POST",
         headers: {
