@@ -1,4 +1,4 @@
-import AuthLoader from "@/components/loading-auth";
+import AuthLoader from "@/components/loadingAuth";
 import { ProcessTimeline } from "@/components/progressTimeLine";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import useGenerateWalletURL from "@/hooks/api/useGenerateWalletURL";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/useToast";
 import { useCallbackPolling } from "@/hooks/useCallbackPolling";
 import useIsMobileDevice from "@/hooks/useIsMobileDevice";
 import { EmployeeCredential } from "@/models/employee";

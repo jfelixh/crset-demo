@@ -4,7 +4,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useFormContext } from "react-hook-form";
 import { FormData } from "../schemas";
 import { EmployeeCredential } from "@/models/employee";
-import { EmployeeCard } from "../employee-card";
+import { EmployeeCard } from "../employeeCard";
 
 const PreviewStep = () => {
   const form = useFormContext<FormData>();

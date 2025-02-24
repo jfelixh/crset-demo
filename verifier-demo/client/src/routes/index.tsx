@@ -69,7 +69,7 @@ export default function Index() {
                   Apply for a loan lightning-fast thanks to the power of
                   blobkchain-backed Self-Sovereign Identity!
                 </h2>
-                <Link to="/apply-for-loan">
+                <Link to="/applyForLoan">
                   <Button size="lg">Apply for a loan now!</Button>
                 </Link>
               </motion.div>

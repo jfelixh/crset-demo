@@ -2,7 +2,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { EmployeeCredential } from "@/models/employee";
-import { GlareCard } from "../ui/glare-card";
+import { GlareCard } from "../ui/glareCard";
 
 interface EmployeeCardProps {
   employee: EmployeeCredential;

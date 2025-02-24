@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { usePostLoan } from "@/hooks/api/usePostLoan";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/useToast";
 import { cn } from "@/lib/utils";
 import { LoanRequest } from "@/models/loan";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,11 +10,11 @@ import { FormProvider, useForm } from "react-hook-form";
 import { z } from "zod";
 import { formSchema } from "./schemas";
 import Stepper from "./stepper";
-import EmployeeCredentialInfoStep from "./steps/employee-credential-info";
-import LoanInfoStep from "./steps/loan-info";
+import EmployeeCredentialInfoStep from "./steps/employeeCredentialInfo";
+import LoanInfoStep from "./steps/loanInfo";
 import PreviewStep from "./steps/overview";
-import PersonalInfoStep from "./steps/personal-info";
-import LoanApplicationConfirmation from "./steps/submit-confirmation";
+import PersonalInfoStep from "./steps/personalInfo";
+import LoanApplicationConfirmation from "./steps/submitConfirmation";
 import { EmployeeCredential } from "@/models/employee";
 
 type FormData = z.infer<typeof formSchema>;
