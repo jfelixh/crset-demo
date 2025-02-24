@@ -113,18 +113,21 @@ const UsersPage = () => {
     setTopUsers(filteredUsers.slice(0, 20));
   }, [users, searchTerm, selectedOption]);
 
-  const fetchStatusForTopUsers = useCallback(async (users: any[]) => {
-    const userStatuses: { [key: string]: string } = {};
-    for (const user of users) {
-      const validity = await getCredentialStatus(user);
-      if (validity) {
-        userStatuses[user.email] = "1";
-      } else {
-        userStatuses[user.email] = "0";
+  const fetchStatusForTopUsers = useCallback(
+    async (users: any[]) => {
+      const userStatuses: { [key: string]: string } = {};
+      for (const user of users) {
+        const validity = await getCredentialStatus(user);
+        if (validity) {
+          userStatuses[user.email] = "1";
+        } else {
+          userStatuses[user.email] = "0";
+        }
       }
-    }
-    setStatuses(userStatuses);
-  }, [getCredentialStatus]);
+      setStatuses(userStatuses);
+    },
+    [getCredentialStatus],
+  );
 
   useEffect(() => {
     fetchStatusForTopUsers(topUsers);
