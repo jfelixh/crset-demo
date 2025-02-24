@@ -1,4 +1,4 @@
-import LoadingComponent from "./LoadingComponent";
+import LoadingComponent from "./loadingComponent";
 import { Card, CardHeader, CardContent } from "./ui/card";
 
 const SmallCard = ({

@@ -1,13 +1,13 @@
 "use client";
 
-import Header from "@/components/Header";
+import Header from "@/components/header";
 import { usePathname } from "next/navigation";
 import { Toaster } from "@/components/ui/toaster";
-import { LogProvider } from "./contexts/BfcLogsContext";
+import { LogProvider } from "./contexts/logsContext";
 import {
   UnpublishedEntriesProvider,
   useUnpublishedEntriesContext,
-} from "./contexts/UnpublishedEntriesContext";
+} from "./contexts/unpublishedStatusContext";
 import "./globals.css";
 
 export default function RootLayout({

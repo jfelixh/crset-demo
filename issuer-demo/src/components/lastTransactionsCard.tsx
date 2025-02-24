@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader } from "../components/ui/card";
 import Link from "next/link";
 import { FileText } from "lucide-react";
-import { LogData } from "@/app/contexts/BfcLogsContext";
+import { LogData } from "@/app/contexts/logsContext";
 import { timeAgo } from "@/lib/constants";
-import LoadingComponent from "./LoadingComponent";
+import LoadingComponent from "./loadingComponent";
 
 const LastTransactionsCard = ({
   logs,

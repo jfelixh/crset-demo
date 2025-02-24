@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useUnpublishedEntriesContext } from "../contexts/UnpublishedEntriesContext";
+import { useUnpublishedEntriesContext } from "../contexts/unpublishedStatusContext";
 import { AlertTitle } from "@/components/ui/alert";
 import { File, Filter, AlertCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -26,7 +26,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radioGroup";
 
 const UsersPage = () => {
   const router = useRouter();

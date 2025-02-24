@@ -1,17 +1,17 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import LastTransactionsCard from "@/components/LastTransactionsCard";
-import BarChart from "@/components/BarChart";
-import LineChart from "@/components/LineChart";
-import ChartCard from "@/components/ChartCard";
-import { LogData } from "../contexts/BfcLogsContext";
-import SmallCard from "@/components/SmallCard";
+import LastTransactionsCard from "@/components/lastTransactionsCard";
+import BarChart from "@/components/barChart";
+import LineChart from "@/components/lineChart";
+import ChartCard from "@/components/chartCard";
+import { LogData } from "../contexts/logsContext";
+import SmallCard from "@/components/smallCard";
 import {
   optionsLineChartFilterCascade,
   optionsLineChartEntries,
 } from "@/lib/constants";
 import { timeAgo } from "@/lib/constants";
-import LoadingComponent from "@/components/LoadingComponent";
+import LoadingComponent from "@/components/loadingComponent";
 
 interface ChartDataset {
   label: string;
