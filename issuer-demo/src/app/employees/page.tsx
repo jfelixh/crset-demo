@@ -384,7 +384,7 @@ const UsersPage = () => {
           className="bg-blue-900 hover:bg-blue-700"
           onClick={publishtoBFC}
         >
-          Publish BFC
+          Publish CRSet
         </Button>
       </div>
     </div>
