@@ -40,9 +40,11 @@ The _verifier demo_ is a mock up of a banking site allowing loan applicants to p
 ## Technical Overview
 
 > [!NOTE]
-> This demo was built first and foremost to be easy to set up and run. Security-critical aspects like session-management have been excluded since they are not core to showing the CRSet mechanism itself.
+> This demo was built first and foremost to be easy to set up and run. Security-critical aspects like session management have been excluded since they are not core to showing the CRSet mechanism itself.
 
 ### Components
+
+This is an overview over the demo. The components in blue are core components of CRSet which are built to be use case agnostic:
 
 ![UML Component Diagram of the crset-demo](docs/assets/component-diagram.png)
 
