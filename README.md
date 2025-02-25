@@ -29,7 +29,7 @@ The _issuer demo_ also offers a dashboard showing the past publications and asso
 
 ### Verifying Employment Status To Take Out a Loan
 
-The _verifier demo_ is a mock up of a banking site allowing loan applicants to prove their employment status with their employment ID VC:
+The _verifier demo_ is a mock-up of a banking site allowing loan applicants to prove their employment status with their employment ID VC:
 
 1. Click "Apply for a loan now!"
 2. Enter arbitrary data for personal data and click next
@@ -44,7 +44,7 @@ The _verifier demo_ is a mock up of a banking site allowing loan applicants to p
 
 ### Components
 
-This is an overview over the demo. The components in blue are core components of CRSet which are built to be use case agnostic:
+This is an overview of the demo. The components in blue are core components of CRSet which are built to be use case agnostic:
 
 ![UML Component Diagram of the crset-demo](docs/assets/component-diagram.png)
 
