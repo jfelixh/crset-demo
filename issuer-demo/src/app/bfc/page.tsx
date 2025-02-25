@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ProcessTimeline } from "@/components/progressTimeLine";
 import { Button } from "@/components/ui/button";
 
@@ -13,18 +13,29 @@ interface Step {
   };
 }
 
-const ws = new WebSocket(
-  `ws://${process.env.NEXT_PUBLIC_ISSUER_BACKEND_HOST}:${process.env.NEXT_PUBLIC_ISSUER_BACKEND_PORT_WS}`,
-);
-ws.onerror = (error) => {
-  console.error("WebSocket Error:", error);
-};
-ws.onclose = () => {
-  console.log("WebSocket connection closed");
-};
-let lastTime = new Date().getTime();
-
 const BFCPage = () => {
+  const [ws, setWs] = useState<WebSocket | null>(null);
+
+  useEffect(() => {
+    const websocket = new WebSocket(
+      `ws://${process.env.NEXT_PUBLIC_ISSUER_BACKEND_HOST}:${process.env.NEXT_PUBLIC_ISSUER_BACKEND_PORT_WS}`,
+    );
+    
+    websocket.onerror = (error) => {
+      console.error("WebSocket Error:", error);
+    };
+    
+    websocket.onclose = () => {
+      console.log("WebSocket connection closed");
+    };
+    
+    setWs(websocket);
+    
+    return () => {
+      websocket.close();
+    };
+  }, []);
+
   const publishtoBFC = async () => {
     try {
       const response = await fetch("/api/publishBFC", {
@@ -86,53 +97,60 @@ const BFCPage = () => {
       additionalMetrics: {},
     },
   ]);
-  ws.onmessage = (event) => {
-    const currentTime = new Date().getTime();
-    const eventData = JSON.parse(event.data.toString());
-    const timePassed = currentTime - lastTime;
-    console.log("------------" + event.data.toString() + " " + timePassed);
-    let stepId = 0;
-    switch (eventData.step) {
-      case "queryDB":
-        stepId = 0;
-        break;
-      case "constructBFC":
-        stepId = 1;
-        break;
-      case "serializeBFC":
-        stepId = 2;
-        break;
-      case "constructBlobs":
-        stepId = 3;
-        break;
-      case "constructTx":
-        stepId = 4;
-        break;
-      case "sendTx":
-        stepId = 5;
-        break;
+
+  let lastTime = new Date().getTime();
+
+  useEffect(() => {
+    if (ws) {
+      ws.onmessage = (event) => {
+        const currentTime = new Date().getTime();
+        const eventData = JSON.parse(event.data.toString());
+        const timePassed = currentTime - lastTime;
+        console.log("------------" + event.data.toString() + " " + timePassed);
+        let stepId = 0;
+        switch (eventData.step) {
+          case "queryDB":
+            stepId = 0;
+            break;
+          case "constructBFC":
+            stepId = 1;
+            break;
+          case "serializeBFC":
+            stepId = 2;
+            break;
+          case "constructBlobs":
+            stepId = 3;
+            break;
+          case "constructTx":
+            stepId = 4;
+            break;
+          case "sendTx":
+            stepId = 5;
+            break;
+        }
+        // update step status
+        setSteps((prev) => {
+          prev[stepId].status = eventData.status;
+          return [...prev];
+        });
+        // update time elapsed for completed steps
+        if (eventData.status === "completed") {
+          setSteps((prev) => {
+            prev[stepId].timeElapsed = timePassed;
+            return [...prev];
+          });
+        }
+        // update additional metrics
+        if (Object.keys(eventData).length > 2) {
+          setSteps((prev) => {
+            prev[stepId].additionalMetrics = eventData.additionalMetrics;
+            return [...prev];
+          });
+        }
+        lastTime = currentTime;
+      };
     }
-    // update step status
-    setSteps((prev) => {
-      prev[stepId].status = eventData.status;
-      return [...prev];
-    });
-    // update time elapsed for completed steps
-    if (eventData.status === "completed") {
-      setSteps((prev) => {
-        prev[stepId].timeElapsed = timePassed;
-        return [...prev];
-      });
-    }
-    // update additional metrics
-    if (Object.keys(eventData).length > 2) {
-      setSteps((prev) => {
-        prev[stepId].additionalMetrics = eventData.additionalMetrics;
-        return [...prev];
-      });
-    }
-    lastTime = currentTime;
-  };
+  }, [ws]);
 
   return (
     <div className="page-container flex flex-col items-center justify-center">
