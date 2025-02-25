@@ -4,7 +4,7 @@ This project is a showcase of CRSet, the novel revocation mechanism for _W3C Ver
 
 ## Demo Content
 
-The demo consists of two parts: the _issuer demo_ and the _verifier demo_, which have to be started separeately. To experience the demo, a smartphone with an SSI wallet app is needed. Any wallet app with OID4VC support should work. The Altme app worked well in testing.
+The demo consists of two parts: the _issuer demo_ and the _verifier demo_, which have to be started separately. To experience the demo, a smartphone with an SSI wallet app is needed. Any wallet app with OID4VC support should work. The Altme app worked well in testing.
 
 ### Issuing an Employee ID VC with CRSet Support
 
@@ -12,7 +12,7 @@ The _issuer demo_ resembles a simple HR tool that allows a company to issue empl
 
 1. Click on "Start Issuing"
 2. Enter arbitrary employee info and click "Generate Verifiable Credential"
-3. Scan the QR code with the smartphone and follow the directions to obtain the newly issued epmloyee ID VC
+3. Scan the QR code with the smartphone and follow the directions to obtain the newly issued employee ID VC
 
 The tool also gives an overview over issued VCs and allows revocation:
 
@@ -27,17 +27,15 @@ To make the revocations public, a manually triggered rebuild and publishing of t
 
 The _issuer demo_ also offers a dashboard showing the past publications and associated data, such as cost, time, and data size. It also includes direct links to block and blob explorers to dive in further.
 
-
 ### Verifying Employment Status To Take Out a Loan
 
-The _verifier demo_ is a mock up of a banking site allowing loan applicants to proove their employment status with their employment ID VC:
+The _verifier demo_ is a mock up of a banking site allowing loan applicants to prove their employment status with their employment ID VC:
 
 1. Click "Apply for a loan now!"
 2. Enter arbitrary data for personal data and click next
 3. Enter arbitrary loan data and click next
-4. Scan the QR code with the smartphone and follow directions to present the employmee ID VC
+4. Scan the QR code with the smartphone and follow directions to present the employee ID VC
 5. Observe how the website updating the verification progress with emphasis on the revocation check in real time
-
 
 ## Technical Overview
 
@@ -57,7 +55,7 @@ The project is structured as follows (only the most relevant files and folders a
     |-- issuer-demo/
     |   |-- Dockerfile
     |   |-- package.json
-    |   |-- database/
+    |   |-- data/
     |   |-- src/
     |-- verifier-demo/
     |   |-- client/
@@ -95,11 +93,11 @@ Using ngrok, an external URL can be set up with:
 ngrok http 3000
 ```
 
-The terminal process will keep running and show the external url, looking somethign like: `https://<random-string>.ngrok-free.app`.
+The terminal process will keep running and show the external URL, looking something like: `https://<random-string>.ngrok-free.app`.
 
 ### Environment Variables
 
-This demo requires several environment variables. These are specified in the `.env` file. An examplefile `.env.example` with some explanations is provided to be copied. It can be found [here](./.env.example).
+This demo requires several environment variables. These are specified in the `.env` file. An example file `.env.example` with some explanations is provided to be copied. It can be found [here](./.env.example).
 
 ## Running the Demo
 
@@ -129,4 +127,3 @@ The _issuer demo_ can be accessed at `http://localhost:3000` and the _verifier d
 
 - **[EIP-4844: Shard Blob Transactions](https://eips.ethereum.org/EIPS/eip-4844)**
 - **[W3C Verifiable Credentials Data Model 1.1](https://www.w3.org/TR/vc-data-model/)**
-
