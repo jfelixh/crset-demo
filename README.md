@@ -41,6 +41,9 @@ The _verifier demo_ is a mock up of a banking site allowing loan applicants to p
 
 ## Technical Overview
 
+> [!NOTE]
+> This demo was built first and foremost to be easy to set up and run. Security-critical aspects like session-management have been excluded since they are not core to showing the CRSet mechanism itself.
+
 ### Components
 
 ![UML Component Diagram of the bfc-status-demo](docs/assets/component-diagram.png)
