@@ -21,17 +21,17 @@ const BFCPage = () => {
     const websocket = new WebSocket(
       `ws://${process.env.NEXT_PUBLIC_ISSUER_BACKEND_HOST}:${process.env.NEXT_PUBLIC_ISSUER_BACKEND_PORT_WS}`,
     );
-    
+
     websocket.onerror = (error) => {
       console.error("WebSocket Error:", error);
     };
-    
+
     websocket.onclose = () => {
       console.log("WebSocket connection closed");
     };
-    
+
     setWs(websocket);
-    
+
     return () => {
       websocket.close();
     };

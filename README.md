@@ -1,6 +1,6 @@
 # CRSet Demonstrator
 
-This project is a showcase of CRSet, the novel revocation mechanism for _W3C Verifiable Credential_ with **cascading padded Bloom filters**, as proposed in the paper **[CRSet: Non-Interactive Verifiable Credential Revocation with Metadata Privacy for Issuers and Everyone Else](https://arxiv.org/abs/2501.17089)**.
+This project is a showcase of CRSet, the novel revocation mechanism for _W3C Verifiable Credentials_ with **cascading padded Bloom filters**, as proposed in the paper **[CRSet: Non-Interactive Verifiable Credential Revocation with Metadata Privacy for Issuers and Everyone Else](https://arxiv.org/abs/2501.17089)**.
 
 ## Demo Content
 
