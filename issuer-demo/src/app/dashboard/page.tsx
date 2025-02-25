@@ -234,16 +234,13 @@ const Dashboard = () => {
           isLoading={isLoading}
           content={`$ ${(latestLog.transactionCost * exchangeRate).toFixed(
             2,
-          )} / ${(latestLog.transactionCost || 0).toFixed(6)} ether`}
+          )} or ${(latestLog.transactionCost || 0).toFixed(6)} ether`}
         />
 
         <SmallCard
-          title="Savings made from Last Transaction"
+          title="Data Size"
           isLoading={isLoading}
-          content={`${(
-            100 -
-            (latestLog.transactionCost / latestLog.calldataTotalCost) * 100
-          ).toFixed(2)} %`}
+          content={`${(latestLog.serializedDataSize / 1000.0).toFixed(2)} KB`}
         />
       </div>
 
