@@ -44,7 +44,7 @@ The _verifier demo_ is a mock up of a banking site allowing loan applicants to p
 
 ### Components
 
-![UML Component Diagram of the bfc-status-demo](docs/assets/component-diagram.png)
+![UML Component Diagram of the crset-demo](docs/assets/component-diagram.png)
 
 ### Folder Structure
 

@@ -234,7 +234,7 @@ const Dashboard = () => {
           isLoading={isLoading}
           content={`$ ${(latestLog.transactionCost * exchangeRate).toFixed(
             2,
-          )} or ${(latestLog.transactionCost || 0).toFixed(6)} ether`}
+          )} or ${(latestLog.transactionCost || 0).toFixed(6)} ETH`}
         />
 
         <SmallCard

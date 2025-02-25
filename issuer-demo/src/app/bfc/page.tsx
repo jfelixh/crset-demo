@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ProcessTimeline } from "@/components/progressTimeLine";
 import { Button } from "@/components/ui/button";
 
@@ -15,6 +15,7 @@ interface Step {
 
 const BFCPage = () => {
   const [ws, setWs] = useState<WebSocket | null>(null);
+  const lastTimeRef = useRef(new Date().getTime());
 
   useEffect(() => {
     const websocket = new WebSocket(
@@ -98,14 +99,12 @@ const BFCPage = () => {
     },
   ]);
 
-  let lastTime = new Date().getTime();
-
   useEffect(() => {
     if (ws) {
       ws.onmessage = (event) => {
         const currentTime = new Date().getTime();
         const eventData = JSON.parse(event.data.toString());
-        const timePassed = currentTime - lastTime;
+        const timePassed = currentTime - lastTimeRef.current;
         console.log("------------" + event.data.toString() + " " + timePassed);
         let stepId = 0;
         switch (eventData.step) {
@@ -147,7 +146,7 @@ const BFCPage = () => {
             return [...prev];
           });
         }
-        lastTime = currentTime;
+        lastTimeRef.current = currentTime;
       };
     }
   }, [ws]);
