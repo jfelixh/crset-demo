@@ -1,13 +1,11 @@
-import {redisGet} from "@/app/config/redis";
+import { getVC } from "../../../../../../database/database";
 
 export async function GET(
   _request: Request,
-  { params }:  { params: Promise<{ vcid: string } > }
+  { params }: { params: Promise<{ vcid: number }> },
 ) {
   const resolvedParams = await params;
-  console.log("Resolved params for openid-credential:", resolvedParams);
-  const vc = await redisGet("vc-" + resolvedParams.vcid);
-  console.log("redisGet")
+  const vc = await getVC(resolvedParams.vcid);
   if (!vc || vc === undefined) {
     return Response.json({ error: "No prepared VC found" }, { status: 404 });
   }
@@ -15,24 +13,23 @@ export async function GET(
   const jsonVc = JSON.parse(vc);
 
   const data = {
-    credential_issuer: process.env.NEXT_PUBLIC_URL + "/vci/" + resolvedParams.vcid,
+    credential_issuer:
+      process.env.NEXT_PUBLIC_URL + "/vci/" + resolvedParams.vcid,
     credential_endpoint:
-      process.env.NEXT_PUBLIC_URL + "/vci/" + resolvedParams.vcid + "/credential",
+      process.env.NEXT_PUBLIC_URL +
+      "/vci/" +
+      resolvedParams.vcid +
+      "/credential",
     credential_configurations_supported: {
       ProofOfEmploymentCredential: {
         format: "ldp_vc",
         credential_definition: {
-          // just mentioning the standard type for simplicity
-          // might need to be dynamically loaded from redis in the future
-          // but seems to work for now
           "@context": jsonVc["@context"],
           type: jsonVc["type"],
         },
       },
     },
   };
-
-  console.log("Send metadata to the wallet to know what kind of credential to request")
 
   return Response.json(data);
 }

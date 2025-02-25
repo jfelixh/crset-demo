@@ -15,10 +15,10 @@ export default defineConfig({
     host: `0.0.0.0`,
     strictPort: true,
     port: 5173,
-    origin: "http://0.0.0.0:5173",
+    origin: "http://127.0.0.0:5173",
   },
   preview: {
-    port: 5173, // default is 4173, set to 5173 for Docker
+    port: 5173,
   },
   plugins: [TanStackRouterVite(), viteReact()],
   resolve: {

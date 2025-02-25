@@ -4,7 +4,6 @@ import { baseUrl } from "./api/base";
 interface CallbackPollingProps {
   walletUrl: string | null;
   challenge: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onSuccess: (result: { success: boolean; [key: string]: any }) => void;
   onError?: (error: Error) => void;
   intervalMs?: number;
@@ -35,7 +34,7 @@ export const useCallbackPolling = ({
       try {
         const response = await fetch(
           `${baseUrl}/present/callback?${params.toString()}`,
-          { credentials: "include" }
+          { credentials: "include" },
         );
 
         if (response.status === 202) return; // Pending
@@ -49,7 +48,7 @@ export const useCallbackPolling = ({
           return;
         } else if (response.status === 401) {
           onError?.(
-            new Error("The presented credential is revoked or invalid")
+            new Error("The presented credential is revoked or invalid"),
           );
           clearInterval(intervalId);
           setIsPending(false);

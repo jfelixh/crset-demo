@@ -1,27 +1,14 @@
 "use client";
 
-import Header from "@/components/Header";
-import { Toaster } from "@/components/ui/toaster";
-import localFont from "next/font/local";
+import Header from "@/components/header";
 import { usePathname } from "next/navigation";
-import { AuthProvider, useAuth } from "./contexts/AuthContext";
-import { LogProvider } from "./contexts/BfcLogsContext";
+import { Toaster } from "@/components/ui/toaster";
+import { LogProvider } from "./contexts/logsContext";
 import {
   UnpublishedEntriesProvider,
   useUnpublishedEntriesContext,
-} from "./contexts/UnpublishedEntriesContext";
+} from "./contexts/unpublishedEntriesContext";
 import "./globals.css";
-
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
 
 export default function RootLayout({
   children,
@@ -29,37 +16,25 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning >
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <AuthProvider>
-          <UnpublishedEntriesProvider>
-            <LogProvider>
-              <AuthWrapper>
-                {children}
-              </AuthWrapper>
-              <Toaster />
-            </LogProvider>
-          </UnpublishedEntriesProvider>
-        </AuthProvider>
+    <html lang="en" suppressHydrationWarning>
+      <body>
+        <UnpublishedEntriesProvider>
+          <LogProvider>
+            <HeaderWrapper>{children}</HeaderWrapper>
+            <Toaster />
+          </LogProvider>
+        </UnpublishedEntriesProvider>
       </body>
     </html>
   );
 }
 
-const AuthWrapper = ({ children }: { children: React.ReactNode }) => {
-  const { isAuthenticated, logout } = useAuth();
+const HeaderWrapper = ({ children }: { children: React.ReactNode }) => {
   const { thereIsUnpublished } = useUnpublishedEntriesContext();
   const pathname = usePathname();
   return (
     <>
-      <Header
-        showLinks={isAuthenticated}
-        pathname={pathname}
-        logout={logout}
-        isUnpublished={thereIsUnpublished}
-      />
+      <Header pathname={pathname} isUnpublished={thereIsUnpublished} />
       {children}
     </>
   );

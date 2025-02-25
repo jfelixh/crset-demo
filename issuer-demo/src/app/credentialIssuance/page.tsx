@@ -22,15 +22,7 @@ import { z } from "zod";
 import * as React from "react";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useUnpublishedEntriesContext } from "../contexts/UnpublishedEntriesContext";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Command,
   CommandEmpty,
@@ -45,21 +37,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useState } from "react";
-
-const jobtypes = [
-  {
-    value: "Full Time",
-    label: "Full Time",
-  },
-  {
-    value: "Part Time",
-    label: "Part Time",
-  },
-  {
-    value: "Intern",
-    label: "Intern",
-  },
-];
+import { toDataURL } from "qrcode";
+import Image from "next/image";
 
 const formSchema = z.object({
   name: z
@@ -84,9 +63,11 @@ const formSchema = z.object({
     .regex(/^[^\d]*$/, { message: "Manager name cannot contain numbers" }), // Custom error message
   employmentType: z.string().min(1),
 });
+
 export default function Home() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [dialogMessage, setDialogMessage] = useState("");
+  const [qrCode, setQrCode] = useState<string>("");
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -98,9 +79,6 @@ export default function Home() {
       employmentType: "",
     },
   });
-
-  const { thereIsUnpublished, unpublishedEntries, setThereIsUnpublished } =
-    useUnpublishedEntriesContext();
 
   const handleSubmit = async (data: z.infer<typeof formSchema>) => {
     try {
@@ -117,46 +95,17 @@ export default function Home() {
         }),
       });
       const responseData = await response.json();
-      console.log("response", response);
 
-      if (responseData?.uuid && data.email) {
-        //window.location.href = `/vci/${responseData.uuid}`;
-        if (!data.email || !responseData.uuid) {
-          alert("Please enter an email and ensure VCID is loaded.");
-          return;
-        }
-
-        try {
-          const response = await fetch("/api/sendEmail", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              vcid: responseData.uuid,
-              email: data.email,
-            }),
-          });
-
-          const result = await response.json();
-
-          if (response.ok) {
-            setDialogMessage("Email sent successfully!");
-            setIsDialogOpen(true);
-            setThereIsUnpublished(true);
-          } else {
-            setDialogMessage(`Error: ${result.error}`);
-            setIsDialogOpen(true);
-          }
-        } catch (error) {
-          console.log(error);
-          alert("Failed to send email.");
-        }
-      } else {
-        console.error("Missing UUID in the response");
-      }
+      const qrCodeData = await toDataURL(responseData.credentialOffer);
+      setQrCode(qrCodeData);
+      setIsDialogOpen(true);
+      setDialogMessage(
+        "Scan this QR code with your wallet app to receive the credential",
+      );
     } catch (error) {
       console.error("Form submission error", error);
+      setDialogMessage("Error generating credential");
+      setIsDialogOpen(true);
     }
   };
 
@@ -312,12 +261,12 @@ export default function Home() {
                                             "mr-2 h-4 w-4",
                                             field.value === type
                                               ? "opacity-100"
-                                              : "opacity-0"
+                                              : "opacity-0",
                                           )}
                                         />
                                         {type}
                                       </CommandItem>
-                                    )
+                                    ),
                                   )}
                                 </CommandGroup>
                               </CommandList>
@@ -342,13 +291,21 @@ export default function Home() {
         open={isDialogOpen}
         onOpenChange={(open) => setIsDialogOpen(open)}
       >
-        <DialogContent>
-          <DialogTitle>Notification</DialogTitle>
+        <DialogContent className="sm:max-w-md">
+          <DialogTitle>Credential QR Code</DialogTitle>
           <DialogDescription>{dialogMessage}</DialogDescription>
+          <div className="flex items-center justify-center py-6">
+            {qrCode && (
+              <Image src={qrCode} alt="QR Code" className="w-64 h-64" />
+            )}
+          </div>
           <DialogFooter>
             <Button
               className="bg-blue-900 hover:bg-blue-800"
-              onClick={() => setIsDialogOpen(false)}
+              onClick={() => {
+                setIsDialogOpen(false);
+                setQrCode("");
+              }}
             >
               Close
             </Button>

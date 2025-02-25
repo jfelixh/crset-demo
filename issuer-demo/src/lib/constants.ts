@@ -1,4 +1,4 @@
-export  const optionsLineChartFilterCascade = {
+export const optionsLineChartFilterCascade = {
   scales: {
     "y-axis-1": {
       beginAtZero: true,
@@ -47,7 +47,7 @@ export const optionsLineChartEntries = {
 
 export const timeAgo = (date: string) => {
   const seconds = Math.floor(
-    (new Date().getTime() - new Date(date).getTime()) / 1000
+    (new Date().getTime() - new Date(date).getTime()) / 1000,
   );
 
   if (seconds < 60) return `${seconds} second(s) ago`;

@@ -1,5 +1,5 @@
 import axios from "axios";
-import vc from "@digitalcredentials/vc";
+import * as vc from "@digitalcredentials/vc";
 
 import testContext from "../resources/contexts/index";
 
@@ -12,7 +12,7 @@ const documentLoader = async (url: string) => {
       document: context,
     };
   }
-  
+
   if (url && (url.startsWith("https:") || url.startsWith("http:"))) {
     const { data: document } = await axios.get(url);
     const result = {
@@ -20,7 +20,7 @@ const documentLoader = async (url: string) => {
       document,
       documentUrl: url,
     };
-  
+
     return result;
   }
 

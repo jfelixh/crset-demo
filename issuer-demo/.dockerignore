@@ -1,6 +1,4 @@
 node_modules
-.dockerignore
 Dockerfile
-sqlite_data
 databse/bfc.db
 *.csv

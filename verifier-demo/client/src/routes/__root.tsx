@@ -1,15 +1,22 @@
 import { NavBar } from "@/components/navbar";
 import { Toaster } from "@/components/ui/toaster";
-import { AuthContextType } from "@/context/authContextProvider";
-import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
-import { TanStackRouterDevtools } from "@tanstack/router-devtools";
+import { createRootRoute, Outlet } from "@tanstack/react-router";
+import React, { Suspense } from "react";
 
-interface RouterContext {
-  auth: AuthContextType;
-}
+const TanStackRouterDevtools =
+  process.env.NODE_ENV === "production"
+    ? () => null // Render nothing in production
+    : React.lazy(() =>
+        // Lazy load in development
+        import("@tanstack/router-devtools").then((res) => ({
+          default: res.TanStackRouterDevtools,
+          // For Embedded Mode
+          // default: res.TanStackRouterDevtoolsPanel
+        })),
+      );
 
 // Layout for the entire application
-export const Route = createRootRouteWithContext<RouterContext>()({
+export const Route = createRootRoute({
   component: () => (
     <>
       <div className="min-h-screen">
@@ -20,7 +27,9 @@ export const Route = createRootRouteWithContext<RouterContext>()({
           <Outlet />
         </div>
         <Toaster />
-        <TanStackRouterDevtools />
+        <Suspense>
+          <TanStackRouterDevtools />
+        </Suspense>
       </div>
     </>
   ),

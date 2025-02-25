@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import {
   Table,
   TableBody,
@@ -11,12 +11,11 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useUnpublishedEntriesContext } from "../contexts/UnpublishedEntriesContext";
-import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
-import { Info, Bell, File, Filter, AlertCircle } from "lucide-react";
+import { useUnpublishedEntriesContext } from "../contexts/unpublishedEntriesContext";
+import { AlertTitle } from "@/components/ui/alert";
+import { File, Filter, AlertCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
@@ -27,7 +26,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radioGroup";
 
 const UsersPage = () => {
   const router = useRouter();
@@ -49,17 +48,31 @@ const UsersPage = () => {
   const [loading, setLoading] = useState(true);
   const [selectedOption, setSelectedOption] = useState("all");
   const [isMounted, setIsMounted] = useState(false);
+
+  const getCredentialStatus = useCallback(async (user: any) => {
+    const response = await fetch("/api/getStatus", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ user: user }),
+    });
+    const result = await response.json();
+    return result.data.status;
+  }, []);
+
   useEffect(() => {
     // Ensure the component is mounted before changing state
     setIsMounted(true);
   }, []);
+
   useEffect(() => {
     if (!isMounted) return; // Only update on the client side after mount
     // Optionally, you can update selectedOption here if needed
   }, [isMounted]);
+
   const toggleDialog = () => {
     setIsDialogOpen(!isDialogOpen);
   };
+
   const fetchUsers = async () => {
     try {
       const response = await fetch("/api/users");
@@ -72,6 +85,7 @@ const UsersPage = () => {
       setLoading(false); // Set loading to false once data is fetched
     }
   };
+
   useEffect(() => {
     console.log("repeatedly going?");
     fetchUsers();
@@ -81,8 +95,10 @@ const UsersPage = () => {
     console.log("users:", users);
 
     const filteredUsers = users
-      .filter((user) => user.email.toLowerCase().includes(searchTerm.toLowerCase()))
-      .filter((user) => {
+      .filter((user: any) =>
+        user.email.toLowerCase().includes(searchTerm.toLowerCase()),
+      )
+      .filter((user: any) => {
         console.log("published?", user.published);
         if (selectedOption === "all") return true;
         if (selectedOption === "Published") return user.published === true;
@@ -97,33 +113,33 @@ const UsersPage = () => {
     setTopUsers(filteredUsers.slice(0, 20));
   }, [users, searchTerm, selectedOption]);
 
-  const fetchStatusForTopUsers = async (topUsers) => {
-    const userStatuses: { [key: string]: string } = {};
-    for (const user of topUsers) {
-      // console.log("user:", user);
-      const validity = await getCredentialStatus(user);
-      console.log("validity:", validity);
-      if (validity) {
-        userStatuses[user.email] = "1";
-      } else {
-        userStatuses[user.email] = "0";
+  const fetchStatusForTopUsers = useCallback(
+    async (users: any[]) => {
+      const userStatuses: { [key: string]: string } = {};
+      for (const user of users) {
+        const validity = await getCredentialStatus(user);
+        if (validity) {
+          userStatuses[user.email] = "1";
+        } else {
+          userStatuses[user.email] = "0";
+        }
       }
-      //  console.log("userStatuses:", userStatuses[user.email_address]);
-    }
-    setStatuses(userStatuses);
-  };
+      setStatuses(userStatuses);
+    },
+    [getCredentialStatus],
+  );
 
   useEffect(() => {
     fetchStatusForTopUsers(topUsers);
-  }, [topUsers]);
+  }, [topUsers, fetchStatusForTopUsers]);
 
-  const handleCheckboxChange = (user) => {
+  const handleCheckboxChange = (user: any) => {
     setSelectedUser((prevSelected) => (prevSelected === user ? null : user));
   };
 
   const revokeSelectedUser = async () => {
     try {
-      const response = await fetch("/api/revoke-users", {
+      const response = await fetch("/api/revokeUsers", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -160,23 +176,6 @@ const UsersPage = () => {
 
   const publishtoBFC = async () => {
     try {
-      /* toast({
-              title: "Publishing the list to Sepolia...",
-              description: "This may take a moment, depending on network congestion.",
-            })       */
-      /*
-      const responseForPublish = await fetch("/api/publishBFC", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!responseForPublish.ok) {
-        throw new Error(
-          `Response is not ok! status: ${responseForPublish.status}`
-        );
-      }*/
       console.log("unpublishedEntries:", unpublishedEntries);
       const responseForUpdatePublish = await fetch("/api/updatePublishById", {
         method: "POST",
@@ -202,18 +201,6 @@ const UsersPage = () => {
     router.push("/bfc");
   };
 
-  const getCredentialStatus = async (user) => {
-    const response = await fetch("/api/get_status", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ user: user }),
-    });
-    const result = await response.json(); // Wait for the Promise to resolve
-    return result.data.status;
-  };
-
   return (
     <div className="page-container">
       {thereIsUnpublished && (
@@ -221,7 +208,7 @@ const UsersPage = () => {
           <AlertTitle className="font-semibold bg-text-white">
             <Badge className="bg-orange-500 text-white text-xl gap-x-2 animate-pulse hover:bg-orange-400 transition-colors duration-4000 ease-in-out">
               <AlertCircle className="h-5 w-5 text-white" />
-              Reminder: Don't forget to publish!
+              Reminder: Don&apos;t forget to publish!
             </Badge>
           </AlertTitle>
         </div>
@@ -239,7 +226,6 @@ const UsersPage = () => {
           {/* Control dialog visibility */}
           <DialogTrigger asChild>
             <Filter
-              variant="outline"
               className="cursor-pointer"
               onClick={() => setOpenDialogue(true)} // Open the dialog when clicked
             />
@@ -280,7 +266,6 @@ const UsersPage = () => {
           </DialogContent>
         </Dialog>
       </div>
-
       {topUsers && topUsers.length > 0 ? (
         <div className="overflow-x-auto max-w-full">
           <div className="overflow-y-auto max-h-screen">
@@ -296,8 +281,7 @@ const UsersPage = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {topUsers.map((user) => {
-                  const vcData = JSON.parse(user.VC);
+                {topUsers.map((user: any) => {
                   return (
                     <TableRow key={user.email}>
                       <TableCell>
@@ -318,9 +302,7 @@ const UsersPage = () => {
                                 : "bg-red-500 text-white hover:bg-red-400"
                             }
                           >
-                            {statuses[user.email] === "1"
-                              ? "Valid"
-                              : "Invalid"}
+                            {statuses[user.email] === "1" ? "Valid" : "Invalid"}
                           </Badge>
                         ) : (
                           <Skeleton className={skeletonStyle} />
@@ -358,7 +340,7 @@ const UsersPage = () => {
                                   <pre className="whitespace-pre-wrap break-words">
                                     {JSON.stringify(user.VC, null, 2).replace(
                                       /\\"/g,
-                                      '"'
+                                      '"',
                                     )}
                                   </pre>
                                 </div>
@@ -390,7 +372,6 @@ const UsersPage = () => {
           <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-grey-500"></div>
         </div>
       )}
-
       <div className="sticky bottom-0 bg-white border-t border-gray-200 pt-4 flex justify-end gap-2">
         <Button
           className="bg-blue-900 hover:bg-blue-700"
@@ -403,7 +384,7 @@ const UsersPage = () => {
           className="bg-blue-900 hover:bg-blue-700"
           onClick={publishtoBFC}
         >
-          Publish BFC
+          Publish CRSet
         </Button>
       </div>
     </div>

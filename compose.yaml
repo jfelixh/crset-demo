@@ -1,75 +1,71 @@
 services:
-  issuer-redis:
-    image: redis:7.2.2
-    container_name: issuer-redis
-    restart: always
-    ports:
-      - "6379:6379"
-    command: ["redis-server", "--port", "6379"]
-    networks:
-      - bfc-network
-
   verifier-redis:
     image: redis:7.2.2
     container_name: verifier-redis
     restart: always
-    ports:
-      - "6380:6380"
+    expose:
+      - 6380
     command: ["redis-server", "--port", "6380"]
-
-  ngrok-verifier: # port 8080 (verifier-backend)
-    image: ngrok/ngrok:latest
-    command: http http://host.docker.internal:8080
-    environment:
-      NGROK_AUTHTOKEN: ${NGROK_AUTH_TOKEN}
-    ports:
-      - "4040:4040" # ngrok dashboard
-
-  ngrok-issuer: # port 3000 (issuer-app)
-    image: ngrok/ngrok:latest
-    command: http http://host.docker.internal:3000
-    environment:
-      NGROK_AUTHTOKEN: ${NGROK_AUTH_TOKEN}
-    ports:
-      - "4041:4040" # ngrok dashboard
+    networks:
+      - crset-network
+    profiles: [verifier]
 
   verifier-backend:
     build: ./verifier-demo/server
     ports:
-      - "8080:8080"
+      - "3000:8080"
       - "8090:8090"
     volumes:
       - ./verifier-demo/server/data:/app/data
+    environment:
+      - REDIS_HOST=verifier-redis
+      - REDIS_PORT=6380
+      - FRONTEND_URL=http://localhost:3001
     depends_on:
-      - ngrok-verifier
       - verifier-redis
     env_file:
       - .env
+    networks:
+      - crset-network
+    profiles: [verifier]
 
   verifier-frontend:
-    build: ./verifier-demo/client
+    build:
+      context: ./verifier-demo/client
+      args:
+        - VITE_BACKEND_HOST=localhost
+        - VITE_BACKEND_PORT=3000
+        - VITE_BACKEND_PORT_WS=8090
     ports:
-      - "5173:5173"
+      - "3001:8080"
     depends_on:
       - verifier-backend
     env_file:
       - .env
+    networks:
+      - crset-network
+    profiles: [verifier]
 
   issuer-app:
     build:
       context: ./issuer-demo
+      args:
+        - ISSUER_BACKEND_HOST=localhost
+        - ISSUER_BACKEND_PORT=5050
+        - ISSUER_BACKEND_PORT_WS=8091
     ports:
       - "3000:3000"
     volumes:
       - ./issuer-demo/data:/app/data
-    depends_on:
-      - ngrok-issuer
-      - issuer-redis
+    environment:
+      - BE_ISSUER_BACKEND_HOST=host.docker.internal
+      - BE_ISSUER_BACKEND_PORT=5050
     env_file:
       - .env
     networks:
-      - bfc-network
+      - crset-network
+    profiles: [issuer]
 
 networks:
-  bfc-network:
-    external: true
+  crset-network:
+    name: crset-network

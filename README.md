@@ -1,25 +1,63 @@
-# bfc-status-demo
-This project is a showcase of the novel revocation mechanism for *W3C Verifiable Credential* with **cascading padded bloom filters**, as proposed in the paper **[CRSet: Non-Interactive Verifiable Credential Revocation with Metadata Privacy for Issuers and Everyone Else](https://arxiv.org/abs/2501.17089)**. 
+# CRSet Demonstrator
 
-The demo consists of two parts: the *issuer demo* and the *verifier demo*. Specifically in our demo case, the issuer is a fictitious company called "CMW" and the verifier is a fictitious bank called "M26". The issuer issues an employee credential to the prospective holder, which the holder can in our scenario use to apply for a loan at the bank. The bank verifies the credential and checks the revocation status of the credential as part of the verification process.
+This project is a showcase of CRSet, the novel revocation mechanism for _W3C Verifiable Credentials_ with **cascading padded Bloom filters**, as proposed in the paper **[CRSet: Non-Interactive Verifiable Credential Revocation with Metadata Privacy for Issuers and Everyone Else](https://arxiv.org/abs/2501.17089)**.
 
-As such, the issuer demo showcases the revocation mechanism, while the verifier demo showcases the verification of credentials, including the revocation status. To this avail, the issuer demo uses as separate service called **[bfc-status-issuer-backend](https://github.com/jfelixh/bfc-status-issuer-backend)**. The verifier demo utilizes a separate library to check the revocation status of credentials, namely **[bfc-status-check](https://github.com/jfelixh/bfc-status-check)**.
+## Demo Content
 
-For more details on the underlying mechanism, please refer to the paper and the linked repositories, as well as the links in the [references section](#links-and-references).
+The demo consists of two parts: the _issuer demo_ and the _verifier demo_, which have to be started separately. To experience the demo, a smartphone with an SSI wallet app is needed. Any wallet app with OID4VC support should work. The Altme app worked well in testing.
+
+### Issuing an Employee ID VC with CRSet Support
+
+The _issuer demo_ resembles a simple HR tool that allows a company to issue employee IDs as VCs for employees:
+
+1. Click on "Start Issuing"
+2. Enter arbitrary employee info and click "Generate Verifiable Credential"
+3. Scan the QR code with the smartphone and follow the directions to obtain the newly issued employee ID VC
+
+The tool also gives an overview over issued VCs and allows revocation:
+
+1. Navigate to the "Employee List" tab
+2. Select any number of VCs to revoke and press the button labeled "Revoke"
+
+To make the revocations public, a manually triggered rebuild and publishing of the CRSet is required:
+
+1. On the "Employee List" tab, click on "Publish CRSet"
+2. On the next page, click "Confirm Publication" to trigger the process
+3. Watch the updates in real time as the system builds the Bloom filter cascade and sends the blob-carrying transaction
+
+The _issuer demo_ also offers a dashboard showing the past publications and associated data, such as cost, time, and data size. It also includes direct links to block and blob explorers to dive in further.
+
+### Verifying Employment Status To Take Out a Loan
+
+The _verifier demo_ is a mock-up of a banking site allowing loan applicants to prove their employment status with their employment ID VC:
+
+1. Click "Apply for a loan now!"
+2. Enter arbitrary data for personal data and click next
+3. Enter arbitrary loan data and click next
+4. Scan the QR code with the smartphone and follow directions to present the employee ID VC
+5. Observe how the website updating the verification progress with emphasis on the revocation check in real time
 
 ## Technical Overview
 
+> [!NOTE]
+> This demo was built first and foremost to be easy to set up and run. Security-critical aspects like session management have been excluded since they are not core to showing the CRSet mechanism itself.
+
 ### Components
-![UML Component Diagram of the bfc-status-demo](docs/assets/component-diagram.png)
+
+This is an overview of the demo. The components in blue are core components of CRSet which are built to be use case agnostic:
+
+![UML Component Diagram of the crset-demo](docs/assets/component-diagram.png)
 
 ### Folder Structure
+
 The project is structured as follows (only the most relevant files and folders are shown):
-``` bash
-|-- bfc-status-demo/
+
+```bash
+|-- crset-demo/
     |-- issuer-demo/
     |   |-- Dockerfile
     |   |-- package.json
-    |   |-- database/
+    |   |-- data/
     |   |-- src/
     |-- verifier-demo/
     |   |-- client/
@@ -35,70 +73,59 @@ The project is structured as follows (only the most relevant files and folders a
 ```
 
 ## Prerequisites
+
 Several prerequisites are required in order to run the demo. These are outlined below.
 
-### Altme Wallet
-The bfc-status-demo requires the Altme Wallet to be installed in order to interact with the Ethereum blockchain. To install the Altme Wallet, follow the instructions on the [Altme Wallet website](https://altme.io/). Once installed, create a new wallet and save the private key.
+### SSI Wallet
 
-### Docker Network
-To make sure that the issuer-demo can communicate with **[bfc-status-issuer-backend](https://github.com/jfelixh/bfc-status-issuer-backend)**, a Docker network is required. To create this network, run the following command:
-```sh
-docker network create bfc-network
-```
+This demo requires an SSI Wallet supporting OID4VC protocols, like Altme Wallet. To install Altme, follow the instructions on the [Altme Wallet website](https://altme.io/). Once installed, create a new wallet and save the private key.
 
-### BFC Status Issuer Backend
-As mentioned earlier, the bfc-status-demo requires the **[bfc-status-issuer-backend](https://github.com/jfelixh/bfc-status-issuer-backend)** to be running in order to manage credentials. To start the bfc-status-issuer-backend, follow the instructions in the [README](https://github.com/jfelixh/bfc-status-issuer-backend/blob/main/README.md) of the repository.
+### CRSet Issuer Backend
 
-### Ngrok
-Additionally, to make the demo pages publicly accessible to the wallet, [ngrok](https://ngrok.com) is required. 
-Since both issuer and verifier demo are running on different ports and need to communicate with the wallet, two ngrok tunnels are required. 
-With that in mind, the URL of both the issuer and verifier demo need to be specified in the `.env` file. To get these public URLs, run the following command:
+As mentioned earlier, this demo requires the **[crset-issuer-backend](https://github.com/jfelixh/crset-issuer-backend)** to be running in order to manage credentials. To start it, follow the instructions in the [README](https://github.com/jfelixh/crset-issuer-backend/blob/main/README.md) of that repository. The docker compose setup of this demo expects the _crset-issuer-backend_ to be available at the default `localhost:5050`.
+
+### External URL
+
+To make the demo pages publicly accessible (for the wallet app), a tool like [ngrok](https://ngrok.com) is required.
+The _issuer demo_ and _verifier demo_ are set up such that both their backends run on port 3000.
+
+Using ngrok, an external URL can be set up with:
 
 ```sh
-docker compose up ngrok-issuer ngrok-verifier --build
+ngrok http 3000
 ```
 
-This will start two ngrok tunnels, one for the issuer demo and one for the verifier demo. The URLs can be found in by accessing the dashboard and will look like this:
+The terminal process will keep running and show the external URL, looking something like: `https://<random-string>.ngrok-free.app`.
 
-```
-http://<random-string>.ngrok-free.app
-```
+### Environment Variables
 
-Head to the dashboards (ngrok [verifier dashboard](http://localhost:4040), [ngrok issuer dashboard](http://localhost:4041)) to find the URLs. Now copy the URLs to the `.env` file:
-
-```
-...
-EXTERNAL_URL=<ngrok url for port 8080, from localhost:4040>
-NEXT_PUBLIC_URL=<ngrok url for port 3000, from localhost:4041>
-...
-```
-
-### Redis
-The demo requires Redis a Redis server for caching. Two Redis servers are required, one for the issuer demo and one for the verifier demo. These are setup with `docker compose` in this [file](./compose.yaml). You can start the Redis servers along with the rest of the demo by running the command specified in the forthcoming section.
-
-### Env Files
-The bfc-status-demo requires several environment variables to be defined in order to run the demo. These are specified in the `.env` file. You can look at the `.env.example` file to see the required variables. The `.env.example` file can be found [here](./.env.example).
+This demo requires several environment variables. These are specified in the `.env` file. An example file `.env.example` with some explanations is provided to be copied. It can be found [here](./.env.example).
 
 ## Running the Demo
-Once the prerequisites are met, the demo can be run. To start the rest of the services required for the demo, run the following command:
+
+Once the prerequisites are met, the demo can be run. Since we assume only one external URL to be available (e.g., via ngrok), the issuer and verifier applications can be started separately. To start the services required for the demo, run one of the following commands:
 
 ```sh
-docker compose up --build
+docker compose --profile issuer up --build
 ```
-This will start the issuer demo, the verifier demo, the Redis servers, and the ngrok tunnels.
-The issuer demo can be accessed at `http://localhost:3000` and the verifier demo can be accessed at `http://localhost:5173`.
+
+or
+
+```sh
+docker compose --profile verifier up --build
+```
+
+This will start the respective demo.
+The _issuer demo_ can be accessed at `http://localhost:3000` and the _verifier demo_ can be accessed at `http://localhost:3001`.
 
 ## Links and References
-- ![arXiv](https://img.shields.io/badge/arXiv-2501.17089-b31b1b.svg) **[CRSet: Non-Interactive Verifiable Credential Revocation with Metadata Privacy for Issuers and Everyone Else](https://arxiv.org/abs/2501.17089)**  
-  *Hoops et al., 2025.*  
-- ![GitHub](https://img.shields.io/badge/GitHub-bfc--status--issuer--backend-blue?logo=github) **[bfc-status-issuer-backend](https://github.com/jfelixh/bfc-status-issuer-backend)**
-  
-- ![GitHub](https://img.shields.io/badge/GitHub-bfc--status--check-blue?logo=github) **[bfc-status-check](https://github.com/jfelixh/bfc-status-check)**
-  
-- ![GitHub](https://img.shields.io/badge/GitHub-padded--bloom--filter--cascade-blue?logo=github)
-    **[padded-bloom-filter-cascade](https://github.com/jfelixh/padded-bloom-filter-cascade/)**
 
-- [![IEEE Xplore](https://img.shields.io/badge/IEEE%20Xplore-7958597-blue)](https://ieeexplore.ieee.org/document/7958597) **[CRLite: A Scalable System for Pushing All TLS Revocations to All Browsers](https://ieeexplore.ieee.org/document/7958597)**
-*Larisch et al., 2025.*
+- ![arXiv](https://img.shields.io/badge/arXiv-2501.17089-b31b1b.svg) **[CRSet: Non-Interactive Verifiable Credential Revocation with Metadata Privacy for Issuers and Everyone Else](https://arxiv.org/abs/2501.17089)**  
+  _Hoops et al., 2025._
+- ![GitHub](https://img.shields.io/badge/GitHub-crset--issuer--backend-blue?logo=github) **[crset-issuer-backend](https://github.com/jfelixh/crset-issuer-backend)**
+- ![GitHub](https://img.shields.io/badge/GitHub-crset--check-blue?logo=github) **[crset-check](https://github.com/jfelixh/crset-check)**
+- ![GitHub](https://img.shields.io/badge/GitHub-crset--cascade-blue?logo=github)
+  **[crset-cascade](https://github.com/jfelixh/crset-cascade/)**
+
 - **[EIP-4844: Shard Blob Transactions](https://eips.ethereum.org/EIPS/eip-4844)**
-- **[W3C Verifiable Credentials Data Model 2.0](https://www.w3.org/TR/vc-data-model-2.0/)**
+- **[W3C Verifiable Credentials Data Model 1.1](https://www.w3.org/TR/vc-data-model/)**

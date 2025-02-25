@@ -1,58 +1,57 @@
 import { Ed25519VerificationKey2020 } from "@digitalcredentials/ed25519-verification-key-2020";
-import { Ed25519Signature2020 } from
-  '@digitalcredentials/ed25519-signature-2020';
+import { Ed25519Signature2020 } from "@digitalcredentials/ed25519-signature-2020";
 import { issue } from "@digitalcredentials/vc";
 import documentLoader from "@/lib/documentLoader";
-import {redisSet} from "@/app/config/redis";
-import * as sqlite from "sqlite3";
 import * as database from "../../../../database/database";
-
-let db: sqlite.Database;
 
 async function createStatusEntry() {
   try {
-    const response = await fetch(`http://bfc-issuer-backend:5050/api/status/createStatusEntry`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+    const response = await fetch(
+      `http://${process.env.BE_ISSUER_BACKEND_HOST}:${process.env.BE_ISSUER_BACKEND_PORT}/api/status/createStatusEntry`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
       },
-    });
+    );
 
     if (!response.ok) {
       throw new Error(`Response is not ok! status: ${response.status}`);
     }
-    const data = await response.json();
-  //  console.log("Revocation results:", data); // Logs the data for debugging
-    return data; // Returns the actual data
+    return await response.json();
   } catch (error) {
     console.error("Error fetching status entry:", error);
     throw error; // Re-throws the error to be handled by the caller
   }
 }
 
-
 export async function POST(req: Request) {
   if (req.method !== "POST") {
-    return new Response(
-      `Method ${req.method} Not Allowed`,
-      { status: 405, headers: { "Allow": "POST" } }
-    );
+    return new Response(`Method ${req.method} Not Allowed`, {
+      status: 405,
+      headers: { Allow: "POST" },
+    });
   }
 
   try {
-
-    // Needed for creating cryptographically secure proofs on the credential
+    // for simplicity, we generate a new issuer key pair for each request
+    // in a real scenario, the issuer would have a fixed key pair
     const keyPair = await Ed25519VerificationKey2020.generate();
     const suite = new Ed25519Signature2020({ key: keyPair });
-  
-    suite.verificationMethod = "did:key:" + keyPair.publicKeyMultibase + "#" + keyPair.publicKeyMultibase;
+
+    suite.verificationMethod =
+      "did:key:" +
+      keyPair.publicKeyMultibase +
+      "#" +
+      keyPair.publicKeyMultibase;
     const rawPayload = await req.json();
- 
+
     const credentialPayload = {
       "@context": [
         "https://www.w3.org/2018/credentials/v1",
         {
-          BFCStatusEntry: {
+          CRSetEntry: {
             "@context": {
               "@protected": true,
               id: "@id",
@@ -81,63 +80,79 @@ export async function POST(req: Request) {
         },
       ],
       id: "urn:uuid:" + crypto.randomUUID(),
-      type: ["VerifiableCredential", "EmploymentCredential",],
+      type: ["VerifiableCredential", "EmploymentCredential"],
       issuer: `did:key:${keyPair.publicKeyMultibase}`,
       credentialSubject: {
-        id: `did:example:${Math.random().toString(36).substr(2)}`, //crypto.randomUUID(),
+        // in a real scenario, the id would be the employee's DID
+        // for simplicity, we generate a dummy id here
+        id: `did:example:${Math.random().toString(36).slice(2)}`,
         email: rawPayload.email,
         name: rawPayload.name,
         familyName: rawPayload.lastName,
         jobTitle: rawPayload.jobTitle,
-        companyName: "CMW Group",
+        companyName: "ACME Inc.",
         comment: "I am just a test employment credential.",
         type: "EmploymentCredential",
       },
     };
 
-   const result = await createStatusEntry();
-   const credential = {...credentialPayload, credentialStatus: 
-    {
-      id: result.id,
-      type: result.type,
-      statusPurpose: result.statusPurpose,
-    }
-  }
+    const result = await createStatusEntry();
+    const credential = {
+      ...credentialPayload,
+      credentialStatus: {
+        id: result.id,
+        type: result.type,
+        statusPurpose: result.statusPurpose,
+      },
+    };
 
     const name = rawPayload.name + " " + rawPayload.lastName;
-   
+
     const signedCredential = await issue({
       credential: credential,
       suite,
       documentLoader,
     });
 
-    //console.log("Start inserting into database")
-  //  db = await database.connectToDb("database/bfc.db");
-    await insertEmployee(name, rawPayload.email, rawPayload.jobTitle, JSON.stringify(signedCredential), rawPayload.manager, rawPayload.employmentType, 0);
-  //  console.log("Finished inserting into database")
-
-    const uuid = crypto.randomUUID();
-    const MAX_AGE = 300; // 300 seconds = 5min
-    const EXPIRY_MS = "EX"; // seconds
-    redisSet(
-      "vc-" + uuid,
+    const idx = await insertEmployee(
+      name,
+      rawPayload.email,
+      rawPayload.jobTitle,
       JSON.stringify(signedCredential),
-      MAX_AGE
-    );
+      rawPayload.manager,
+      rawPayload.employmentType,
+      0,
+    ).catch((err) => {
+      throw err;
+    });
 
-    return new Response(JSON.stringify({ vc: signedCredential, uuid: uuid }), { status: 200 });
+    const credentialOffer = {
+      credential_issuer: process.env.NEXT_PUBLIC_URL + "/vci/" + idx,
+      credential_configuration_ids: ["ProofOfEmploymentCredential"],
+      grants: {
+        "urn:ietf:params:oauth:grant-type:pre-authorized_code": {
+          "pre-authorized_code": "oaKazRN8I0IbtZ0C7JuMn5",
+        },
+      },
+    };
+
+    const qrData = `openid-credential-offer://?credential_offer=${encodeURIComponent(
+      JSON.stringify(credentialOffer),
+    )}`;
+
+    return new Response(JSON.stringify({ credentialOffer: qrData }), {
+      status: 200,
+    });
   } catch (error) {
     console.error("Error generating VC:", error);
     return new Response(
-      JSON.stringify({ error: "Failed to generate Verifiable Credential" }), 
-      { status: 500 }
+      JSON.stringify({ error: "Failed to generate Verifiable Credential" }),
+      { status: 500 },
     );
   }
 }
 
-
-export async function insertEmployee(
+async function insertEmployee(
   name: string,
   email: string,
   jobTitle: string,
@@ -146,52 +161,34 @@ export async function insertEmployee(
   employmentType: string,
   isPublished: number,
 ): Promise<string> {
-  console.log("Start inserting employee into companyDataBase");
-  db = await database.connectToDb("data/bfc.db");
-  //await logDatabaseTables(db); 
-  console.log("Connected to SQLite database in companyDataBase", { db });
+  const db = await database.connectToDb();
   return new Promise((resolve, reject) => {
+    db.exec("BEGIN;");
     db.run(
-      "INSERT INTO companyDataBase (name,email,jobTitle,VC, manager, employmentType, isPublished) VALUES (?,?,?,?,?,?,?)",
+      "INSERT INTO companyDataBase (name,email,jobTitle,VC, manager, employmentType, isPublished) VALUES (?,?,?,?,?,?,?);",
       [name, email, jobTitle, VC, manager, employmentType, isPublished],
-      (err) => {
+      (err: any) => {
         if (err) {
           console.error("Error inserting employee:", err.message);
+          db.exec("ROLLBACK;");
           reject(err);
-          return "";
+        } else {
+          db.all(
+            "SELECT MAX(rowid) AS id FROM companyDataBase;",
+            [],
+            (err: any, rows: any) => {
+              if (err) {
+                console.error("Error inserting employee:", err.message);
+                db.exec("ROLLBACK;");
+                reject(err);
+              } else {
+                db.exec("COMMIT;");
+                resolve(rows[0].id);
+              }
+            },
+          );
         }
-        console.log("Employee inserted successfully with email_address:", email);
-        db.all("SELECT * FROM companyDataBase", [], (err, rows) => {
-          if (err) {
-            console.error("Error fetching data:", err.message);
-          } else {
-            console.log("Current table content:", rows);
-          }
-        });
-        resolve(email);
-      }
+      },
     );
   });
 }
-
-export async function logDatabaseTables(db: sqlite.Database): Promise<void> {
-  try {
-   // console.log("Fetching tables from the database...");
-    db.all("SELECT name FROM sqlite_master WHERE type='table'", [], (err, rows) => {
-      if (err) {
-        console.error("Error fetching tables:", err.message);
-        return;
-      }
-      if (rows.length === 0) {
-        console.log("No tables found in the database.");
-      } else {
-        console.log("Tables in the database:");
-        rows.forEach((row) => console.log(row.name));
-      }
-    });
-  } catch (error) {
-    console.error("Error logging database tables:", error.message);
-  }
-}
-
-

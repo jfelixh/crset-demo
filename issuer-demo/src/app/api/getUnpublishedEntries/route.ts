@@ -1,32 +1,28 @@
-import * as sqlite from "sqlite3";
 import * as database from "../../../../database/database";
 import { UnpublishedEntries } from "@/app/types/UnpublishedEntries";
-
-let db: sqlite.Database;
 
 export const GET = async () => {
   console.log("Fetching unpublished entries...");
   try {
-    db = await database.connectToDb("data/bfc.db");
-    
-    const response = await getUnpublishedEntries(db);
+    const response = await getUnpublishedEntries();
     return new Response(JSON.stringify(response), {
       status: 200,
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     });
   } catch (error) {
-    console.error('Error fetching unpublished entries:', error);
-    
+    console.error("Error fetching unpublished entries:", error);
+
     return new Response(
-      JSON.stringify({ error: 'Failed to fetch unpublished entries' }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
+      JSON.stringify({ error: "Failed to fetch unpublished entries" }),
+      { status: 500, headers: { "Content-Type": "application/json" } },
     );
   }
 };
 
-const getUnpublishedEntries = (db: sqlite.Database): Promise<any[]> => {
+const getUnpublishedEntries = async (): Promise<any[]> => {
+  const db = await database.connectToDb();
   return new Promise((resolve, reject) => {
     console.log("Fetching unpublished companies from companyDataBase...");
     const query = `SELECT * FROM companyDataBase WHERE isPublished = 0`;
@@ -43,7 +39,7 @@ const getUnpublishedEntries = (db: sqlite.Database): Promise<any[]> => {
         console.log("No unpublished entries found.");
       } else {
         console.log("Unpublished entries:");
-        rows.forEach((row) => {
+        rows.forEach((row: any) => {
           entries.push({
             name: row.name,
             email: row.email,
@@ -54,7 +50,7 @@ const getUnpublishedEntries = (db: sqlite.Database): Promise<any[]> => {
         });
       }
       //console.log("Entries:", entries);
-      resolve(entries); 
+      resolve(entries);
     });
   });
 };

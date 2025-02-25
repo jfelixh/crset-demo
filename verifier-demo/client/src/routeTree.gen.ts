@@ -10,123 +10,85 @@
 
 // Import Routes
 
-import { Route as rootRoute } from './routes/__root'
-import { Route as LoginImport } from './routes/login'
-import { Route as DashboardImport } from './routes/dashboard'
-import { Route as ApplyForLoanImport } from './routes/apply-for-loan'
-import { Route as IndexImport } from './routes/index'
+import { Route as rootRoute } from "./routes/__root";
+import { Route as ApplyForLoanImport } from "./routes/applyForLoan";
+import { Route as IndexImport } from "./routes/index";
 
 // Create/Update Routes
 
-const LoginRoute = LoginImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const DashboardRoute = DashboardImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => rootRoute,
-} as any)
-
 const ApplyForLoanRoute = ApplyForLoanImport.update({
-  id: '/apply-for-loan',
-  path: '/apply-for-loan',
+  id: "/applyForLoan",
+  path: "/applyForLoan",
   getParentRoute: () => rootRoute,
-} as any)
+} as any);
 
 const IndexRoute = IndexImport.update({
-  id: '/',
-  path: '/',
+  id: "/",
+  path: "/",
   getParentRoute: () => rootRoute,
-} as any)
+} as any);
 
 // Populate the FileRoutesByPath interface
 
-declare module '@tanstack/react-router' {
+declare module "@tanstack/react-router" {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/apply-for-loan': {
-      id: '/apply-for-loan'
-      path: '/apply-for-loan'
-      fullPath: '/apply-for-loan'
-      preLoaderRoute: typeof ApplyForLoanImport
-      parentRoute: typeof rootRoute
-    }
-    '/dashboard': {
-      id: '/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardImport
-      parentRoute: typeof rootRoute
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginImport
-      parentRoute: typeof rootRoute
-    }
+    "/": {
+      id: "/";
+      path: "/";
+      fullPath: "/";
+      preLoaderRoute: typeof IndexImport;
+      parentRoute: typeof rootRoute;
+    };
+    "/applyForLoan": {
+      id: "/applyForLoan";
+      path: "/applyForLoan";
+      fullPath: "/applyForLoan";
+      preLoaderRoute: typeof ApplyForLoanImport;
+      parentRoute: typeof rootRoute;
+    };
   }
 }
 
 // Create and export the route tree
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/apply-for-loan': typeof ApplyForLoanRoute
-  '/dashboard': typeof DashboardRoute
-  '/login': typeof LoginRoute
+  "/": typeof IndexRoute;
+  "/applyForLoan": typeof ApplyForLoanRoute;
 }
 
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/apply-for-loan': typeof ApplyForLoanRoute
-  '/dashboard': typeof DashboardRoute
-  '/login': typeof LoginRoute
+  "/": typeof IndexRoute;
+  "/applyForLoan": typeof ApplyForLoanRoute;
 }
 
 export interface FileRoutesById {
-  __root__: typeof rootRoute
-  '/': typeof IndexRoute
-  '/apply-for-loan': typeof ApplyForLoanRoute
-  '/dashboard': typeof DashboardRoute
-  '/login': typeof LoginRoute
+  __root__: typeof rootRoute;
+  "/": typeof IndexRoute;
+  "/applyForLoan": typeof ApplyForLoanRoute;
 }
 
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/apply-for-loan' | '/dashboard' | '/login'
-  fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/apply-for-loan' | '/dashboard' | '/login'
-  id: '__root__' | '/' | '/apply-for-loan' | '/dashboard' | '/login'
-  fileRoutesById: FileRoutesById
+  fileRoutesByFullPath: FileRoutesByFullPath;
+  fullPaths: "/" | "/applyForLoan";
+  fileRoutesByTo: FileRoutesByTo;
+  to: "/" | "/applyForLoan";
+  id: "__root__" | "/" | "/applyForLoan";
+  fileRoutesById: FileRoutesById;
 }
 
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  ApplyForLoanRoute: typeof ApplyForLoanRoute
-  DashboardRoute: typeof DashboardRoute
-  LoginRoute: typeof LoginRoute
+  IndexRoute: typeof IndexRoute;
+  ApplyForLoanRoute: typeof ApplyForLoanRoute;
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ApplyForLoanRoute: ApplyForLoanRoute,
-  DashboardRoute: DashboardRoute,
-  LoginRoute: LoginRoute,
-}
+};
 
 export const routeTree = rootRoute
   ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>()
+  ._addFileTypes<FileRouteTypes>();
 
 /* ROUTE_MANIFEST_START
 {
@@ -135,22 +97,14 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/apply-for-loan",
-        "/dashboard",
-        "/login"
+        "/applyForLoan"
       ]
     },
     "/": {
       "filePath": "index.tsx"
     },
-    "/apply-for-loan": {
-      "filePath": "apply-for-loan.tsx"
-    },
-    "/dashboard": {
-      "filePath": "dashboard.tsx"
-    },
-    "/login": {
-      "filePath": "login.tsx"
+    "/applyForLoan": {
+      "filePath": "applyForLoan.tsx"
     }
   }
 }

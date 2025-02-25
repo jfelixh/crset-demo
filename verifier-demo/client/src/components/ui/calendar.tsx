@@ -39,7 +39,7 @@ function Calendar({
         from: currentYear - Math.floor(yearRange / 2 - 1),
         to: currentYear + Math.ceil(yearRange / 2),
       };
-    }, [yearRange])
+    }, [yearRange]),
   );
 
   const { onNextClick, onPrevClick, startMonth, endMonth } = props;
@@ -66,14 +66,14 @@ function Calendar({
             variant: "outline",
             className:
               "absolute right-0 h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100",
-          })
+          }),
         ),
         button_previous: cn(
           buttonVariants({
             variant: "outline",
             className:
               "absolute left-0 h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100",
-          })
+          }),
         ),
         nav: "flex items-start",
         month_grid: "mt-4",
@@ -81,7 +81,7 @@ function Calendar({
         day: "p-0 size-8 text-sm flex-1 flex items-center justify-center has-[button]:hover:!bg-accent rounded-md has-[button]:hover:aria-selected:!bg-primary has-[button]:hover:text-accent-foreground has-[button]:hover:aria-selected:text-primary-foreground",
         day_button: cn(
           buttonVariants({ variant: "ghost" }),
-          "size-8 p-0 font-normal transition-none hover:bg-transparent hover:text-inherit aria-selected:opacity-100"
+          "size-8 p-0 font-normal transition-none hover:bg-transparent hover:text-inherit aria-selected:opacity-100",
         ),
         range_start: "day-range-start rounded-s-md",
         range_end: "day-range-end rounded-e-md",
@@ -110,12 +110,12 @@ function Calendar({
                 (startMonth &&
                   differenceInCalendarDays(
                     new Date(displayYears.from - 1, 0, 1),
-                    startMonth
+                    startMonth,
                   ) < 0) ||
                 (endMonth &&
                   differenceInCalendarDays(
                     new Date(displayYears.from - 1, 0, 1),
-                    endMonth
+                    endMonth,
                   ) > 0)
               );
             }
@@ -128,12 +128,12 @@ function Calendar({
                 (startMonth &&
                   differenceInCalendarDays(
                     new Date(displayYears.to + 1, 0, 1),
-                    startMonth
+                    startMonth,
                   ) < 0) ||
                 (endMonth &&
                   differenceInCalendarDays(
                     new Date(displayYears.to + 1, 0, 1),
-                    endMonth
+                    endMonth,
                   ) > 0)
               );
             }
@@ -151,8 +151,8 @@ function Calendar({
                 new Date(
                   displayYears.from - (displayYears.to - displayYears.from),
                   0,
-                  1
-                )
+                  1,
+                ),
               );
               return;
             }
@@ -171,8 +171,8 @@ function Calendar({
                 new Date(
                   displayYears.from + (displayYears.to - displayYears.from),
                   0,
-                  1
-                )
+                  1,
+                ),
               );
               return;
             }
@@ -247,13 +247,13 @@ function Calendar({
                     const isBefore =
                       differenceInCalendarDays(
                         new Date(displayYears.from + i, 12, 31),
-                        startMonth!
+                        startMonth!,
                       ) < 0;
 
                     const isAfter =
                       differenceInCalendarDays(
                         new Date(displayYears.from + i, 0, 0),
-                        endMonth!
+                        endMonth!,
                       ) > 0;
 
                     const isDisabled = isBefore || isAfter;
@@ -263,7 +263,7 @@ function Calendar({
                         className={cn(
                           "h-7 w-full text-sm font-normal text-foreground",
                           displayYears.from + i === new Date().getFullYear() &&
-                            "bg-accent font-medium text-accent-foreground"
+                            "bg-accent font-medium text-accent-foreground",
                         )}
                         variant="ghost"
                         onClick={() => {
@@ -271,8 +271,8 @@ function Calendar({
                           goToMonth(
                             new Date(
                               displayYears.from + i,
-                              new Date().getMonth()
-                            )
+                              new Date().getMonth(),
+                            ),
                           );
                         }}
                         disabled={navView === "years" ? isDisabled : undefined}
@@ -280,7 +280,7 @@ function Calendar({
                         {displayYears.from + i}
                       </Button>
                     );
-                  }
+                  },
                 )}
               </div>
             );
